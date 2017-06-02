@@ -3,30 +3,32 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-// Estrutura da fila
+// Estrutura da Lista
 template <class Gen>
 struct Node{
     Gen info;
-    struct Node *dir;
-    struct Node *esq;
+    struct Node<Gen> *dir;
+    struct Node<Gen> *esq;
 };
 
 template<class Gen>
 class Lista{
-    public:
-        Node<Gen> *header;
     private:
+        struct Node<Gen> *header;
+    public:
         void cria();
         void insere(Gen&,bool&);
         void remove(Gen&,bool&);
-        void insereADireitaDeP(struct Node <Gen> &N,Gen&,bool&);
+        void insereADireitaDeP(struct Node <Gen> *N,Gen&,bool&);
         void removeP(struct Node <Gen> &N,Gen&,bool&);
 };
 
 template<class Gen>
 void Lista<Gen>::cria(){
-    Node<Gen> *Paux = new Node<Gen>();
+    struct Node<Gen> *Paux = new Node<Gen>();
     header=Paux;
+    header->esq=header;
+    header->dir=header;
     Paux=NULL;
 }
 
@@ -35,11 +37,9 @@ void Lista<Gen>::insere(Gen& x,bool& deuCerto){
     insereADireitaDeP(header,x,deuCerto);
 }
 template<class Gen>
-void Lista<Gen>::insereADireitaDeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
-      Node<Gen> *Paux = new Node<Gen>();
+void Lista<Gen>::insereADireitaDeP(struct Node <Gen> *N,Gen& x,bool& deuCerto){
+    struct  Node<Gen> *Paux = new Node<Gen>();
     
-    if(N->esq==NULL)
-        N->esq=Paux;
     
     Paux->info=x;
     Paux->dir=N->dir;
@@ -51,17 +51,18 @@ void Lista<Gen>::insereADireitaDeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
 }
 template<class Gen>
 void Lista<Gen>::remove(Gen& x,bool& deuCerto){
-    Node <Gen> *Paux = header->esq;
-    x=Paux->info;
-    header->esq=Paux->esq;
-    Paux->esq->dir=header;
-    delete Paux;
+    struct Node <Gen> *Paux;
+     Paux=header->esq;
+     x=Paux->info;
+//     header->esq=Paux->esq;
+//     Paux->esq->dir=header;
+    
     
 }
 
 template<class Gen>
 void Lista<Gen>::removeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
-    Node <Gen> *Paux = N;
+    struct Node <Gen> *Paux = N;
     header->info=x;
     while(Paux->info != x)
         Paux=Paux->esq;
