@@ -8,20 +8,21 @@ class Item{
     public:
         void setLocationItem(sf::Vector2f);
         void carregarItem(std::string);
-        sf::RectangleShape getItem();
+        sf::Sprite getItem();
     private:
-       sf::RectangleShape item;
+       sf::Sprite item;
+       sf::Texture textura;
 };
 
 void Item::carregarItem(std::string nome){
-    sf::Texture textura;
     textura.loadFromFile("Itens/"+nome+".png");
-    
+    item.setTexture(textura);
+    item.setScale(sf::Vector2f(item.getScale().x/5.0f,item.getScale().y/5.0f));
 };
 
 void Item::setLocationItem(sf::Vector2f posicao){
     item.setPosition(posicao);    
 };
-sf::RectangleShape Item::getItem(){
+sf::Sprite Item::getItem(){
     return item;  
 };

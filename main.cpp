@@ -4,12 +4,15 @@
 #include "Item.hpp"
 #include "Lista.hpp"
 #include <string>
+
+
 int main (){
     Lista<Item> itens;
-    Item item;
+    Item item,item1;
     bool deuCerto;
-    item.carregarItem("disc");
+    
     item.setLocationItem(sf::Vector2f(2.0f,2.0f));
+    item.carregarItem("disc");
     itens.cria();
     itens.insere(item,deuCerto);
     sf::RenderWindow window(sf::VideoMode(500, 600), "SFML works!");
@@ -142,8 +145,9 @@ int main (){
 //             }
         }
         
-         itens.remove(item,deuCerto);
-         window.draw(item.getItem());
+        itens.remove(item1,deuCerto);
+        itens.insere(item,deuCerto);
+        window.draw(item1.getItem());
         window.display();
        
     

@@ -4,8 +4,7 @@
 #include <iostream>
 
 // Estrutura da Lista
-template <class Gen>
-struct Node{
+template <class Gen> struct Node{
     Gen info;
     struct Node<Gen> *dir;
     struct Node<Gen> *esq;
@@ -14,13 +13,13 @@ struct Node{
 template<class Gen>
 class Lista{
     private:
-        struct Node<Gen> *header;
     public:
+        struct Node<Gen> *header;
         void cria();
         void insere(Gen&,bool&);
-        void remove(Gen&,bool&);
-        void insereADireitaDeP(struct Node <Gen> *N,Gen&,bool&);
+        void insereAEsquerdaDeP(struct Node <Gen> *N,Gen&,bool&);
         void removeP(struct Node <Gen> &N,Gen&,bool&);
+        void remove(Gen& x,bool& deuCerto);
 };
 
 template<class Gen>
@@ -30,33 +29,26 @@ void Lista<Gen>::cria(){
     header->esq=header;
     header->dir=header;
     Paux=NULL;
+    delete Paux;
 }
 
 template<class Gen>
 void Lista<Gen>::insere(Gen& x,bool& deuCerto){
-    insereADireitaDeP(header,x,deuCerto);
+    insereAEsquerdaDeP(header,x,deuCerto);
 }
 template<class Gen>
-void Lista<Gen>::insereADireitaDeP(struct Node <Gen> *N,Gen& x,bool& deuCerto){
-    struct  Node<Gen> *Paux = new Node<Gen>();
+void Lista<Gen>::insereAEsquerdaDeP(struct Node <Gen> *N,Gen& x,bool& deuCerto){
+    struct  Node<Gen> *Paux = new struct Node<Gen>();
     
     
     Paux->info=x;
-    Paux->dir=N->dir;
-    Paux->esq=N;
-    N->dir->esq=Paux;
-    N->dir=Paux;
+    Paux->esq=N->esq;
+    Paux->dir=N;
+    N->esq->dir=Paux;
+    N->esq=Paux;
     Paux=NULL;
     deuCerto=true;
-}
-template<class Gen>
-void Lista<Gen>::remove(Gen& x,bool& deuCerto){
-    struct Node <Gen> *Paux;
-     Paux=header->esq;
-     x=Paux->info;
-//     header->esq=Paux->esq;
-//     Paux->esq->dir=header;
-    
+    delete Paux;
     
 }
 
@@ -76,4 +68,13 @@ void Lista<Gen>::removeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
         deuCerto=false;
     }
     
+}
+template <class Gen>
+void Lista<Gen>::remove(Gen& x,bool& deuCerto){
+    struct Node <Gen> *Paux;
+    Paux=header->esq;
+    x=Paux->info;
+    header->esq=Paux->esq;
+    Paux->esq->dir=header;
+    delete Paux;
 }
