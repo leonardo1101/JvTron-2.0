@@ -17,7 +17,7 @@ class Item{
 void Item::carregarItem(std::string nome){
     textura.loadFromFile("Itens/"+nome+".png");
     item.setTexture(textura);
-    item.setScale(sf::Vector2f(item.getScale().x/5.0f,item.getScale().y/5.0f));
+    item.setScale(sf::Vector2f(item.getScale().x/2.0f,item.getScale().y/2.0f));
 };
 
 void Item::setLocationItem(sf::Vector2f posicao){

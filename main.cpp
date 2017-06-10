@@ -9,13 +9,20 @@
 int main (){
     Lista<Item> itens;
     Item item,item1;
+    sf::Sprite barraItens;
+    sf::Texture barra;
+    barra.loadFromFile("Itens/barraItens.png");
+    barraItens.setTexture(barra);
+    sf::RectangleShape teste(sf::Vector2f(100.0f,100.0f));
+    teste.setFillColor(sf::Color(100, 250, 50));
     bool deuCerto;
     
     item.setLocationItem(sf::Vector2f(2.0f,2.0f));
-    item.carregarItem("disc");
+    item.carregarItem("lanca");
     itens.cria();
     itens.insere(item,deuCerto);
-    sf::RenderWindow window(sf::VideoMode(500, 600), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(1024, 800), "SFML works!", sf::Style::Fullscreen);
+    barraItens.setPosition(sf::Vector2f(1366.0f - barra.getSize().x,0.0f));
     while (window.isOpen())
     {
     sf::Event Event;
@@ -147,7 +154,9 @@ int main (){
         
         itens.remove(item1,deuCerto);
         itens.insere(item,deuCerto);
-        window.draw(item1.getItem());
+//         window.draw(teste);
+        window.draw(barraItens);
+//         window.draw(item1.getItem());
         window.display();
        
     
