@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
@@ -5,35 +7,93 @@
 #include "Lista.hpp"
 #include <string>
 
+enum InputType{
+    KeyboardInput
+};
+ 
+struct MyKeys{
+    InputType myInputType;
+    sf::Event::EventType myEventType;
+    sf::Keyboard::Key myKeyCode;
+};
+
+bool TestEvent(MyKeys k, sf::Event e){
+    // Keyboard event
+    if (k.myInputType == KeyboardInput &&
+        k.myEventType == e.type &&
+        k.myKeyCode == e.key.code)
+    {
+        return (true);
+    }
+    return (false);
+};
 
 int main (){
     Lista<Item> itens;
     Item item,item1;
     sf::Sprite barraItens;
+    sf::Sprite barraVida;
+    sf::Texture vida;
     sf::Texture barra;
+    sf::RectangleShape caixaItem[5];
+    sf::RectangleShape itemSelecionado(sf::Vector2f(87.0f,87.0f));
+    int i, nItem=0;
+    
+    for(i=0; i<5; i++){
+        caixaItem[i].setSize(sf::Vector2f(85.0f,85.0f));
+        caixaItem[i].setFillColor(sf::Color(35, 77, 77));
+        caixaItem[i].setPosition(sf::Vector2f(820.0f + 110.0f * i,17.0f));
+        
+    }
+    
+    itemSelecionado.setFillColor(sf::Color(32, 210, 212));
+    itemSelecionado.setPosition(sf::Vector2f(819.0f,16.0f));
     barra.loadFromFile("Itens/barraItens.png");
     barraItens.setTexture(barra);
-    sf::RectangleShape teste(sf::Vector2f(100.0f,100.0f));
-    teste.setFillColor(sf::Color(100, 250, 50));
+    vida.loadFromFile("Itens/6vida.png");
+    barraVida.setTexture(vida);
     bool deuCerto;
     
-    item.setLocationItem(sf::Vector2f(2.0f,2.0f));
-    item.carregarItem("lanca");
+    item.setLocationItem(sf::Vector2f(825.0f,20.0f));
+    item.carregarItem("disco",2.5f);
+    item1.setLocationItem(sf::Vector2f(930.0f,10.0f));
+    item1.carregarItem("lanca",2.2f);
     itens.cria();
     itens.insere(item,deuCerto);
+    itens.insere(item1,deuCerto);
     sf::RenderWindow window(sf::VideoMode(1024, 800), "SFML works!", sf::Style::Fullscreen);
     barraItens.setPosition(sf::Vector2f(1366.0f - barra.getSize().x,0.0f));
     while (window.isOpen())
     {
     sf::Event Event;
 
-//     std::map<std::string,MyKeys> Keys;
-//     MyKeys key;
-// 
-//     key.myInputType = KeyboardInput;
-//     key.myEventType = sf::Event::KeyPressed;
-//     key.myKeyCode = sf::Keyboard::D;
-//     Keys["tron-Direita"] = key;
+    std::map<std::string,MyKeys> Keys;
+    MyKeys key;
+
+    key.myInputType = KeyboardInput;
+    key.myEventType = sf::Event::KeyPressed;
+    key.myKeyCode = sf::Keyboard::Num1;
+    Keys["item1"] = key;
+    
+    key.myInputType = KeyboardInput;
+    key.myEventType = sf::Event::KeyPressed;
+    key.myKeyCode = sf::Keyboard::Num2;
+    Keys["item2"] = key;
+    
+    key.myInputType = KeyboardInput;
+    key.myEventType = sf::Event::KeyPressed;
+    key.myKeyCode = sf::Keyboard::Num3;
+    Keys["item3"] = key;
+    
+    key.myInputType = KeyboardInput;
+    key.myEventType = sf::Event::KeyPressed;
+    key.myKeyCode = sf::Keyboard::Num4;
+    Keys["item4"] = key;
+    
+    key.myInputType = KeyboardInput;
+    key.myEventType = sf::Event::KeyPressed;
+    key.myKeyCode = sf::Keyboard::Num5;
+    Keys["item5"] = key;
 // 
 //     key.myInputType = KeyboardInput;
 //     key.myEventType = sf::Event::KeyPressed;
@@ -91,72 +151,36 @@ int main (){
                     break;
                
             }
-//             // teclas tron
-//             if (TestEvent(Keys["tron-Direita"], Event)){
-//                 iT = 50;
-// //                 aux= sf::Vector2f(tron.getForma().getPosition().x + tron.getAuxX(),tron.getForma().getPosition().y + tron.getAuxY());
-//                 aux = tron.getForma().getPosition() + tron.getFimCauda();
-//                 tron.mudarDireita();
-//                  virou=true; 
-//             }
-//             if (TestEvent(Keys["tron-Esquerda"], Event)){
-//                 iT = 50;
-// //                aux= sf::Vector2f(tron.getForma().getPosition().x + tron.getAuxX(),tron.getForma().getPosition().y + tron.getAuxY());
-//                 aux = tron.getForma().getPosition() + tron.getFimCauda();
-//                 tron.mudarEsquerda(); 
-//                  virou=true; 
-//             }
-//             if (TestEvent(Keys["tron-Cima"], Event)){
-//                 iT = 50;
-// //                aux= sf::Vector2f(tron.getForma().getPosition().x + tron.getAuxX(),tron.getForma().getPosition().y + tron.getAuxY());
-//                 aux = tron.getForma().getPosition() + tron.getFimCauda();
-//                 tron.mudarCima();
-//                  virou=true; 
-//             }
-//             if (TestEvent(Keys["tron-Baixo"], Event)){
-//                 iT = 50;
-// //                aux= sf::Vector2f(tron.getForma().getPosition().x + tron.getAuxX(),tron.getForma().getPosition().y + tron.getAuxY());
-//                 aux = tron.getForma().getPosition() + tron.getFimCauda();
-//                 tron.mudarBaixo();
-//                  virou=true; 
-//             }
-// 
-//             // teclas rinzzler
-//             if (TestEvent(Keys["rinz-Direita"], Event)){
-//                 iR = 50;
-//                 virou=true; 
-// //                aux1 = sf::Vector2f(rinz.getForma().getPosition().x + rinz.getAuxX(),rinz.getForma().getPosition().y + rinz.getAuxY()); 
-//                 aux1 = rinz.getForma().getPosition() + rinz.getFimCauda();
-//                 rinz.mudarDireita();
-//             }
-//             if (TestEvent(Keys["rinz-Esquerda"], Event)){
-//                 iR = 50;
-//                 virou=true;
-// //                aux1 = sf::Vector2f(rinz.getForma().getPosition().x + rinz.getAuxX(),rinz.getForma().getPosition().y + rinz.getAuxY()); 
-//                 aux1 = rinz.getForma().getPosition() + rinz.getFimCauda();
-//                 rinz.mudarEsquerda(); 
-//             }
-//             if (TestEvent(Keys["rinz-Cima"], Event)){
-//                 iR = 50;
-//                 virou=true;
-// //                aux1 = sf::Vector2f(rinz.getForma().getPosition().x + rinz.getAuxX(),rinz.getForma().getPosition().y + rinz.getAuxY()); 
-//                 aux1 = rinz.getForma().getPosition() + rinz.getFimCauda();
-//                 rinz.mudarCima();
-//             }
-//             if (TestEvent(Keys["rinz-Baixo"], Event)){
-//                 iR = 50;    
-//                 virou=true;
-// //                aux1 = sf::Vector2f(rinz.getForma().getPosition().x + rinz.getAuxX(),rinz.getForma().getPosition().y + rinz.getAuxY()); 
-//                 aux1 = rinz.getForma().getPosition() + rinz.getFimCauda();
-//                 rinz.mudarBaixo();
-//             }
+            // Mudanca de Itens
+            if (TestEvent(Keys["item1"], Event)){
+                nItem=0;
+            }
+            if (TestEvent(Keys["item2"], Event)){
+                nItem=1;
+            }
+            if (TestEvent(Keys["item3"], Event)){
+                nItem=2;
+            }
+            if (TestEvent(Keys["item4"], Event)){
+                nItem=3;
+            }
+            if (TestEvent(Keys["item5"], Event)){
+                nItem=4;
+            }
+
         }
-        
+        itemSelecionado.setPosition(sf::Vector2f(819.0f + 110.0f * nItem ,16.0f));
         itens.remove(item1,deuCerto);
+        itens.remove(item,deuCerto);
         itens.insere(item,deuCerto);
-//         window.draw(teste);
+        itens.insere(item1,deuCerto);
         window.draw(barraItens);
-//         window.draw(item1.getItem());
+        window.draw(itemSelecionado);
+        for(i=0; i<5; i++)
+            window.draw(caixaItem[i]);
+        window.draw(item.getItem());
+        window.draw(item1.getItem());
+        window.draw(barraVida);
         window.display();
        
     

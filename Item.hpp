@@ -7,17 +7,18 @@
 class Item{
     public:
         void setLocationItem(sf::Vector2f);
-        void carregarItem(std::string);
+        void carregarItem(std::string,float);
         sf::Sprite getItem();
     private:
        sf::Sprite item;
        sf::Texture textura;
+       int quantidade;
 };
 
-void Item::carregarItem(std::string nome){
+void Item::carregarItem(std::string nome, float escala){
     textura.loadFromFile("Itens/"+nome+".png");
     item.setTexture(textura);
-    item.setScale(sf::Vector2f(item.getScale().x/2.0f,item.getScale().y/2.0f));
+    item.setScale(sf::Vector2f(item.getScale().x/escala,item.getScale().y/escala));
 };
 
 void Item::setLocationItem(sf::Vector2f posicao){
