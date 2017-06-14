@@ -35,6 +35,8 @@ int main (){
     sf::Sprite barraVida;
     sf::Texture vida;
     sf::Texture barra;
+    sf::Texture mapa;
+    sf::Sprite background;
     sf::RectangleShape caixaItem[5];
     sf::RectangleShape itemSelecionado(sf::Vector2f(87.0f,87.0f));
     int i, nItem=0;
@@ -52,6 +54,9 @@ int main (){
     barraItens.setTexture(barra);
     vida.loadFromFile("Itens/6vida.png");
     barraVida.setTexture(vida);
+    mapa.loadFromFile("TilesMap/teste.png");
+    background.setTexture(mapa);
+    background.setScale(sf::Vector2f(4.4f,2.5f));
     bool deuCerto;
     
     item.setLocationItem(sf::Vector2f(825.0f,20.0f));
@@ -174,6 +179,7 @@ int main (){
         itens.remove(item,deuCerto);
         itens.insere(item,deuCerto);
         itens.insere(item1,deuCerto);
+        window.draw(background);
         window.draw(barraItens);
         window.draw(itemSelecionado);
         for(i=0; i<5; i++)
