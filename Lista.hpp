@@ -13,15 +13,28 @@ template <class Gen> struct Node{
 template<class Gen>
 class Lista{
     private:
+        int quant;
     public:
+        Lista();
         struct Node<Gen> *header;
         void cria();
+        int getQuant();
         void insere(Gen&,bool&);
         void insereAEsquerdaDeP(struct Node <Gen> *N,Gen&,bool&);
         void removeP(struct Node <Gen> &N,Gen&,bool&);
         void remove(Gen& x,bool& deuCerto);
 };
 
+template<class Gen>
+Lista<Gen>::Lista(){
+    
+    quant=0;
+}
+template<class Gen>
+int Lista<Gen>::getQuant(){
+    
+    return quant;
+};
 template<class Gen>
 void Lista<Gen>::cria(){
     struct Node<Gen> *Paux = new Node<Gen>();
@@ -34,6 +47,7 @@ void Lista<Gen>::cria(){
 
 template<class Gen>
 void Lista<Gen>::insere(Gen& x,bool& deuCerto){
+    quant++;
     insereAEsquerdaDeP(header,x,deuCerto);
 }
 template<class Gen>
@@ -54,6 +68,7 @@ void Lista<Gen>::insereAEsquerdaDeP(struct Node <Gen> *N,Gen& x,bool& deuCerto){
 
 template<class Gen>
 void Lista<Gen>::removeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
+    quant--;
     struct Node <Gen> *Paux = N;
     header->info=x;
     while(Paux->info != x)

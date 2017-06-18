@@ -31,7 +31,7 @@ public:
     bool isPlaying() const;
     sf::Time getFrameTime() const;
     void setFrame(std::size_t newFrame, bool resetTime = true);
-
+    sf::Time getCurrentTime();
 private:
     const Animation* m_animation;
     sf::Time m_frameTime;
@@ -46,7 +46,9 @@ private:
 
 };
 
-
+sf::Time AnimatedSprite::getCurrentTime(){
+    return m_currentTime;
+};
 
 AnimatedSprite::AnimatedSprite(sf::Time frameTime, bool paused, bool looped) :
     m_animation(NULL), m_frameTime(frameTime), m_currentFrame(0), m_isPaused(paused), m_isLooped(looped), m_texture(NULL)

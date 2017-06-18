@@ -8,12 +8,26 @@ class Item{
     public:
         void setLocationItem(sf::Vector2f);
         void carregarItem(std::string,float);
+        void setId(int);
+        int getId();
+        sf::Vector2u getTamanho();
         sf::Sprite getItem();
     private:
        sf::Sprite item;
        sf::Texture textura;
        int quantidade;
+       int id;
 };
+sf::Vector2u Item::getTamanho(){
+    
+    return textura.getSize();
+}
+int Item::getId(){
+    return id;
+}
+void Item::setId(int i){
+    id=i;    
+}
 
 void Item::carregarItem(std::string nome, float escala){
     textura.loadFromFile("Itens/"+nome+".png");
