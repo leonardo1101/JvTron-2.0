@@ -44,6 +44,7 @@ int main (){
     sf::Sprite background;
     sf::RectangleShape caixaItem[5];
     int idItemCaixa[5];
+    int contPulo=0;
     sf::RectangleShape itemSelecionado(sf::Vector2f(52.0f,52.0f));
     Animation* currentAnimation = &tron.stayAnimation[1];
     bool atacando=false;
@@ -53,9 +54,13 @@ int main (){
     ataqueDisco.setTexture(disco);
     animatedSprite.setPosition(sf::Vector2f(1.0f,540.0f));
     int contDisco =10000;
-    sf::Clock frameClock,ataqueClock;
+    sf::Clock frameClock,ataqueClock,puloClock;
+    sf::Vector2f vetor;
+    bool pulando = false;
+    bool descendo = false;
 
-    float speed = 200.f;
+    float speedDir = 200.f;
+    float speedEsq = 200.f;
     bool noKeyWasPressed = true;
     
     int i, nItem=0;
@@ -84,6 +89,7 @@ int main (){
     item.setId(2);
     itens.cria();
     sf::Time tempoAtaque;
+    sf::Time tempoPulo;
     sf::RenderWindow window(sf::VideoMode(1024, 768), "SFML works!", sf::Style::Fullscreen);
     barraItens.setPosition(sf::Vector2f(window.getSize().x - barra.getSize().x * 0.75,0.0f));
     
@@ -166,48 +172,136 @@ int main (){
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
             animatedSprite.setFrameTime(sf::seconds(0.1));
+            background.move(- 1.f,0.0f);
             currentAnimation=&tron.walkingAnimationRight[idItemCaixa[nItem]];
-            movement.x += speed;
+            movement.x += speedDir;
             atacando=false;
             noKeyWasPressed = false;
+            tron.moverDireita();
         }else{
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
                 animatedSprite.setFrameTime(sf::seconds(0.1));
+                background.move(1.f,0.0f);
                 currentAnimation = &tron.walkingAnimationLeft[idItemCaixa[nItem]];
-                movement.x -= speed;
+                movement.x -= speedEsq;
                 atacando=false;
                 noKeyWasPressed = false;
+                tron.moverEsquerda();
             }else{
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || atacando){
-                    animatedSprite.setFrameTime(sf::seconds(0.10));
-                    currentAnimation = &tron.discAnimation;
                     noKeyWasPressed = false;
                     if(atacando == false){
                         atacando = true;
                         ataqueClock.restart();
+                        if(tron.getDirecao() == 1){
+                            currentAnimation = &tron.ataqueAnimation[idItemCaixa[nItem]];
+                            if(idItemCaixa[nItem] == 1){
+                                animatedSprite.setFrameTime(sf::seconds(0.04));
+                                pDisco = sf::Vector2f(animatedSprite.getPosition().x + 85, animatedSprite.getPosition().y + 30);
+                                vetor.x=1.0;
+                                vetor.y=0;
+                            }else{
+                                vetor.x=1025;
+                                animatedSprite.setFrameTime(sf::seconds(0.045));
+                            }
+                        }else{
+                            currentAnimation = &tron.ataqueAnimationEsq[idItemCaixa[nItem]];
+                            if(idItemCaixa[nItem] == 1){
+                                animatedSprite.setFrameTime(sf::seconds(0.04));
+                                pDisco = sf::Vector2f(animatedSprite.getPosition().x, animatedSprite.getPosition().y + 30);
+                                vetor.x=-1.0;
+                                vetor.y=0;
+                            }else{
+                                vetor.x=1025;
+                                animatedSprite.setFrameTime(sf::seconds(0.045));
+                            }
+                            
+                        }
                         
                     }
                     
-                }else{                
-                    if(!atacando){
-                        animatedSprite.setFrameTime(sf::seconds(0.7));
-                        currentAnimation = &tron.stayAnimation[idItemCaixa[nItem]];
+                }else{
+                         if(!atacando){
+                            if(tron.getDirecao() == 1){
+                                animatedSprite.setFrameTime(sf::seconds(0.7));
+                                currentAnimation = &tron.stayAnimation[idItemCaixa[nItem]];
+                                noKeyWasPressed = false;
+                            }else{
+                                animatedSprite.setFrameTime(sf::seconds(0.7));
+                                currentAnimation = &tron.stayAnimationEsq[idItemCaixa[nItem]];
+                                noKeyWasPressed = false;
+                            }
+                        
+                        }
+                    
+                }
+                
+            }
+            bool teste = sf::Keyboard::isKeyPressed(sf::Keyboard::X) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+            printf("X : %s \n", sf::Keyboard::isKeyPressed(sf::Keyboard::X) ? "true" : "false");
+                printf("Z : %s \n", sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ? "true" : "false");
+                printf("A : %s \n", sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ? "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" : "false");
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::X) || pulando || descendo || (sf::Keyboard::isKeyPressed(sf::Keyboard::X) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))){
+                        if(pulando == false && descendo == false){
+                            puloClock.restart();
+                            pulando = true;
+                        }
+                        if(!descendo){
+                            animatedSprite.setFrameTime(sf::seconds(0.08));
+                            currentAnimation = &tron.pulandoDir[idItemCaixa[nItem]];
+                        }else{
+                            animatedSprite.setFrameTime(sf::seconds(0.08));
+                            currentAnimation = &tron.descendoDir[idItemCaixa[nItem]];
+                        }
                         noKeyWasPressed = false;
                     }
-                }
+        }
+        tempoPulo = puloClock.getElapsedTime();
+        
+        if(pulando){
+            if(tempoPulo <= sf::seconds(0.4)){
+                movement.y -= contPulo * 7.0f;
+                contPulo++;
+            }else{
+                contPulo--;
+                pulando = false;
+                descendo = true;
+                
             }
         }
-        
+        if(descendo){
+            if(tempoPulo <= sf::seconds(0.8)){
+                movement.y += contPulo * 7.0f;
+                contPulo--;
+            }else{
+               
+                pulando = false;
+                descendo = false;
+                contPulo = 0;
+                
+            }
+        }
+        if(animatedSprite.getPosition().x >= 400 ){
+            speedDir=0.f;
+        }else{
+            speedDir=200.f;
+        }
+        if(animatedSprite.getPosition().x <= 1 ){
+            speedEsq=0.f;
+        }else{
+            speedEsq=200.f;
+        }
         animatedSprite.play(*currentAnimation );
         animatedSprite.move(movement * frameTime.asSeconds());
         tempoAtaque = ataqueClock.getElapsedTime();
-        if(atacando == true && tempoAtaque >= sf::seconds(0.35) && tempoAtaque < sf::seconds(0.45)){
-                pDisco = sf::Vector2f(animatedSprite.getPosition().x + 85, animatedSprite.getPosition().y + 30);
-                        contDisco = 0;
-                        ataqueDisco.setPosition(pDisco);
-            }
-        if(tempoAtaque >= sf::seconds(0.75) ){
-            
+        
+        if(atacando == true && tempoAtaque >= sf::seconds(0.15) && tempoAtaque < sf::seconds(0.20)){
+                
+            contDisco = 0;
+            ataqueDisco.setPosition(pDisco);
+        }
+        if(tempoAtaque >= sf::seconds(0.25) ){
+            ataqueDisco.setPosition(sf::Vector2f(-0.1f,-0.1f));
             atacando=false;
         }
         
@@ -218,7 +312,7 @@ int main (){
         noKeyWasPressed = true;
 
         animatedSprite.update(frameTime);
-
+        window.clear();
         itemSelecionado.setPosition(sf::Vector2f(window.getSize().x - barra.getSize().x * 0.75 + 79 + 80.0f * nItem ,16.0f));
         itens.remove(item1,deuCerto);
         itens.remove(item,deuCerto);
@@ -232,9 +326,9 @@ int main (){
         window.draw(item.getItem());
         window.draw(item1.getItem());
         window.draw(barraVida);
-        if((pDisco.x + 3.0f * contDisco) <= 2048.0f ){
+        if((pDisco.x + vetor.x * contDisco) <= 1024.0f && (pDisco.x + vetor.x * contDisco) > 0){
             contDisco++;
-            ataqueDisco.setPosition(sf::Vector2f(pDisco.x + 3.0f * contDisco, pDisco.y ));
+            ataqueDisco.setPosition(sf::Vector2f(pDisco.x + vetor.x * contDisco, pDisco.y ));
             window.draw(ataqueDisco);
         }
         window.draw(animatedSprite);

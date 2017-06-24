@@ -7,6 +7,7 @@ class Player{
         Player();
         void moverDireita();
         void moverEsquerda();
+        int getDirecao();
         void Parado();
         void reset();
         void setTamanho(sf::Vector2f);
@@ -16,10 +17,14 @@ class Player{
         Animation walkingAnimationRight[4];
         Animation walkingAnimationLeft[4];
         Animation stayAnimation[4];
-        Animation discAnimation;
+        Animation stayAnimationEsq[4];
+        Animation ataqueAnimation[3];
+        Animation ataqueAnimationEsq[3];
+        Animation pulandoDir[3];
+        Animation descendoDir[3];
     private:
         sf::Sprite tron;
-        sf::Texture forma[8];
+        sf::Texture forma[19];
         int direcao;
         int nDir;
         int nEsq;
@@ -30,9 +35,19 @@ void Player::setIdItem(int id){
     idItem = id;   
     
 };
-
+void Player::moverDireita(){
+    direcao=1;
+};
+void Player::moverEsquerda(){
+    direcao=2;
+};
+int Player::getDirecao(){
+    
+   return direcao; 
+}
 Player::Player(){
     int i;
+    direcao =1;
     forma[0].loadFromFile("spriteProtagonista/Andando.png");
     walkingAnimationRight[0].setSpriteSheet(forma[0]);
     for(i=1;i<11;i++){
@@ -64,13 +79,64 @@ Player::Player(){
         stayAnimation[1].addFrame(sf::IntRect(forma[5].getSize().x/6 * i,forma[5].getSize().y * 0,forma[5].getSize().x / 6,forma[5].getSize().y));
     }
     forma[6].loadFromFile("spriteProtagonista/jogandodisco.png");
-    discAnimation.setSpriteSheet(forma[6]);
+    ataqueAnimation[1].setSpriteSheet(forma[6]);
     for(i=1;i<8;i++){
-        discAnimation.addFrame(sf::IntRect(forma[6].getSize().x/8 * i,forma[6].getSize().y * 0,forma[6].getSize().x / 8,forma[6].getSize().y));
+        ataqueAnimation[1].addFrame(sf::IntRect(forma[6].getSize().x/8 * i,forma[6].getSize().y * 0,forma[6].getSize().x / 8,forma[6].getSize().y));
     }
-    
-    
-    
+     forma[7].loadFromFile("spriteProtagonista/ParadoEsq.png");
+     stayAnimationEsq[0].setSpriteSheet(forma[7]);
+     for(i=5;i!=0;i--){
+        stayAnimationEsq[0].addFrame(sf::IntRect(forma[7].getSize().x/6 * i,forma[7].getSize().y * 0,forma[7].getSize().x / 6,forma[7].getSize().y));
+    }
+    forma[8].loadFromFile("spriteProtagonista/ParadoEsq0.png");
+    stayAnimationEsq[1].setSpriteSheet(forma[8]);
+    for(i=5;i!=0;i--){
+        stayAnimationEsq[1].addFrame(sf::IntRect(forma[8].getSize().x/6 * i,forma[8].getSize().y * 0,forma[8].getSize().x / 6,forma[8].getSize().y));
+    }
+    forma[9].loadFromFile("spriteProtagonista/jogandoDiscoEsq.png");
+    ataqueAnimationEsq[1].setSpriteSheet(forma[9]);
+    for(i=7;i!=0;i--){
+        ataqueAnimationEsq[1].addFrame(sf::IntRect(forma[9].getSize().x/8 * i,forma[9].getSize().y * 0,forma[9].getSize().x / 8,forma[9].getSize().y));
+    }
+    forma[10].loadFromFile("spriteProtagonista/Andando1.png");
+    walkingAnimationRight[2].setSpriteSheet(forma[10]);
+     for(i=1;i<10;i++){
+        walkingAnimationRight[2].addFrame(sf::IntRect(forma[10].getSize().x/10 * i,forma[10].getSize().y * 0,forma[10].getSize().x /10,forma[10].getSize().y));
+    }
+    forma[11].loadFromFile("spriteProtagonista/AndandoEsq1.png");
+    walkingAnimationLeft[2].setSpriteSheet(forma[11]);
+    for(i=9;i>=0;i--){
+        walkingAnimationLeft[2].addFrame(sf::IntRect(forma[11].getSize().x/10 * i,forma[11].getSize().y * 0,forma[11].getSize().x / 10,forma[11].getSize().y));
+    }
+    forma[12].loadFromFile("spriteProtagonista/Parado1.png");
+    stayAnimation[2].setSpriteSheet(forma[12]);
+    for(i=0;i<6;i++){
+        stayAnimation[2].addFrame(sf::IntRect(forma[12].getSize().x/6 * i,forma[12].getSize().y * 0,forma[12].getSize().x / 6,forma[12].getSize().y));
+    }
+    forma[13].loadFromFile("spriteProtagonista/ParadoEsq1.png");
+    stayAnimationEsq[2].setSpriteSheet(forma[13]);
+    for(i=5;i!=0;i--){
+        stayAnimationEsq[2].addFrame(sf::IntRect(forma[13].getSize().x/6 * i,forma[13].getSize().y * 0,forma[13].getSize().x / 6,forma[13].getSize().y));
+    }
+    forma[14].loadFromFile("spriteProtagonista/lancaataca.png");
+    ataqueAnimation[2].setSpriteSheet(forma[14]);
+    for(i=0;i<7;i++){
+        ataqueAnimation[2].addFrame(sf::IntRect(forma[14].getSize().x/7 * i,forma[14].getSize().y * 0,forma[14].getSize().x /7,forma[14].getSize().y));
+    }
+    forma[15].loadFromFile("spriteProtagonista/lancaatacaEsq.png");
+    ataqueAnimationEsq[2].setSpriteSheet(forma[15]);
+    for(i=6;i!=0;i--){
+        ataqueAnimationEsq[2].addFrame(sf::IntRect(forma[15].getSize().x/7 * i,forma[15].getSize().y * 0,forma[15].getSize().x /7,forma[15].getSize().y));
+    }
+    forma[16].loadFromFile("spriteProtagonista/Pulando.png");
+    pulandoDir[0].setSpriteSheet(forma[16]);
+    for(i=0;i<5;i++){
+        pulandoDir[0].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
+    }
+    descendoDir[0].setSpriteSheet(forma[16]);
+    for(i=4;i>=0;i--){
+        descendoDir[0].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
+    }
 }
 
 void Player::setTamanho(sf::Vector2f tamanho){
@@ -81,6 +147,6 @@ void Player::setPosicao(sf::Vector2f posicao){
     tron.setPosition(posicao);
 }
 void Player::reset(){
-    direcao=0;
+    direcao=1;
     
 }
