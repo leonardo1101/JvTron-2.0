@@ -58,7 +58,7 @@ int main (){
     sf::Vector2f vetor;
     bool pulando = false;
     bool descendo = false;
-
+    bool andandoDir = false;
     float speedDir = 200.f;
     float speedEsq = 200.f;
     bool noKeyWasPressed = true;
@@ -170,8 +170,9 @@ int main (){
         sf::Time frameTime = frameClock.restart();
         sf::Vector2f movement(0.f, 0.f);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando){
             animatedSprite.setFrameTime(sf::seconds(0.1));
+            andandoDir= true;
             background.move(- 1.f,0.0f);
             currentAnimation=&tron.walkingAnimationRight[idItemCaixa[nItem]];
             movement.x += speedDir;
@@ -179,9 +180,10 @@ int main (){
             noKeyWasPressed = false;
             tron.moverDireita();
         }else{
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !pulando){
                 animatedSprite.setFrameTime(sf::seconds(0.1));
                 background.move(1.f,0.0f);
+                andandoDir= false;
                 currentAnimation = &tron.walkingAnimationLeft[idItemCaixa[nItem]];
                 movement.x -= speedEsq;
                 atacando=false;
@@ -221,7 +223,8 @@ int main (){
                     }
                     
                 }else{
-                         if(!atacando){
+                         if(!atacando && !pulando){
+                             andandoDir= false;
                             if(tron.getDirecao() == 1){
                                 animatedSprite.setFrameTime(sf::seconds(0.7));
                                 currentAnimation = &tron.stayAnimation[idItemCaixa[nItem]];
@@ -237,11 +240,8 @@ int main (){
                 }
                 
             }
-            bool teste = sf::Keyboard::isKeyPressed(sf::Keyboard::X) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
-            printf("X : %s \n", sf::Keyboard::isKeyPressed(sf::Keyboard::X) ? "true" : "false");
-                printf("Z : %s \n", sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ? "true" : "false");
-                printf("A : %s \n", sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ? "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" : "false");
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::X) || pulando || descendo || (sf::Keyboard::isKeyPressed(sf::Keyboard::X) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))){
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::X) || pulando || descendo){
                         if(pulando == false && descendo == false){
                             puloClock.restart();
                             pulando = true;
@@ -254,13 +254,14 @@ int main (){
                             currentAnimation = &tron.descendoDir[idItemCaixa[nItem]];
                         }
                         noKeyWasPressed = false;
-                    }
         }
         tempoPulo = puloClock.getElapsedTime();
         
         if(pulando){
             if(tempoPulo <= sf::seconds(0.4)){
                 movement.y -= contPulo * 7.0f;
+                if(andandoDir)
+                     movement.x += contPulo * 7.0f;
                 contPulo++;
             }else{
                 contPulo--;
@@ -272,9 +273,11 @@ int main (){
         if(descendo){
             if(tempoPulo <= sf::seconds(0.8)){
                 movement.y += contPulo * 7.0f;
+                if(andandoDir)
+                    movement.x += contPulo * 7.0f;
                 contPulo--;
             }else{
-               
+                andandoDir=false;
                 pulando = false;
                 descendo = false;
                 contPulo = 0;
