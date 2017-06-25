@@ -26,7 +26,7 @@ class Player{
         Animation descendoEsq[3];
     private:
         sf::Sprite tron;
-        sf::Texture forma[19];
+        sf::Texture forma[25];
         int direcao;
         int nDir;
         int nEsq;
@@ -147,6 +147,44 @@ Player::Player(){
     descendoEsq[0].setSpriteSheet(forma[17]);
     for(i=0;i<5;i++){
         descendoEsq[0].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
+    }
+    
+    forma[18].loadFromFile("spriteProtagonista/Pulando0.png");
+    pulandoDir[1].setSpriteSheet(forma[18]);
+    for(i=0;i<5;i++){
+        pulandoDir[1].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
+    }
+    descendoDir[1].setSpriteSheet(forma[18]);
+    for(i=4;i>=0;i--){
+        descendoDir[1].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
+    }
+    forma[19].loadFromFile("spriteProtagonista/PulandoEsq0.png");
+    pulandoEsq[1].setSpriteSheet(forma[19]);
+    for(i=4;i>=0;i--){
+        pulandoEsq[1].addFrame(sf::IntRect(forma[19].getSize().x/5 * i,forma[19].getSize().y * 0,forma[19].getSize().x /5,forma[19].getSize().y));
+    }
+    descendoEsq[1].setSpriteSheet(forma[19]);
+    for(i=0;i<5;i++){
+        descendoEsq[1].addFrame(sf::IntRect(forma[19].getSize().x/5 * i,forma[19].getSize().y * 0,forma[19].getSize().x /5,forma[19].getSize().y));
+    }
+    
+    forma[20].loadFromFile("spriteProtagonista/Pulando1.png");
+    pulandoDir[2].setSpriteSheet(forma[20]);
+    for(i=0;i<5;i++){
+        pulandoDir[2].addFrame(sf::IntRect(forma[20].getSize().x/5 * i,forma[20].getSize().y * 0,forma[20].getSize().x /5,forma[20].getSize().y));
+    }
+    descendoDir[2].setSpriteSheet(forma[20]);
+    for(i=4;i>=0;i--){
+        descendoDir[2].addFrame(sf::IntRect(forma[20].getSize().x/5 * i,forma[20].getSize().y * 0,forma[20].getSize().x /5,forma[20].getSize().y));
+    }
+    forma[21].loadFromFile("spriteProtagonista/PulandoEsq1.png");
+    pulandoEsq[2].setSpriteSheet(forma[21]);
+    for(i=4;i>=0;i--){
+        pulandoEsq[2].addFrame(sf::IntRect(forma[21].getSize().x/5 * i,forma[21].getSize().y * 0,forma[21].getSize().x /5,forma[21].getSize().y));
+    }
+    descendoEsq[2].setSpriteSheet(forma[21]);
+    for(i=0;i<5;i++){
+        descendoEsq[2].addFrame(sf::IntRect(forma[21].getSize().x/5 * i,forma[21].getSize().y * 0,forma[21].getSize().x /5,forma[21].getSize().y));
     }
 }
 
