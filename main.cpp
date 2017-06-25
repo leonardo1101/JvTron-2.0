@@ -10,6 +10,8 @@
 #include "AnimatedSprite.hpp"
 #include <string>
 
+
+// struct, enum e TestEvent para pegar a tecla e deixar ela "pressionada"
 enum InputType{
     KeyboardInput
 };
@@ -32,46 +34,89 @@ bool TestEvent(MyKeys k, sf::Event e){
 };
 
 int main (){
+    //Lista com itens
     Lista<Item> itens;
+    //Variaveis do tipo item para pegar ou enviar um item para a lista
     Item item,item1;
+    
     Player tron;
+    
+    //Sprites para a barra da vida e dos itens
     sf::Sprite barraItens;
     sf::Sprite barraVida;
+    
+    //Variaveis para carregar as texturas
     sf::Texture vida;
     sf::Texture barra;
     sf::Texture mapa;
     sf::Texture disco;
+    //sprite para o background
     sf::Sprite background;
+    
+    //RectangleShape para as caixas da barra de itens
     sf::RectangleShape caixaItem[5];
+    
+    //vetor que contem cada id do item contido na caixa
     int idItemCaixa[5];
+    
+    //variaveis utilizadas para o pulo ser algo crescente/decrescente
     int contPulo=0;
+    int contPulo2=0; 
+    
+    //Caixa que representa qual item está itemSelecionado
     sf::RectangleShape itemSelecionado(sf::Vector2f(52.0f,52.0f));
+    
+    
     Animation* currentAnimation = &tron.stayAnimation[1];
+    
+    //variavel que eh utilizada para quando atacar terminar o ataque
     bool atacando=false;
     AnimatedSprite animatedSprite(sf::seconds(0.7), true, false);
+    
+    //carregamento do disco que pode ser jogado
     sf::Sprite ataqueDisco;
     disco.loadFromFile("Itens/discoLancado.png");
     ataqueDisco.setTexture(disco);
+    
+    //coloca o heroi na posicao
     animatedSprite.setPosition(sf::Vector2f(1.0f,540.0f));
+    
+    //escalar da reta que o disco irá passar
     int contDisco =10000;
+    
+    //clocks que são utilizados para monitorar os ataques, pulos e frames
     sf::Clock frameClock,ataqueClock,puloClock;
+    
+    //vetor da reta do disco
     sf::Vector2f vetor;
+    
+    //variaveis para ver qual estado do pulo está
     bool pulando = false;
     bool descendo = false;
+    
+    //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
     bool andandoDir = false;
     bool andandoEsq = false;
+   
+    //velocidade dos frames para os casos de direita e esquerda
     float speedDir = 200.f;
     float speedEsq = 200.f;
-    bool noKeyWasPressed = true;
     
+    //verifica se nenhuma tecla está sendo pressionada
+    bool noKeyWasPressed = true;
+    //i para loop e nItem para ver o numero do item atual
     int i, nItem=0;
-    int contPulo2; 
+    
+    //reseta o tron e seta posicao e tamanho
     tron.reset();
     tron.setTamanho(sf::Vector2f(3.0f,3.0f));
     tron.setPosicao(sf::Vector2f(1.0f,540.0f));
     
+    //seta cor e posicao para o item selecionado
     itemSelecionado.setFillColor(sf::Color(32, 210, 212));
     itemSelecionado.setPosition(sf::Vector2f(819.0f,16.0f));
+    
+    //faz  load das imagens e seta a escala 
     barra.loadFromFile("Itens/barraItens.png");
     barraItens.setTexture(barra);
     barraItens.setScale(sf::Vector2f(0.75,0.75));
@@ -81,7 +126,11 @@ int main (){
     mapa.loadFromFile("TilesMap/teste.png");
     background.setTexture(mapa);
     background.setScale(sf::Vector2f(4.4f,2.5f));
+    
+    //para utilizar nos parametros da lista
     bool deuCerto;
+    
+    //faz load dos itens
     item.carregarItem("disco",3.0f);
     sf::Vector2f pDisco;
     item.setId(1);
@@ -89,21 +138,29 @@ int main (){
     item1.carregarItem("lanca",3.5f);
     item.setId(2);
     itens.cria();
+    
+    //times para o tempo de ataque e pulo
     sf::Time tempoAtaque;
     sf::Time tempoPulo;
+    
+    //seta valores da tela
     sf::RenderWindow window(sf::VideoMode(1024, 768), "SFML works!", sf::Style::Fullscreen);
+    //seta posicao das barras
     barraItens.setPosition(sf::Vector2f(window.getSize().x - barra.getSize().x * 0.75,0.0f));
     
+    //loop para setar a posicao das caixas da barra
     for(i=0; i<5; i++){
         caixaItem[i].setSize(sf::Vector2f(50.0f,50.0f));
         caixaItem[i].setFillColor(sf::Color(35, 77, 77));
         caixaItem[i].setPosition(sf::Vector2f(window.getSize().x - barra.getSize().x * 0.75 + 80  + 80.0f * i,17.0f));
         idItemCaixa[i]=0;
     }
+    //seta valores dos id das caixas para realizar teste - nao mexa
     idItemCaixa[0]=1;
     idItemCaixa[1]=2;
     item.setLocationItem(sf::Vector2f(caixaItem[0].getPosition().x - 8 ,caixaItem[0].getPosition().y - 8 ));
     item1.setLocationItem(sf::Vector2f(caixaItem[1].getPosition().x - 3 ,caixaItem[1].getPosition().y - 5 ));
+    //adiciona itens na lista
     itens.insere(item,deuCerto);
     itens.insere(item1,deuCerto);
     while (window.isOpen())
@@ -112,7 +169,8 @@ int main (){
 
         std::map<std::string,MyKeys> Keys;
         MyKeys key;
-
+        
+        //parte para verificar em qual item ficará selecionado
         key.myInputType = KeyboardInput;
         key.myEventType = sf::Event::KeyPressed;
         key.myKeyCode = sf::Keyboard::Num1;
@@ -168,15 +226,23 @@ int main (){
                 nItem=4;
             }
         }
+        //da um restart no time do frame
         sf::Time frameTime = frameClock.restart();
         sf::Vector2f movement(0.f, 0.f);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando && !descendo){
+            
+            //seta o valor de cada frame
             animatedSprite.setFrameTime(sf::seconds(0.1));
             andandoDir= true;
             andandoEsq=false;
+            
+            //para o cenário se mover - irá ser mudado para algo mais dinamico
             background.move(- 1.f,0.0f);
+            //carrega a animacao do andar para a direita dependendo o id do item
             currentAnimation=&tron.walkingAnimationRight[idItemCaixa[nItem]];
+            
+            //seta como que vai ser o movimento para o valor de x
             movement.x += speedDir;
             atacando=false;
             noKeyWasPressed = false;
@@ -200,6 +266,8 @@ int main (){
                         ataqueClock.restart();
                         if(tron.getDirecao() == 1){
                             currentAnimation = &tron.ataqueAnimation[idItemCaixa[nItem]];
+                            
+                            //dependendo de qual ataque iremos ter uma velocidade e outros fatores diferentes como vetor e pontos
                             if(idItemCaixa[nItem] == 1){
                                 animatedSprite.setFrameTime(sf::seconds(0.04));
                                 pDisco = sf::Vector2f(animatedSprite.getPosition().x + 85, animatedSprite.getPosition().y + 30);
@@ -245,6 +313,7 @@ int main (){
                 
             }
         }
+        //para o pulo animacoes de descendo e pulando são diferentes, mas são usadas
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::X) || pulando || descendo){
                         if(pulando == false && descendo == false){
                             puloClock.restart();
@@ -269,11 +338,14 @@ int main (){
                         }
                         noKeyWasPressed = false;
         }
+        //time para o tempo de pulo
         tempoPulo = puloClock.getElapsedTime();
         
         if(pulando){
             if(tempoPulo <= sf::seconds(0.5)){
                 movement.y -= contPulo * 7.0f;
+                
+                //se ele estiver andando o valor de x mexe, alem disso temos uma "parede" para que o ususario não possa sair da tela
                 if(andandoDir){
                      if(animatedSprite.getPosition().x < 400 ){
                         movement.x += contPulo * 4.0f;
@@ -334,6 +406,7 @@ int main (){
                 
             }
         }
+        //testes para o heroi não sair da tela
         if(animatedSprite.getPosition().x >= 400 ){
             speedDir=0.f;
         }else{
@@ -344,15 +417,17 @@ int main (){
         }else{
             speedEsq=200.f;
         }
+        //da um play na animação e move ela
         animatedSprite.play(*currentAnimation );
         animatedSprite.move(movement * frameTime.asSeconds());
         tempoAtaque = ataqueClock.getElapsedTime();
-        
+        //teste para setar o ataque do disco
         if(atacando == true && tempoAtaque >= sf::seconds(0.15) && tempoAtaque < sf::seconds(0.20)){
                 
             contDisco = 0;
             ataqueDisco.setPosition(pDisco);
         }
+        //dependendo do tempo ele irá "sumir" com o disco
         if(tempoAtaque >= sf::seconds(0.25) ){
             ataqueDisco.setPosition(sf::Vector2f(-0.1f,-0.1f));
             atacando=false;
@@ -379,6 +454,7 @@ int main (){
         window.draw(item.getItem());
         window.draw(item1.getItem());
         window.draw(barraVida);
+        //animação do disco indo,  ponto + vetor * escalar
         if((pDisco.x + vetor.x * contDisco) <= 1024.0f && (pDisco.x + vetor.x * contDisco) > 0){
             contDisco++;
             ataqueDisco.setPosition(sf::Vector2f(pDisco.x + vetor.x * contDisco, pDisco.y ));

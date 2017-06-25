@@ -14,6 +14,9 @@ class Player{
         void setPosicao(sf::Vector2f);
         void setIdItem(int);
         sf::Sprite getTron();
+        
+        //Animacao para cada estado possivel do heroi
+        //utilizado vetor para ficar mais facil saber qual animação utilizar para tal item
         Animation walkingAnimationRight[4];
         Animation walkingAnimationLeft[4];
         Animation stayAnimation[4];
@@ -26,6 +29,7 @@ class Player{
         Animation descendoEsq[3];
     private:
         sf::Sprite tron;
+        //texture para subir cada imagem
         sf::Texture forma[25];
         int direcao;
         int nDir;
@@ -50,6 +54,7 @@ int Player::getDirecao(){
 Player::Player(){
     int i;
     direcao =1;
+    //subindo imagens e dividindo elas em frames
     forma[0].loadFromFile("spriteProtagonista/Andando.png");
     walkingAnimationRight[0].setSpriteSheet(forma[0]);
     for(i=1;i<11;i++){
@@ -185,6 +190,16 @@ Player::Player(){
     descendoEsq[2].setSpriteSheet(forma[21]);
     for(i=0;i<5;i++){
         descendoEsq[2].addFrame(sf::IntRect(forma[21].getSize().x/5 * i,forma[21].getSize().y * 0,forma[21].getSize().x /5,forma[21].getSize().y));
+    }
+    forma[22].loadFromFile("spriteProtagonista/soco.png");
+    ataqueAnimation[0].setSpriteSheet(forma[22]);
+    for(i=0;i<6;i++){
+        ataqueAnimation[0].addFrame(sf::IntRect(forma[22].getSize().x/7 * i,forma[22].getSize().y * 0,forma[22].getSize().x /7,forma[22].getSize().y));
+    }
+    forma[23].loadFromFile("spriteProtagonista/socoEsq.png");
+    ataqueAnimationEsq[0].setSpriteSheet(forma[23]);
+    for(i=6;i>=0;i--){
+        ataqueAnimationEsq[0].addFrame(sf::IntRect(forma[23].getSize().x/7 * i,forma[23].getSize().y * 0,forma[23].getSize().x /7,forma[23].getSize().y));
     }
 }
 

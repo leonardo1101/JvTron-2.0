@@ -28,7 +28,7 @@ int Item::getId(){
 void Item::setId(int i){
     id=i;    
 }
-
+//pega a imagem do item
 void Item::carregarItem(std::string nome, float escala){
     textura.loadFromFile("Itens/"+nome+".png");
     item.setTexture(textura);
@@ -38,6 +38,7 @@ void Item::carregarItem(std::string nome, float escala){
 void Item::setLocationItem(sf::Vector2f posicao){
     item.setPosition(posicao);    
 };
+//pega a sprite do item
 sf::Sprite Item::getItem(){
     return item;  
 };
