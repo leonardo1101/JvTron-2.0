@@ -59,12 +59,13 @@ int main (){
     bool pulando = false;
     bool descendo = false;
     bool andandoDir = false;
+    bool andandoEsq = false;
     float speedDir = 200.f;
     float speedEsq = 200.f;
     bool noKeyWasPressed = true;
     
     int i, nItem=0;
-    
+    int contPulo2; 
     tron.reset();
     tron.setTamanho(sf::Vector2f(3.0f,3.0f));
     tron.setPosicao(sf::Vector2f(1.0f,540.0f));
@@ -170,9 +171,10 @@ int main (){
         sf::Time frameTime = frameClock.restart();
         sf::Vector2f movement(0.f, 0.f);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando && !descendo){
             animatedSprite.setFrameTime(sf::seconds(0.1));
             andandoDir= true;
+            andandoEsq=false;
             background.move(- 1.f,0.0f);
             currentAnimation=&tron.walkingAnimationRight[idItemCaixa[nItem]];
             movement.x += speedDir;
@@ -180,17 +182,18 @@ int main (){
             noKeyWasPressed = false;
             tron.moverDireita();
         }else{
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !pulando){
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !pulando && !descendo){
                 animatedSprite.setFrameTime(sf::seconds(0.1));
                 background.move(1.f,0.0f);
                 andandoDir= false;
+                andandoEsq=true;
                 currentAnimation = &tron.walkingAnimationLeft[idItemCaixa[nItem]];
                 movement.x -= speedEsq;
                 atacando=false;
                 noKeyWasPressed = false;
                 tron.moverEsquerda();
             }else{
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || atacando){
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || atacando && !descendo){
                     noKeyWasPressed = false;
                     if(atacando == false){
                         atacando = true;
@@ -223,8 +226,9 @@ int main (){
                     }
                     
                 }else{
-                         if(!atacando && !pulando){
+                         if(!atacando && !pulando && !descendo){
                              andandoDir= false;
+                             andandoEsq=false;
                             if(tron.getDirecao() == 1){
                                 animatedSprite.setFrameTime(sf::seconds(0.7));
                                 currentAnimation = &tron.stayAnimation[idItemCaixa[nItem]];
@@ -247,40 +251,86 @@ int main (){
                             pulando = true;
                         }
                         if(!descendo){
-                            animatedSprite.setFrameTime(sf::seconds(0.08));
-                            currentAnimation = &tron.pulandoDir[idItemCaixa[nItem]];
+                            if(tron.getDirecao() == 1){
+                                animatedSprite.setFrameTime(sf::seconds(0.1));
+                                currentAnimation = &tron.pulandoDir[idItemCaixa[nItem]];
+                            }else{
+                                animatedSprite.setFrameTime(sf::seconds(0.1));
+                                currentAnimation = &tron.pulandoEsq[idItemCaixa[nItem]];
+                            }
                         }else{
-                            animatedSprite.setFrameTime(sf::seconds(0.08));
-                            currentAnimation = &tron.descendoDir[idItemCaixa[nItem]];
+                            if(tron.getDirecao() == 1){
+                                animatedSprite.setFrameTime(sf::seconds(0.1));
+                                currentAnimation = &tron.descendoDir[idItemCaixa[nItem]];
+                            }else{
+                                animatedSprite.setFrameTime(sf::seconds(0.1));
+                                currentAnimation = &tron.descendoEsq[idItemCaixa[nItem]];
+                            }
                         }
                         noKeyWasPressed = false;
         }
         tempoPulo = puloClock.getElapsedTime();
         
         if(pulando){
-            if(tempoPulo <= sf::seconds(0.4)){
+            if(tempoPulo <= sf::seconds(0.5)){
                 movement.y -= contPulo * 7.0f;
-                if(andandoDir)
-                     movement.x += contPulo * 7.0f;
-                contPulo++;
+                if(andandoDir){
+                     if(animatedSprite.getPosition().x < 400 ){
+                        movement.x += contPulo * 4.0f;
+                        background.move(- 1.f,0.0f);
+                    }else{
+                        background.move(- 2.f,0.0f);
+                    }
+                    
+                }
+                if(andandoEsq){
+                    if(animatedSprite.getPosition().x > 1 ){
+                        movement.x -= contPulo * 4.0f;
+                        background.move( 1.f,0.0f);
+                    }else{
+                        background.move( 2.f,0.0f);
+                    }
+                }
+                contPulo++;                
+                contPulo2++;
+               
             }else{
+                
                 contPulo--;
                 pulando = false;
                 descendo = true;
-                
             }
         }
+        
         if(descendo){
-            if(tempoPulo <= sf::seconds(0.8)){
+            if(tempoPulo <= sf::seconds(1)){
                 movement.y += contPulo * 7.0f;
-                if(andandoDir)
-                    movement.x += contPulo * 7.0f;
+                if(andandoDir){
+                    if(animatedSprite.getPosition().x < 400 ){
+                        movement.x += contPulo2 * 4.0f;
+                        background.move(- 1.f,0.0f);
+                    }else{
+                        background.move(- 2.f,0.0f);
+                    }
+                    
+                }
+                if(andandoEsq){
+                    if(animatedSprite.getPosition().x > 1 ){
+                        movement.x -= contPulo2 * 4.0f;
+                        background.move(+ 1.f,0.0f);
+                    }else{
+                        background.move( 2.f,0.0f);
+                    }
+                    
+                }   
                 contPulo--;
             }else{
-                andandoDir=false;
+                if(descendo == true)
+                    andandoDir=false;
                 pulando = false;
                 descendo = false;
                 contPulo = 0;
+                contPulo2=0;
                 
             }
         }

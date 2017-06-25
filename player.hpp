@@ -22,6 +22,8 @@ class Player{
         Animation ataqueAnimationEsq[3];
         Animation pulandoDir[3];
         Animation descendoDir[3];
+        Animation pulandoEsq[3];
+        Animation descendoEsq[3];
     private:
         sf::Sprite tron;
         sf::Texture forma[19];
@@ -136,6 +138,15 @@ Player::Player(){
     descendoDir[0].setSpriteSheet(forma[16]);
     for(i=4;i>=0;i--){
         descendoDir[0].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
+    }
+    forma[17].loadFromFile("spriteProtagonista/PulandoEsq.png");
+    pulandoEsq[0].setSpriteSheet(forma[17]);
+    for(i=4;i>=0;i--){
+        pulandoEsq[0].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
+    }
+    descendoEsq[0].setSpriteSheet(forma[17]);
+    for(i=0;i<5;i++){
+        descendoEsq[0].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
     }
 }
 
