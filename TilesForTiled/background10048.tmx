@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="314" height="10" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="backgroundsTiles" tilewidth="32" tileheight="32" tilecount="1000">
+  <image source="backgroundsTiles.png" width="641" height="1607"/>
+ </tileset>
+ <tileset firstgid="1001" name="backgroundTiles" tilewidth="32" tileheight="32" tilecount="256">
+  <image source="backgroundTiles.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="1257" name="luunar" tilewidth="32" tileheight="32" tilecount="512">
+  <image source="luunar.png" width="512" height="1024"/>
+ </tileset>
+ <tileset firstgid="1769" name="megacommando" tilewidth="32" tileheight="32" tilecount="1280">
+  <image source="megacommando.png" width="1024" height="1280"/>
+ </tileset>
+ <tileset firstgid="3049" name="metroid" tilewidth="32" tileheight="32" tilecount="841">
+  <image source="metroid.png" width="950" height="950"/>
+ </tileset>
+ <tileset firstgid="3890" name="omegateam" tilewidth="32" tileheight="32" tilecount="640">
+  <image source="omegateam.png" width="1024" height="640"/>
+ </tileset>
+ <tileset firstgid="4530" name="scifi_sidescroller_tiles" tilewidth="32" tileheight="32" tilecount="400">
+  <image source="scifi_sidescroller_tiles.png" width="640" height="640"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="314" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzt2TtPwmAYhuEiIuAOCiJ7FUHdC6jAXjl42EHBw/8fvRlIHL82bfqmfYZr8o590gQS8vqe513hGj3coI8BbnGHe/iOXQlHKOMYFZygihrqOI3w/5LutE/78rDPN7zN4rsLMMQIYzzgEU+YYIpZhK6BJs5wjhbauEAHl+im8Fzt074i7QsMb7P47kI8Y44FlljhBa94w3uEzvW7Oennap/2FWlfaHibxXe3xgYf+MQWO3zhGz/4jdC5fjcn/Vzt074i7Vsb3mbx3bn+5lWnTp2drmR4m8XO9TevOnXq7HQNw9ssdlndTtSpUxe/+39vtXTXtHp3zep2ok6duvjd4d7qp/DsPN5ds7qdqFOnLn53uLcGKTw7j3fXrG4n6tSpi9/t/77/vIcpPDuPd9c/AtTK8A==
+  </data>
+ </layer>
+ <layer name="Tile Layer 3" width="314" height="10" opacity="0.74">
+  <data encoding="base64" compression="zlib">
+   eJzt0TENACAQBDAGzOLqpDIh4XMh6VAFPXutAwAAPKF+AMwK9QNgVqgfALNC/QCYFeoHAAAAAN+4UZ8Ebw==
+  </data>
+ </layer>
+ <layer name="Tile Layer 3" width="314" height="10" opacity="0.68">
+  <data encoding="base64" compression="zlib">
+   eJzt1FENACEMREF+8S8Dk+eBEPZoZ5KngC1jANS2pnaChPTu1au/75ma0rtXr17bMjWkdy93doL3oJP0v+Su7vM2dGPjAAAAAFDfBw6Y06Q=
+  </data>
+ </layer>
+ <layer name="Tile Layer 4" width="314" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzt2LEJwEAMA8Avsv80GTB9wEllzL/uQAMYhAqvBQAA7OK+vgPwZhvopmNM00G66RjTdJBuOrafv/+QiJyf0yXcCNQSNiDhRqCWsAEJNwK1iQ14ACcLx9E=
+  </data>
+ </layer>
+ <layer name="Tile Layer 5" width="314" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzt0kENAAAIAzEe+FeDQEzwGm1yApasCgAA/pq+LWWHMn4BAAAAAAAAAADJFv++WSE=
+  </data>
+ </layer>
+</map>

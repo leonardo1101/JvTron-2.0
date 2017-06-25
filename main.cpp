@@ -28,10 +28,10 @@ int main (){
     int numeroTela = 0; // tela de inicio da aplicacao (0) é o menu
 
     // Janela do aplicativo creation
-    sf::RenderWindow App(sf::VideoMode(1024, 768), "SFML works!", sf::Style::Fullscreen);
-
+    sf::RenderWindow App(sf::VideoMode(1024, 768), "SFML works!", sf::Style::Titlebar | sf::Style::Close);
+    App.setFramerateLimit(150);
     // Esconder seta do mouse
-    App.setMouseCursorVisible(false);
+    //App.setMouseCursorVisible(false);
 
     // Preparacao das tela
     Menu * s0 = new Menu(App.getSize().x, App.getSize().y); // TELA 0: menu do jogo
