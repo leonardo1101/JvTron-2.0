@@ -38,10 +38,13 @@ private:
     //Variaveis para carregar as texturas
     sf::Texture vida;
     sf::Texture barra;
-    sf::Texture mapa;
+    sf::Texture backgroundT;
     sf::Texture disco;
-  	
+  	sf::Texture groundT;
+    
     sf::Sprite background;//sprite para o background
+    sf::Sprite ground;//sprite para o background
+    
     
     sf::Clock frameClock, ataqueClock, puloClock;//clocks que são utilizados para monitorar os ataques, pulos e frames
     sf::Vector2f pDisco;
@@ -94,9 +97,12 @@ Jogo::Jogo(float larg, float Alt){
     vida.loadFromFile("Itens/6vida.png");
     barraVida.setTexture(vida);
     barraVida.setScale(sf::Vector2f(0.85,0.85));
-    mapa.loadFromFile("TilesMap/teste.png");
-    background.setTexture(mapa);
-    background.setScale(sf::Vector2f(4.4f,2.5f));
+    backgroundT.loadFromFile("TilesMap/teste.png");
+    background.setTexture(backgroundT);
+    groundT.loadFromFile("TilesMap/chao.png");
+    ground.setTexture(groundT);
+    ground.setScale(sf::Vector2f(1.f,2.5f));
+    ground.setPosition(sf::Vector2f(0.f, 768 - 2.5f * 64 ));
 
     //faz load dos itens
     item.carregarItem("disco",3.0f);
@@ -133,13 +139,13 @@ Jogo::~Jogo(){
 
 int Jogo::Executar(sf::RenderWindow & App){
 	//variaveis utilizadas para o pulo ser algo crescente/decrescente
-    int contPulo = 0;
+    int contPulo = 79;
     int contPulo2 = 0;
     Animation* currentAnimation = &tron.stayAnimation[1];
     //variavel que eh utilizada para quando atacar terminar o ataque
     bool atacando = false;
     AnimatedSprite animatedSprite(sf::seconds(0.7), true, false);
-    animatedSprite.setPosition(sf::Vector2f(1.0f,540.0f));//coloca o heroi na posicao
+    animatedSprite.setPosition(sf::Vector2f(1.0f,ground.getPosition().y - 140));//coloca o heroi na posicao
     //carregamento do disco que pode ser jogado
     sf::Sprite ataqueDisco;
     disco.loadFromFile("Itens/discoLancado.png");
@@ -203,6 +209,7 @@ int Jogo::Executar(sf::RenderWindow & App){
         Keys["item5"] = key;
 
 		// Verificação de eventos
+       
 		while (App.pollEvent(evento)){ // loop de eventos
 			if (evento.type == sf::Event::Closed){
 				return (-1);
@@ -236,7 +243,8 @@ int Jogo::Executar(sf::RenderWindow & App){
             andandoEsq=false;
             
             //para o cenário se mover - irá ser mudado para algo mais dinamico
-            background.move(- 1.f,0.0f);
+            background.move(- 2.f,0.0f);
+            ground.move(- 1.f,0.0f);
             //carrega a animacao do andar para a direita dependendo o id do item
             currentAnimation=&tron.walkingAnimationRight[idItemCaixa[nItem]];
             
@@ -248,7 +256,8 @@ int Jogo::Executar(sf::RenderWindow & App){
         }else{
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !pulando && !descendo){
                 animatedSprite.setFrameTime(sf::seconds(0.1));
-                background.move(1.f,0.0f);
+                background.move(2.f,0.0f);
+                ground.move(1.f,0.0f);
                 andandoDir= false;
                 andandoEsq=true;
                 currentAnimation = &tron.walkingAnimationLeft[idItemCaixa[nItem]];
@@ -333,6 +342,10 @@ int Jogo::Executar(sf::RenderWindow & App){
         }
         //time para o tempo de pulo
         tempoPulo = puloClock.getElapsedTime();
+        if(!pulando && !descendo)
+             animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x,ground.getPosition().y - 140));
+        
+        
         
         if(pulando){
             if(tempoPulo <= sf::seconds(0.5)){
@@ -342,54 +355,64 @@ int Jogo::Executar(sf::RenderWindow & App){
                 if(andandoDir){
                      if(animatedSprite.getPosition().x < 400 ){
                         movement.x += contPulo * 4.0f;
-                        background.move(- 1.f,0.0f);
-                    }else{
                         background.move(- 2.f,0.0f);
+                        ground.move(- 1.f,0.f);
+                    }else{
+                        background.move(- 4.f,0.0f);
+                        ground.move(- 2.f,0.f);
                     }
                 }
                 if(andandoEsq){
                     if(animatedSprite.getPosition().x > 1 ){
                         movement.x -= contPulo * 4.0f;
-                        background.move( 1.f,0.0f);
+                        background.move(2.f,0.0f);
+                        ground.move( 1.f,0.f);
                     }else{
-                        background.move( 2.f,0.0f);
+                        background.move(- 4.f,0.0f);
+                        ground.move(- 2.f,0.f);
                     }
                 }
-                contPulo++;                
+                contPulo--;                
                 contPulo2++;
             }else{
-                contPulo--;
+                printf("%d \n",contPulo);
+                contPulo++;
                 pulando = false;
                 descendo = true;
             }
-        }
-        if(descendo){
-            if(tempoPulo <= sf::seconds(1)){
-                movement.y += contPulo * 7.0f;
-                if(andandoDir){
-                    if(animatedSprite.getPosition().x < 400 ){
-                        movement.x += contPulo2 * 4.0f;
-                        background.move(- 1.f,0.0f);
-                    }else{
-                        background.move(- 2.f,0.0f);
+        }else{
+            if(descendo){
+                if(tempoPulo <= sf::seconds(1)){
+                    movement.y += contPulo * 7.0f;
+                    if(andandoDir){
+                        if(animatedSprite.getPosition().x < 400 ){
+                            movement.x += contPulo2 * 4.0f;
+                            background.move(- 2.f,0.0f);
+                            ground.move(- 1.f,0.f);
+                        }else{
+                            background.move(- 4.f,0.0f);
+                            ground.move(- 2.f,0.f);
+                        }
                     }
+                    if(andandoEsq){
+                        if(animatedSprite.getPosition().x > 1 ){
+                            movement.x -= contPulo2 * 4.0f;
+                            background.move(+ 2.f,0.0f);
+                            ground.move( 1.f,0.f);
+                        }else{
+                            background.move( 4.f,0.0f);
+                            ground.move( 2.f,0.f);
+                        }
+                    }   
+                    contPulo++;
+                }else{
+                    if(descendo == true)
+                        andandoDir=false;
+                    pulando = false;
+                    descendo = false;
+                    contPulo = 79;
+                    contPulo2=0;
                 }
-                if(andandoEsq){
-                    if(animatedSprite.getPosition().x > 1 ){
-                        movement.x -= contPulo2 * 4.0f;
-                        background.move(+ 1.f,0.0f);
-                    }else{
-                        background.move( 2.f,0.0f);
-                    }
-                }   
-                contPulo--;
-            }else{
-                if(descendo == true)
-                    andandoDir=false;
-                pulando = false;
-                descendo = false;
-                contPulo = 0;
-                contPulo2=0;
             }
         }
         //testes para o heroi não sair da tela
@@ -433,6 +456,7 @@ int Jogo::Executar(sf::RenderWindow & App){
         itens.insere(item,deuCerto);
         itens.insere(item1,deuCerto);
         App.draw(background);
+        App.draw(ground);
         App.draw(barraItens);
         App.draw(*itemSelecionado);
         for(i=0; i<5; i++)

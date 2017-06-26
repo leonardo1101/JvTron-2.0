@@ -67,7 +67,7 @@ Player::Player(){
     }
     forma[2].loadFromFile("spriteProtagonista/AndandoEsq.png");
     walkingAnimationLeft[0].setSpriteSheet(forma[2]);
-    for(i=9;i!=0;i--){
+    for(i=9;i>=0;i--){
         walkingAnimationLeft[0].addFrame(sf::IntRect(forma[2].getSize().x/11 * i,forma[2].getSize().y * 0,forma[2].getSize().x / 11,forma[2].getSize().y));
     }
     forma[3].loadFromFile("spriteProtagonista/Andando0.png");
@@ -77,7 +77,7 @@ Player::Player(){
     }
     forma[4].loadFromFile("spriteProtagonista/AndandoEsq0.png");
     walkingAnimationLeft[1].setSpriteSheet(forma[4]);
-    for(i=9;i!=0;i--){
+    for(i=9;i>=0;i--){
         walkingAnimationLeft[1].addFrame(sf::IntRect(forma[4].getSize().x/11 * i,forma[4].getSize().y * 0,forma[4].getSize().x / 11,forma[4].getSize().y));
     }
     forma[5].loadFromFile("spriteProtagonista/Parado0.png");
@@ -92,17 +92,17 @@ Player::Player(){
     }
      forma[7].loadFromFile("spriteProtagonista/ParadoEsq.png");
      stayAnimationEsq[0].setSpriteSheet(forma[7]);
-     for(i=5;i!=0;i--){
+     for(i=5;i>=0;i--){
         stayAnimationEsq[0].addFrame(sf::IntRect(forma[7].getSize().x/6 * i,forma[7].getSize().y * 0,forma[7].getSize().x / 6,forma[7].getSize().y));
     }
     forma[8].loadFromFile("spriteProtagonista/ParadoEsq0.png");
     stayAnimationEsq[1].setSpriteSheet(forma[8]);
-    for(i=5;i!=0;i--){
+    for(i=5;i>=0;i--){
         stayAnimationEsq[1].addFrame(sf::IntRect(forma[8].getSize().x/6 * i,forma[8].getSize().y * 0,forma[8].getSize().x / 6,forma[8].getSize().y));
     }
     forma[9].loadFromFile("spriteProtagonista/jogandoDiscoEsq.png");
     ataqueAnimationEsq[1].setSpriteSheet(forma[9]);
-    for(i=7;i!=0;i--){
+    for(i=7;i>=0;i--){
         ataqueAnimationEsq[1].addFrame(sf::IntRect(forma[9].getSize().x/8 * i,forma[9].getSize().y * 0,forma[9].getSize().x / 8,forma[9].getSize().y));
     }
     forma[10].loadFromFile("spriteProtagonista/Andando1.png");
@@ -122,7 +122,7 @@ Player::Player(){
     }
     forma[13].loadFromFile("spriteProtagonista/ParadoEsq1.png");
     stayAnimationEsq[2].setSpriteSheet(forma[13]);
-    for(i=5;i!=0;i--){
+    for(i=5;i>=0;i--){
         stayAnimationEsq[2].addFrame(sf::IntRect(forma[13].getSize().x/6 * i,forma[13].getSize().y * 0,forma[13].getSize().x / 6,forma[13].getSize().y));
     }
     forma[14].loadFromFile("spriteProtagonista/lancaataca.png");
@@ -132,7 +132,7 @@ Player::Player(){
     }
     forma[15].loadFromFile("spriteProtagonista/lancaatacaEsq.png");
     ataqueAnimationEsq[2].setSpriteSheet(forma[15]);
-    for(i=6;i!=0;i--){
+    for(i=6;i>=0;i--){
         ataqueAnimationEsq[2].addFrame(sf::IntRect(forma[15].getSize().x/7 * i,forma[15].getSize().y * 0,forma[15].getSize().x /7,forma[15].getSize().y));
     }
     forma[16].loadFromFile("spriteProtagonista/Pulando.png");
@@ -160,7 +160,7 @@ Player::Player(){
         pulandoDir[1].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
     }
     descendoDir[1].setSpriteSheet(forma[18]);
-    for(i=4;i>=0;i--){
+    for(i=3;i>=0;i--){
         descendoDir[1].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
     }
     forma[19].loadFromFile("spriteProtagonista/PulandoEsq0.png");
