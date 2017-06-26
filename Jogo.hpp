@@ -19,6 +19,7 @@
 #include "Item.hpp"
 #include "Lista.hpp"
 #include "player.hpp"
+#include "Inimigo.hpp"
 #include "AnimatedSprite.hpp"
 
 class Jogo : public Tela{
@@ -30,6 +31,7 @@ private:
     sf::RectangleShape * itemSelecionado;
     
     Player tron;
+    Inimigo inimigo;
     
     //Sprites para a barra da vida e dos itens
     sf::Sprite barraItens;
@@ -144,6 +146,8 @@ int Jogo::Executar(sf::RenderWindow & App){
     Animation* currentAnimation = &tron.stayAnimation[1];
     //variavel que eh utilizada para quando atacar terminar o ataque
     bool atacando = false;
+    inimigo.setTipo(2);
+    inimigo.setPosicao(sf::Vector2f(600.0f,ground.getPosition().y - 140));
     AnimatedSprite animatedSprite(sf::seconds(0.7), true, false);
     animatedSprite.setPosition(sf::Vector2f(1.0f,ground.getPosition().y - 140));//coloca o heroi na posicao
     //carregamento do disco que pode ser jogado
@@ -267,6 +271,7 @@ int Jogo::Executar(sf::RenderWindow & App){
                 tron.moverEsquerda();
             }else{
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || atacando && !descendo){
+                   
                     noKeyWasPressed = false;
                     if(atacando == false){
                         atacando = true;
@@ -427,9 +432,11 @@ int Jogo::Executar(sf::RenderWindow & App){
             speedEsq=200.f;
         }
         //da um play na animação e move ela
+        
         animatedSprite.play(*currentAnimation );
         animatedSprite.move(movement * frameTime.asSeconds());
         tempoAtaque = ataqueClock.getElapsedTime();
+        inimigo.procurarHeroi(animatedSprite,frameTime);
         //teste para setar o ataque do disco
         if(atacando == true && tempoAtaque >= sf::seconds(0.15) && tempoAtaque < sf::seconds(0.20)){
                 
@@ -447,7 +454,7 @@ int Jogo::Executar(sf::RenderWindow & App){
             animatedSprite.stop();
         }
         noKeyWasPressed = true;
-
+        inimigo.animatedSprite.update(frameTime);
         animatedSprite.update(frameTime);
         App.clear();
         itemSelecionado->setPosition(sf::Vector2f(App.getSize().x - barra.getSize().x * 0.75 + 79 + 80.0f * nItem ,16.0f));
@@ -470,6 +477,7 @@ int Jogo::Executar(sf::RenderWindow & App){
             ataqueDisco.setPosition(sf::Vector2f(pDisco.x + vetor.x * contDisco, pDisco.y ));
             App.draw(ataqueDisco);
         }
+        App.draw(inimigo.animatedSprite);
         App.draw(animatedSprite);
         
         App.display();
