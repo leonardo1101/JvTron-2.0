@@ -14,15 +14,17 @@ class Inimigo{
         void setTipo(int);
         void setPosicao(sf::Vector2f);
         void atacar();
-        void procurarHeroi(AnimatedSprite &,sf::Time);
-        void andar(int, sf::Time);
+        sf::RectangleShape procurarHeroi(AnimatedSprite &,sf::Time);
+        void andar(sf::Time);
     private:
+        bool atacando;
         Animation* currentAnimation;
         sf::Texture textura[20];
         int vida;
+        int direcao;
         int tipo;
         sf::Vector2f movement;
-        float speed = 2.5f;
+        float speed = 250.5f;
 };
 void Inimigo::setPosicao(sf::Vector2f posicao){
     animatedSprite.setPosition(posicao);
@@ -30,7 +32,11 @@ void Inimigo::setPosicao(sf::Vector2f posicao){
 void Inimigo::atacar(){
     movement.x=0;
     movement.y=0;
-    currentAnimation = &ataqueAnimationEsq[tipo - 1];
+    atacando=true;
+    if(direcao == 1)
+        currentAnimation = &ataqueAnimationEsq[tipo - 1];
+    else
+        currentAnimation = &ataqueAnimationDir[tipo - 1];
     if(tipo == 1 ){
         animatedSprite.setFrameTime(sf::seconds(0.04));
         animatedSprite.play(*currentAnimation);
@@ -81,8 +87,8 @@ void Inimigo::setTipo(int t){
     }else{
         textura[6].loadFromFile("antagonista/andandoDir1.png");
         walkingAnimationRight[1].setSpriteSheet(textura[6]);
-        for(i=1;i<11;i++){
-            walkingAnimationRight[1].addFrame(sf::IntRect(textura[6].getSize().x/11 * i,textura[6].getSize().y * 0,textura[6].getSize().x / 11,textura[6].getSize().y));
+        for(i=0;i<10;i++){
+            walkingAnimationRight[1].addFrame(sf::IntRect(textura[6].getSize().x/10 * i,textura[6].getSize().y * 0,textura[6].getSize().x / 10,textura[6].getSize().y));
         }
         
         textura[7].loadFromFile("antagonista/andandoEsq1.png");
@@ -117,22 +123,40 @@ void Inimigo::setTipo(int t){
     currentAnimation = &stayAnimationEsq[tipo - 1];
     animatedSprite.play(*currentAnimation);
 };
-void Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameTime){
-    sf::RectangleShape campoVisao(sf::Vector2f(heroi.getPosition().x - 175.f , heroi.getPosition().y ));
-    campoVisao.setSize(sf::Vector2f(200.f, 2.f ));
-    if(!campoVisao.getGlobalBounds().intersects(heroi.getGlobalBounds())){
-        if(animatedSprite.getGlobalBounds().intersects(heroi.getGlobalBounds())){
+sf::RectangleShape Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameTime){
+    sf::RectangleShape campoVisao(sf::Vector2f(heroi.getPosition().x - 175.f - 75.f * (direcao  - 1) , heroi.getPosition().y ));
+    campoVisao.setPosition(animatedSprite.getPosition().x  - 150.f, animatedSprite.getPosition().y + 50.f);
+    campoVisao.setFillColor(sf::Color(32, 210, 212));
+    campoVisao.setSize(sf::Vector2f(400.f, 20.f ));
+    if(campoVisao.getGlobalBounds().intersects(heroi.getGlobalBounds()) || heroi.getGlobalBounds().intersects(animatedSprite.getGlobalBounds())){
+        if(heroi.getGlobalBounds().intersects(animatedSprite.getGlobalBounds())){
             atacar();
         }else{
-            andar(1,frameTime);
+            if(heroi.getPosition().x - animatedSprite.getPosition().x < 0){
+                direcao=1;
+                andar(frameTime);
+            }else{
+                direcao=2;
+                andar(frameTime);
+            }
         }
+    }else{
+        animatedSprite.setFrameTime(sf::seconds(0.1));
+        currentAnimation = &stayAnimationEsq[tipo - 1];
+        animatedSprite.play(*currentAnimation);
     }
-    
+    return campoVisao;
 };
-void Inimigo::andar(int direcao, sf::Time frameTime){
+void Inimigo::andar(sf::Time frameTime){
     animatedSprite.setFrameTime(sf::seconds(0.1));
-    currentAnimation = &walkingAnimationLeft[tipo - 1];
-    movement.x -= speed;
+    movement.x = 0;
+    if(direcao == 1){
+        currentAnimation = &walkingAnimationLeft[tipo - 1];
+        movement.x = - speed;
+    }else{
+        currentAnimation = &walkingAnimationRight[tipo - 1];
+        movement.x = speed;
+    }
     animatedSprite.play(*currentAnimation );
     animatedSprite.move(movement * frameTime.asSeconds());
 }

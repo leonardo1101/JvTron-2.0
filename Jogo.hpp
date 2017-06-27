@@ -241,6 +241,8 @@ int Jogo::Executar(sf::RenderWindow & App){
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando && !descendo){
             
+            inimigo.animatedSprite.move(- 1.f,0.f);
+            
             //seta o valor de cada frame
             animatedSprite.setFrameTime(sf::seconds(0.1));
             andandoDir= true;
@@ -259,6 +261,7 @@ int Jogo::Executar(sf::RenderWindow & App){
             tron.moverDireita();
         }else{
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !pulando && !descendo){
+                inimigo.animatedSprite.move(1.f,0.f);
                 animatedSprite.setFrameTime(sf::seconds(0.1));
                 background.move(2.f,0.0f);
                 ground.move(1.f,0.0f);
@@ -436,7 +439,7 @@ int Jogo::Executar(sf::RenderWindow & App){
         animatedSprite.play(*currentAnimation );
         animatedSprite.move(movement * frameTime.asSeconds());
         tempoAtaque = ataqueClock.getElapsedTime();
-        inimigo.procurarHeroi(animatedSprite,frameTime);
+        
         //teste para setar o ataque do disco
         if(atacando == true && tempoAtaque >= sf::seconds(0.15) && tempoAtaque < sf::seconds(0.20)){
                 
@@ -477,6 +480,7 @@ int Jogo::Executar(sf::RenderWindow & App){
             ataqueDisco.setPosition(sf::Vector2f(pDisco.x + vetor.x * contDisco, pDisco.y ));
             App.draw(ataqueDisco);
         }
+        App.draw(inimigo.procurarHeroi(animatedSprite,frameTime));
         App.draw(inimigo.animatedSprite);
         App.draw(animatedSprite);
         
