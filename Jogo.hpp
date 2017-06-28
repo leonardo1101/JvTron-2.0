@@ -29,7 +29,7 @@ private:
     Lista<Disco> discosHeroi; //Lista de Discos
     Lista<Disco> discosInimigos;
     
-    Item item,item1;//Variaveis do tipo item para pegar ou enviar um item para a lista
+    Item itensPadrao[5];//Variaveis do tipo item para pegar ou enviar um item para a lista
     sf::RectangleShape caixaItem[5];//RectangleShape para as caixas da barra de itens
     int idItemCaixa[5];//vetor que contem cada id do item contido na caixa
     sf::RectangleShape * itemSelecionado;
@@ -84,20 +84,12 @@ bool TestEvent(MyKeys k, sf::Event e){
 };
 
 Jogo::Jogo(float larg, float Alt){
-	itemSelecionado = new sf::RectangleShape(sf::Vector2f(52.0f,52.0f));
     //reseta o tron e seta posicao e tamanho
     tron.reset();
     tron.setTamanho(sf::Vector2f(3.0f,3.0f));
     tron.setPosicao(sf::Vector2f(1.0f,540.0f));
     
-    //seta cor e posicao para o item selecionado
-    itemSelecionado->setFillColor(sf::Color(32, 210, 212));
-    itemSelecionado->setPosition(sf::Vector2f(819.0f,16.0f));
-    
     //faz  load das imagens e seta a escala 
-    barra.loadFromFile("Itens/barraItens.png");
-    barraItens.setTexture(barra);
-    barraItens.setScale(sf::Vector2f(0.75,0.75));
     vida.loadFromFile("Itens/6vida.png");
     barraVida.setTexture(vida);
     barraVida.setScale(sf::Vector2f(0.85,0.85));
@@ -108,33 +100,22 @@ Jogo::Jogo(float larg, float Alt){
     ground.setScale(sf::Vector2f(1.f,2.5f));
     ground.setPosition(sf::Vector2f(0.f, 768 - 2.5f * 64 ));
 
-    //faz load dos itens
-    item.carregarItem("disco",3.0f);
-    item.setId(1);
-    item1.setLocationItem(sf::Vector2f(930.0f,10.0f));
-    item1.carregarItem("lanca",3.5f);
-    item.setId(2);
-    itens.cria();
+    itensPadrao[0].carregarItem("",3.0f);
+    itensPadrao[0].setId(0);
+    itensPadrao[1].carregarItem("disco",3.0f);
+    itensPadrao[1].setId(1);
+    itensPadrao[2].carregarItem("lanca",3.4f);
+    itensPadrao[2].setId(2);
+    itensPadrao[3].carregarItem("pocao",3.4f);
+    itensPadrao[3].setId(3);
+    itensPadrao[4].carregarItem("discoLancadoInimigo",3.f);
+    itensPadrao[4].setId(4);
 
-    //seta posicao das barras
-    barraItens.setPosition(sf::Vector2f(larg - barra.getSize().x * 0.75,0.0f));
 
     //loop para setar a posicao das caixas da barra
-    for(int i=0; i<5; i++){
-        caixaItem[i].setSize(sf::Vector2f(50.0f,50.0f));
-        caixaItem[i].setFillColor(sf::Color(35, 77, 77));
-        caixaItem[i].setPosition(sf::Vector2f(larg - barra.getSize().x * 0.75 + 80  + 80.0f * i,17.0f));
-        idItemCaixa[i]=0;
-    }
 
-    //seta valores dos id das caixas para realizar teste - nao mexa
-    idItemCaixa[0]=1;
-    idItemCaixa[1]=2;
-    item.setLocationItem(sf::Vector2f(caixaItem[0].getPosition().x - 8 ,caixaItem[0].getPosition().y - 8 ));
-    item1.setLocationItem(sf::Vector2f(caixaItem[1].getPosition().x - 3 ,caixaItem[1].getPosition().y - 5 ));
-    //adiciona itens na lista
-    itens.insere(item1,deuCerto);
-    itens.insere(item,deuCerto);
+
+
 };
 
 Jogo::~Jogo(){
@@ -152,8 +133,8 @@ int Jogo::Executar(sf::RenderWindow & App){
     Animation* currentAnimation = &tron.stayAnimation[1];
     //variavel que eh utilizada para quando atacar terminar o ataque
     bool atacando = false;
-    inimigo.setTipo(1);
-    inimigo.setPosicao(sf::Vector2f(600.0f,ground.getPosition().y - 140));
+    inimigo.setTipo(2);
+    inimigo.setPosicao(sf::Vector2f(600.0f,ground.getPosition().y - 69));
     AnimatedSprite animatedSprite(sf::seconds(0.7), true, false);
     animatedSprite.setPosition(sf::Vector2f(1.0f,ground.getPosition().y - 140));//coloca o heroi na posicao
     //carregamento do disco que pode ser jogado
@@ -497,7 +478,6 @@ int Jogo::Executar(sf::RenderWindow & App){
         inimigo.animatedSprite.update(frameTime);
         animatedSprite.update(frameTime);
         App.clear();
-        itemSelecionado->setPosition(sf::Vector2f(App.getSize().x - barra.getSize().x * 0.75 + 79 + 80.0f * nItem ,16.0f));
         itens.remove(item1,deuCerto);
         itens.insere(item1,deuCerto);
         itens.remove(item,deuCerto);

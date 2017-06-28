@@ -10,6 +10,7 @@ class Item{
         void carregarItem(std::string,float);
         void setId(int);
         int getId();
+        void setPosicao(sf::Vector2f);
         sf::Vector2u getTamanho();
         sf::Sprite getItem();
     private:
@@ -17,6 +18,10 @@ class Item{
        sf::Texture textura;
        int quantidade;
        int id;
+};
+void Item::setPosicao(sf::Vector2f posicao){
+    
+    item.setPosition(posicao);
 };
 sf::Vector2u Item::getTamanho(){
     
@@ -30,9 +35,11 @@ void Item::setId(int i){
 }
 //pega a imagem do item
 void Item::carregarItem(std::string nome, float escala){
-    textura.loadFromFile("Itens/"+nome+".png");
-    item.setTexture(textura);
-    item.setScale(sf::Vector2f(item.getScale().x/escala,item.getScale().y/escala));
+    if(nome != ""){
+        textura.loadFromFile("Itens/"+nome+".png");
+        item.setTexture(textura);
+        item.setScale(sf::Vector2f(item.getScale().x/escala,item.getScale().y/escala));
+    }
 };
 
 void Item::setLocationItem(sf::Vector2f posicao){
