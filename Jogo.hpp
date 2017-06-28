@@ -84,6 +84,7 @@ bool TestEvent(MyKeys k, sf::Event e){
 };
 
 Jogo::Jogo(float larg, float Alt){
+    //std::cout << tron.getPilha().getNumeroElementos() << std::endl;
 	itemSelecionado = new sf::RectangleShape(sf::Vector2f(52.0f,52.0f));
     //reseta o tron e seta posicao e tamanho
     tron.reset();
@@ -98,8 +99,9 @@ Jogo::Jogo(float larg, float Alt){
     barra.loadFromFile("Itens/barraItens.png");
     barraItens.setTexture(barra);
     barraItens.setScale(sf::Vector2f(0.75,0.75));
-    vida.loadFromFile("Itens/6vida.png");
-    barraVida.setTexture(vida);
+    std::cout << "TADAIMA!!!" << std::endl;
+    barraVida.setTexture(tron.getPilha().getTopo());
+    std::cout << "TADAIMAAA!!" << std::endl;
     barraVida.setScale(sf::Vector2f(0.85,0.85));
     backgroundT.loadFromFile("TilesMap/teste.png");
     background.setTexture(backgroundT);
@@ -187,30 +189,9 @@ int Jogo::Executar(sf::RenderWindow & App){
 	sf::Event evento; // eventos de jogo
 	bool executando = true;
 	while (executando){ // loop da tela
-
-        switch(tron.getVidaAtual()){
-            case 6:
-                vida.loadFromFile("Itens/6vida.png");
-                break;
-            case 5:
-                vida.loadFromFile("Itens/5vida.png");
-                break;
-            case 4:
-                vida.loadFromFile("Itens/4vida.png");
-                break;
-            case 3:
-                vida.loadFromFile("Itens/3vida.png");
-                break;
-            case 2:
-                vida.loadFromFile("Itens/2vida.png");
-                break;
-            case 1:
-                vida.loadFromFile("Itens/1vida.png");
-                break;
-            case 0:
-                return 0; // vai virar tela de perdeu
-                break;
-        }
+        if(!tron.getVidaAtual()) // se nao tem vida, retorne 0
+            return 0;
+            
 
 		std::map<std::string,MyKeys> Keys;
         MyKeys key;

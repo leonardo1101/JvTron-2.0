@@ -28,9 +28,10 @@ class Player{
         Animation descendoDir[3];
         Animation pulandoEsq[3];
         Animation descendoEsq[3];
-        void perdeVida();
-        void ganhaVida();
+        bool perdeVida();
+        bool ganhaVida();
         int getVidaAtual() const;
+        Pilha getPilha () const;
     private:
         sf::Sprite tron;
         //texture para subir cada imagem
@@ -209,7 +210,28 @@ Player::Player(int v): nVidas(v){
     }
     // inserir vidas iniciais
     for(int i = 0; i < nVidas; i++){
-        vida.Empilha(1, DeuCerto);
+        sf::Texture tAux; // sprite auxiliar pra epilhar
+        switch(i){
+            case 0:
+                tAux.loadFromFile("Itens/1vida.png");
+                break;
+            case 1:
+                tAux.loadFromFile("Itens/2vida.png");
+                break;
+            case 2:
+                tAux.loadFromFile("Itens/3vida.png");
+                break;
+            case 3:
+                tAux.loadFromFile("Itens/4vida.png");
+                break;
+            case 4:
+                tAux.loadFromFile("Itens/5vida.png");
+                break;
+            case 5:
+                tAux.loadFromFile("Itens/6vida.png");
+                break;
+        }
+        vida.Empilha(tAux, DeuCerto);
     }
 }
 
@@ -225,18 +247,48 @@ void Player::reset(){
     direcao=1;
 }
 
-void Player::ganhaVida(){
+bool Player::ganhaVida(){
+    sf::Texture tAux; // Textura auxiliar pra empilhar
     bool DeuCerto;
-    vida.Empilha(1, DeuCerto);
+    switch(vida.getNumeroElementos()){
+        case 0:
+            tAux.loadFromFile("Itens/1vida.png");
+            break;
+        case 1:
+            tAux.loadFromFile("Itens/2vida.png");
+            break;
+        case 2:
+            tAux.loadFromFile("Itens/3vida.png");
+            break;
+        case 3:
+            tAux.loadFromFile("Itens/4vida.png");
+            break;
+        case 4:
+            tAux.loadFromFile("Itens/5vida.png");
+            break;
+        case 5:
+            tAux.loadFromFile("Itens/6vida.png");
+            break;
+        case 6:
+            return false;
+            break;
+    }
+    vida.Empilha(tAux, DeuCerto);
+    return DeuCerto;
 }
 
-void Player::perdeVida(){
-    int x;
+bool Player::perdeVida(){
+    sf::Texture tAux;
     bool DeuCerto;
     if(!vida.Vazia())
-        vida.Desempilha(x, DeuCerto);
+        vida.Desempilha(tAux, DeuCerto);
+    return DeuCerto;
 };
 
 int Player::getVidaAtual() const{
     return vida.getNumeroElementos();
+};
+
+Pilha Player::getPilha() const {
+    return vida;
 };
