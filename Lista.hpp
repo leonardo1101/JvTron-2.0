@@ -37,6 +37,7 @@ int Lista<Gen>::getQuant(){
 };
 template<class Gen>
 void Lista<Gen>::cria(){
+    quant=0;
     struct Node<Gen> *Paux = new Node<Gen>();
     header=Paux;
     header->esq=header;
@@ -53,7 +54,6 @@ void Lista<Gen>::insere(Gen& x,bool& deuCerto){
 template<class Gen>
 void Lista<Gen>::insereAEsquerdaDeP(struct Node <Gen> *N,Gen& x,bool& deuCerto){
     struct  Node<Gen> *Paux = new struct Node<Gen>();
-    
     
     Paux->info=x;
     Paux->esq=N->esq;
@@ -87,9 +87,16 @@ void Lista<Gen>::removeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
 template <class Gen>
 void Lista<Gen>::remove(Gen& x,bool& deuCerto){
     struct Node <Gen> *Paux;
-    Paux=header->esq;
-    x=Paux->info;
-    header->esq=Paux->esq;
-    Paux->esq->dir=header;
-    delete Paux;
+    if(header->dir != header){
+        quant--;
+        deuCerto=true;
+        Paux=header->dir;
+        x=Paux->info;
+        header->dir=Paux->dir;
+        Paux->dir->esq=header;
+        delete Paux;
+    }else{
+        deuCerto=false;
+        
+    }
 }
