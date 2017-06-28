@@ -1,10 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Animation.hpp"
+#include "Pilha.hpp"
 
 class Player{
     public:
-        Player();
+        Player(int=10); // inicialmente tem 10 vidas
         void moverDireita();
         void moverEsquerda();
         int getDirecao();
@@ -27,6 +28,9 @@ class Player{
         Animation descendoDir[3];
         Animation pulandoEsq[3];
         Animation descendoEsq[3];
+        void perdeVida();
+        void ganhaVida();
+        int getVidaAtual() const;
     private:
         sf::Sprite tron;
         //texture para subir cada imagem
@@ -35,7 +39,8 @@ class Player{
         int nDir;
         int nEsq;
         int idItem;
-    
+        Pilha vida;
+        const int nVidas;
 };
 void Player::setIdItem(int id){
     idItem = id;   
@@ -51,8 +56,9 @@ int Player::getDirecao(){
     
    return direcao; 
 }
-Player::Player(){
+Player::Player(int v): nVidas(v){
     int i;
+    bool DeuCerto;
     direcao =1;
     //subindo imagens e dividindo elas em frames
     forma[0].loadFromFile("spriteProtagonista/Andando.png");
@@ -201,16 +207,36 @@ Player::Player(){
     for(i=6;i>=0;i--){
         ataqueAnimationEsq[0].addFrame(sf::IntRect(forma[23].getSize().x/7 * i,forma[23].getSize().y * 0,forma[23].getSize().x /7,forma[23].getSize().y));
     }
+    // inserir vidas iniciais
+    for(int i = 0; i < nVidas; i++)
+        if(vida.Vazia())
+            vida.Empilha(1, DeuCerto);
 }
 
 void Player::setTamanho(sf::Vector2f tamanho){
     tron.setScale(tamanho);
-    
 }
+
 void Player::setPosicao(sf::Vector2f posicao){
     tron.setPosition(posicao);
 }
+
 void Player::reset(){
     direcao=1;
-    
 }
+
+void Player::ganhaVida(){
+    bool DeuCerto;
+    vida.Empilha(1, DeuCerto);
+}
+
+void Player::perdeVida(){
+    int x;
+    bool DeuCerto;
+    if(!vida.Vazia())
+        vida.Desempilha(x, DeuCerto);
+};
+
+int Player::getVidaAtual() const{
+    return vida.getNumeroElementos();
+};

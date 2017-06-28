@@ -182,6 +182,8 @@ int Jogo::Executar(sf::RenderWindow & App){
 	sf::Event evento; // eventos de jogo
 	bool executando = true;
 	while (executando){ // loop da tela
+        if(!tron.getVidaAtual())
+            return 0; // vai virar tela de perdeu
 
 		std::map<std::string,MyKeys> Keys;
         MyKeys key;
