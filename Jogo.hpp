@@ -152,15 +152,16 @@ int Jogo::Executar(sf::RenderWindow & App){
     Animation* currentAnimation = &tron.stayAnimation[1];
     //variavel que eh utilizada para quando atacar terminar o ataque
     bool atacando = false;
-    inimigo.setTipo(2);
+    inimigo.setTipo(1);
     inimigo.setPosicao(sf::Vector2f(600.0f,ground.getPosition().y - 140));
     AnimatedSprite animatedSprite(sf::seconds(0.7), true, false);
     animatedSprite.setPosition(sf::Vector2f(1.0f,ground.getPosition().y - 140));//coloca o heroi na posicao
     //carregamento do disco que pode ser jogado
-    Disco disco;
+    Disco disco, discoInimigo;
      
     //Criação da lista disco
     discosHeroi.cria();
+    discosInimigos.cria();
         
     //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
     bool andandoDir = false;
@@ -270,7 +271,7 @@ int Jogo::Executar(sf::RenderWindow & App){
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando && !descendo){
             
-            inimigo.animatedSprite.move(1.f,0.f);
+            inimigo.animatedSprite.move(- 1.0f,0.f);
             
             //seta o valor de cada frame
             animatedSprite.setFrameTime(sf::seconds(0.1));
@@ -316,7 +317,7 @@ int Jogo::Executar(sf::RenderWindow & App){
                                 animatedSprite.setFrameTime(sf::seconds(0.04));
                                 
                                 //seta o vetor e o ponto do disco a ser lançado
-                                disco.setReset(sf::Vector2f(animatedSprite.getPosition().x + 85, animatedSprite.getPosition().y + 30),sf::Vector2f(1.0f,0.f));
+                                disco.setReset(sf::Vector2f(animatedSprite.getPosition().x + 85, animatedSprite.getPosition().y + 30),sf::Vector2f(1.0f,0.f),0);
                                 adicionarUmDisco=true;
                             }else{
                                 animatedSprite.setFrameTime(sf::seconds(0.045));
@@ -327,7 +328,7 @@ int Jogo::Executar(sf::RenderWindow & App){
                                 animatedSprite.setFrameTime(sf::seconds(0.04));
                                 
                                 //seta o vetor e o ponto do disco a ser lançado
-                                disco.setReset(sf::Vector2f(animatedSprite.getPosition().x , animatedSprite.getPosition().y + 30),sf::Vector2f(- 1.0f,0.f));
+                                disco.setReset(sf::Vector2f(animatedSprite.getPosition().x , animatedSprite.getPosition().y + 30),sf::Vector2f(- 1.0f,0.f),0);
                                 adicionarUmDisco=true;
             
                             }else{
@@ -470,6 +471,14 @@ int Jogo::Executar(sf::RenderWindow & App){
         tempoAtaque = ataqueClock.getElapsedTime();
         
         //teste para adicionar um disco na lista quando precionado a tecla de ataque
+        if(inimigo.getAtacouDisco()){
+            if(inimigo.getDirecao() == -1)
+                discoInimigo.setReset(sf::Vector2f(inimigo.animatedSprite.getPosition().x , inimigo.animatedSprite.getPosition().y + 30),sf::Vector2f(- 1.0f,0.f),1);
+            else
+                discoInimigo.setReset(sf::Vector2f(inimigo.animatedSprite.getPosition().x + 85, inimigo.animatedSprite.getPosition().y + 30),sf::Vector2f(1.0f,0.f),1);
+            inimigo.setDiscoJogado();
+            discosInimigos.insere(discoInimigo,deuCerto);
+        }
         if(adicionarUmDisco){
             discosHeroi.insere(disco,deuCerto);
             adicionarUmDisco=false;
@@ -512,6 +521,17 @@ int Jogo::Executar(sf::RenderWindow & App){
                 App.draw(disco.getDisco());
                 disco.mover();
                 discosHeroi.insere(disco,deuCerto);
+            }
+        }
+        quantDiscosHeroi = discosInimigos.getQuant();
+        //animação do disco indo,  ponto + vetor * escalar
+        for(i=0;i<quantDiscosHeroi;i++){
+            discosInimigos.remove(discoInimigo,deuCerto);
+            printf("%d",i);
+            if(discoInimigo.getPosicao().x <= 1024.0f && discoInimigo.getPosicao().x > 0){
+                App.draw(discoInimigo.getDisco());
+                discoInimigo.mover();
+                discosInimigos.insere(discoInimigo,deuCerto);
             }
         }
         App.draw(inimigo.procurarHeroi(animatedSprite,frameTime));

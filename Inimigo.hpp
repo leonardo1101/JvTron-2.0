@@ -12,12 +12,18 @@ class Inimigo{
         Animation ataqueAnimationDir[2];
         Animation ataqueAnimationEsq[3];     
         void setTipo(int);
+        void setDiscoJogado();
+        bool getAtacouDisco();
         void setPosicao(sf::Vector2f);
         void atacar();
+        int getDirecao();
         sf::RectangleShape procurarHeroi(AnimatedSprite &,sf::Time);
         void andar(sf::Time);
     private:
         bool atacando;
+        bool atacouDisco;
+        sf::Time tempoAtaque;
+        sf::Clock ataqueClock;
         Animation* currentAnimation;
         sf::Texture textura[20];
         int vida;
@@ -26,30 +32,58 @@ class Inimigo{
         sf::Vector2f movement;
         float speed = 250.5f;
 };
+int Inimigo::getDirecao(){
+    return direcao;
+};
+void Inimigo::setDiscoJogado(){
+    atacouDisco=false;
+};
+bool Inimigo::getAtacouDisco(){
+    return atacouDisco;
+};
 void Inimigo::setPosicao(sf::Vector2f posicao){
     animatedSprite.setPosition(posicao);
 };
 void Inimigo::atacar(){
     movement.x=0;
     movement.y=0;
-    atacando=true;
-    if(direcao == 1)
+    
+    if(direcao == -1)
         currentAnimation = &ataqueAnimationEsq[tipo - 1];
     else
         currentAnimation = &ataqueAnimationDir[tipo - 1];
-    if(tipo == 1 ){
+    if(tipo == 2 ){
         animatedSprite.setFrameTime(sf::seconds(0.04));
         animatedSprite.play(*currentAnimation);
     }else{
-        animatedSprite.setFrameTime(sf::seconds(0.045));
-        animatedSprite.play(*currentAnimation);
+        tempoAtaque = ataqueClock.getElapsedTime();
+        if(tempoAtaque >= sf::seconds(0.8) || !atacando){
+            atacouDisco=true;
+            ataqueClock.restart();
+            animatedSprite.setFrameTime(sf::seconds(0.01));
+            currentAnimation = &stayAnimationEsq[tipo - 1];
+            animatedSprite.play(*currentAnimation);
+        }else{
+            if(tempoAtaque <= sf::seconds(0.315) ){
+                animatedSprite.setFrameTime(sf::seconds(0.045));
+                animatedSprite.play(*currentAnimation);
+            }else{
+                animatedSprite.setFrameTime(sf::seconds(0.01));
+                currentAnimation = &stayAnimationEsq[tipo - 1];
+                animatedSprite.play(*currentAnimation);
+            }
+        }   
+        
     }
+    atacando=true;
 };
 
 void Inimigo::setTipo(int t){
     int i;
     tipo=t;
-    
+    direcao=-1;
+    atacouDisco=false;
+    atacando=false;
     //se o inimigo for do tipo 1 ele irá utilizar o disco
     if(tipo == 1){
         
@@ -75,14 +109,14 @@ void Inimigo::setTipo(int t){
         
         textura[4].loadFromFile("antagonista/atacandoDiscoDir.png");
         ataqueAnimationDir[0].setSpriteSheet(textura[4]);
-        for(i=0;i<7;i++){
-            ataqueAnimationDir[0].addFrame(sf::IntRect(textura[4].getSize().x/7 * i,textura[4].getSize().y * 0,textura[4].getSize().x /7,textura[4].getSize().y));
+        for(i=1;i<8;i++){
+            ataqueAnimationDir[0].addFrame(sf::IntRect(textura[4].getSize().x/8 * i,textura[4].getSize().y * 0,textura[4].getSize().x /8,textura[4].getSize().y));
         }
         
         textura[5].loadFromFile("antagonista/atacandoDiscoEsq.png");
         ataqueAnimationEsq[0].setSpriteSheet(textura[5]);
         for(i=6;i>=0;i--){
-            ataqueAnimationEsq[0].addFrame(sf::IntRect(textura[5].getSize().x/7 * i,textura[5].getSize().y * 0,textura[5].getSize().x /7,textura[5].getSize().y));
+            ataqueAnimationEsq[0].addFrame(sf::IntRect(textura[5].getSize().x/8 * i,textura[5].getSize().y * 0,textura[5].getSize().x /8,textura[5].getSize().y));
         }
     }else{
         textura[6].loadFromFile("antagonista/andandoDir1.png");
@@ -128,17 +162,17 @@ sf::RectangleShape Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameT
     campoVisao.setPosition(animatedSprite.getPosition().x  - 150.f, animatedSprite.getPosition().y + 50.f);
     campoVisao.setFillColor(sf::Color(32, 210, 212));
     campoVisao.setSize(sf::Vector2f(400.f, 20.f ));
+    if(heroi.getPosition().x - animatedSprite.getPosition().x < 0 ){
+        direcao=-1;
+    }else{
+        direcao=1;
+    }
     if(campoVisao.getGlobalBounds().intersects(heroi.getGlobalBounds()) || heroi.getGlobalBounds().intersects(animatedSprite.getGlobalBounds())){
-        if(heroi.getGlobalBounds().intersects(animatedSprite.getGlobalBounds())){
+        if(heroi.getGlobalBounds().intersects(animatedSprite.getGlobalBounds()) || tipo == 1 ){
             atacar();
         }else{
-            if(heroi.getPosition().x - animatedSprite.getPosition().x < 0){
-                direcao=1;
-                andar(frameTime);
-            }else{
-                direcao=2;
-                andar(frameTime);
-            }
+            andar(frameTime);
+            
         }
     }else{
         animatedSprite.setFrameTime(sf::seconds(0.1));
@@ -150,7 +184,7 @@ sf::RectangleShape Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameT
 void Inimigo::andar(sf::Time frameTime){
     animatedSprite.setFrameTime(sf::seconds(0.1));
     movement.x = 0;
-    if(direcao == 1){
+    if(direcao == -1){
         currentAnimation = &walkingAnimationLeft[tipo - 1];
         movement.x = - speed;
     }else{

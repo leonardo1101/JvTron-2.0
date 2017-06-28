@@ -11,7 +11,7 @@ class Disco{
         sf::Sprite getDisco();
         
         //faz um reset no disco colocando primeiro o ponto e depois o vetor
-        void setReset(sf::Vector2f,sf::Vector2f);
+        void setReset(sf::Vector2f,sf::Vector2f,bool tipo);
         
         //posicao do disco
         sf::Vector2f getPosicao();
@@ -33,8 +33,12 @@ void Disco::mover(){
 sf::Sprite Disco::getDisco(){
     return desenho;
 };
-void Disco::setReset(sf::Vector2f p,sf::Vector2f v){
-    img.loadFromFile("Itens/discoLancado.png");
+void Disco::setReset(sf::Vector2f p,sf::Vector2f v,bool tipo){
+    if(tipo==0){
+        img.loadFromFile("Itens/discoLancado.png");
+    }else{
+        img.loadFromFile("Itens/discoLancadoInimigo.png");
+    }
     desenho.setTexture(img);
     ponto=p;
     vetor=v;
