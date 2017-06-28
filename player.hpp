@@ -5,7 +5,7 @@
 
 class Player{
     public:
-        Player(int=10); // inicialmente tem 10 vidas
+        Player(int=6); // inicialmente tem 10 vidas
         void moverDireita();
         void moverEsquerda();
         int getDirecao();
@@ -208,9 +208,9 @@ Player::Player(int v): nVidas(v){
         ataqueAnimationEsq[0].addFrame(sf::IntRect(forma[23].getSize().x/7 * i,forma[23].getSize().y * 0,forma[23].getSize().x /7,forma[23].getSize().y));
     }
     // inserir vidas iniciais
-    for(int i = 0; i < nVidas; i++)
-        if(vida.Vazia())
-            vida.Empilha(1, DeuCerto);
+    for(int i = 0; i < nVidas; i++){
+        vida.Empilha(1, DeuCerto);
+    }
 }
 
 void Player::setTamanho(sf::Vector2f tamanho){

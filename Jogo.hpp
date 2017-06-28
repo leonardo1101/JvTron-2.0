@@ -182,8 +182,30 @@ int Jogo::Executar(sf::RenderWindow & App){
 	sf::Event evento; // eventos de jogo
 	bool executando = true;
 	while (executando){ // loop da tela
-        if(!tron.getVidaAtual())
-            return 0; // vai virar tela de perdeu
+
+        switch(tron.getVidaAtual()){
+            case 6:
+                vida.loadFromFile("Itens/6vida.png");
+                break;
+            case 5:
+                vida.loadFromFile("Itens/5vida.png");
+                break;
+            case 4:
+                vida.loadFromFile("Itens/4vida.png");
+                break;
+            case 3:
+                vida.loadFromFile("Itens/3vida.png");
+                break;
+            case 2:
+                vida.loadFromFile("Itens/2vida.png");
+                break;
+            case 1:
+                vida.loadFromFile("Itens/1vida.png");
+                break;
+            case 0:
+                return 0; // vai virar tela de perdeu
+                break;
+        }
 
 		std::map<std::string,MyKeys> Keys;
         MyKeys key;
