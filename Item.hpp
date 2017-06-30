@@ -14,6 +14,8 @@ class Item{
         int getId();
         int getQuantidade();
         void setQuantidade(int);
+        void diminuirQuantidade();
+        void aumentarQuantidade();
         void setPosicao(sf::Vector2f);
         sf::Vector2u getTamanho();
         sf::Sprite getItem();
@@ -25,6 +27,14 @@ class Item{
 };
 int Item::getQuantidade(){
     return quantidade;
+};
+void Item::diminuirQuantidade(){
+    if(quantidade - 1 >= 0)
+        quantidade--;
+};
+void Item::aumentarQuantidade(){
+    if(quantidade + 1 < 7)
+        quantidade++;
 };
 void Item::setQuantidade(int quant){
     if(quant < 7 && quant>=0)

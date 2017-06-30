@@ -23,6 +23,7 @@ class Inimigo{
         int getDirecao();
         sf::RectangleShape procurarHeroi(AnimatedSprite &,sf::Time);
         void andar(sf::Time);
+        void fakeGravidade(sf::Vector2f gravidade);
     private:
         int estado;
         sf::Vector2f sizeEstado[2];
@@ -40,6 +41,9 @@ class Inimigo{
         
         void setSizeEstado();
         void mudarEstado();
+};
+void Inimigo::fakeGravidade(sf::Vector2f gravidade){
+        animatedSprite.setPosition(sf::Vector2f(gravidade.x,gravidade.y - 140));//coloca o heroi na posicao
 };
 void Inimigo::setSizeEstado(){
     sizeEstado[0]= sf::Vector2f(150.f,150.f);

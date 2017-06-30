@@ -85,9 +85,6 @@ sf::Texture Pilha::getTopo(){
 
 int Pilha::getNumeroElementos() const{
     return numeroElementos;
-<<<<<<< HEAD
 }
 #endif
-=======
-};
->>>>>>> master
+

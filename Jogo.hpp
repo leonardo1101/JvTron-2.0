@@ -31,6 +31,7 @@ private:
     Lista<Item> itens;//Lista com itens
     Lista<Disco> discosHeroi; //Lista de Discos
     Lista<Disco> discosInimigos;
+    Lista<Inimigo> inimigos;
     sf::RectangleShape caixaItem[5];//RectangleShape para as caixas da barra de itens
     int idItemCaixa[5];//vetor que contem cada id do item contido na caixa
     
@@ -109,27 +110,27 @@ bool TestEvent(MyKeys k, sf::Event e){
 };
 
 Jogo::Jogo(float larg, float Alt){
-    
+    bool ok;
      sistemaItens.resetBarra();
     //reseta o tron e seta posicao e tamanho
     tron.reset();
     tron.setTamanho(sf::Vector2f(3.0f,3.0f));
     tron.setPosicao(sf::Vector2f(1.0f,540.0f));
     
-//     sistemaItens.resetBarra();
+     sistemaItens.resetBarra();
     
     //faz  load das imagens e seta a escala 
-<<<<<<< HEAD
-    barra.loadFromFile("Itens/barraItens.png");
-    barraItens.setTexture(barra);
-    barraItens.setScale(sf::Vector2f(0.75,0.75));
-    std::cout << "TADAIMA!!!" << std::endl;
-    barraVida.setTexture(tron.getPilha().getTopo());
-    std::cout << "TADAIMAAA!!" << std::endl;
-=======
-    vida.loadFromFile("Itens/6vida.png");
-    barraVida.setTexture(vida);
->>>>>>> 6fadd775963a69e6655a20f0a11bd8fa1238241c
+// <<<<<<< HEAD
+//     barra.loadFromFile("Itens/barraItens.png");
+//     barraItens.setTexture(barra);
+//     barraItens.setScale(sf::Vector2f(0.75,0.75));
+//     std::cout << "TADAIMA!!!" << std::endl;
+//     barraVida.setTexture(tron.getPilha().getTopo());
+//     std::cout << "TADAIMAAA!!" << std::endl;
+// =======
+//     vida.loadFromFile("Itens/6vida.png");
+//     barraVida.setTexture(vida);
+// >>>>>>> 6fadd775963a69e6655a20f0a11bd8fa1238241c
     barraVida.setScale(sf::Vector2f(0.85,0.85));
     backgroundT.loadFromFile("TilesMap/teste.png");
     background.setTexture(backgroundT);
@@ -140,15 +141,19 @@ Jogo::Jogo(float larg, float Alt){
 
     itensPadrao[0].carregarItem("",3.0f);
     itensPadrao[0].setId(0);
-    itensPadrao[1].carregarItem("disco",3.0f);
+    itensPadrao[1].carregarItem("disco",2.9f);
     itensPadrao[1].setId(1);
+    itensPadrao[1].setQuantidade(6);
     itensPadrao[2].carregarItem("lanca",3.4f);
     itensPadrao[2].setId(2);
-    itensPadrao[3].carregarItem("pocao",3.4f);
+    itensPadrao[2].setQuantidade(6);
+    itensPadrao[3].carregarItem("pocao",4.5f);
     itensPadrao[3].setId(3);
-
+    itensPadrao[3].setQuantidade(6);
     
-    
+    sistemaItens.inserirItem(itensPadrao[1]);
+    sistemaItens.inserirItem(itensPadrao[2]);
+    sistemaItens.inserirItem(itensPadrao[3]);
             //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
      andandoDir = false;
      andandoEsq = false;
@@ -164,10 +169,10 @@ Jogo::Jogo(float larg, float Alt){
     //loop para setar a posicao das caixas da barra
 
     currentAnimation = &tron.stayAnimation[1];
-    
+    inimigos.cria();
     inimigo.setTipo(1);
     inimigo.setPosicao(sf::Vector2f(600.0f,ground.getPosition().y - 69));
-
+    inimigos.insere(inimigo,ok);
 
 };
 
@@ -213,8 +218,8 @@ int Jogo::Executar(sf::RenderWindow & App){
 	sf::Event evento; // eventos de jogo
 	bool executando = true;
 	while (executando){ // loop da tela
-        if(!tron.getVidaAtual()) // se nao tem vida, retorne 0
-            return 0;
+//         if(!tron.getVidaAtual()) // se nao tem vida, retorne 0
+//             return 0;
             
 
 //         switch(tron.getVidaAtual()){
@@ -268,8 +273,7 @@ int Jogo::Executar(sf::RenderWindow & App){
         key.myKeyCode = sf::Keyboard::Num5;
         Keys["item5"] = key;
 
-		// Verificação de eventos
-       tron.fakeGravidade(ground.getPosition());
+
 		while (App.pollEvent(evento)){ // loop de eventos
 			if (evento.type == sf::Event::Closed){
 				return (-1);
@@ -289,43 +293,41 @@ int Jogo::Executar(sf::RenderWindow & App){
             }
             if (TestEvent(Keys["item5"], evento)){
                 nItem=4;
+                
             }
 		}
 		//da um restart no time do frame
         sf::Time frameTime = frameClock.restart();
         sf::Vector2f movement(0.f, 0.f);
         tron.setTimeFrame(frameClock.restart());
-        sistemaItens.selecionarItem(nItem);
+        tron.estadoPulo();
+        tron.setIdItem(sistemaItens.selecionarItem(nItem));
         
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !pulando && !descendo){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !tron.getPulando()){
             
-            inimigo.animatedSprite.move(- 1.0f,0.f);
+             inimigo.animatedSprite.move(- 2.f,0.f);
             
             tron.moverDireita();
             //seta o valor de cada frame
 
             
             //para o cenário se mover - irá ser mudado para algo mais dinamico
-            background.move(- 2.f,0.0f);
-            ground.move(- 1.f,0.0f);
 
             atacando=false;
             noKeyWasPressed = false;
             
         }else{
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !pulando && !descendo){
-                inimigo.animatedSprite.move(1.f,0.f);
-                background.move(2.f,0.0f);
-                ground.move(1.f,0.0f);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !tron.getPulando() && !descendo){
+                inimigo.animatedSprite.move(2.f,0.f);
                 atacando=false;
                 noKeyWasPressed = false;
                 tron.moverEsquerda();
             }else{
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || tron.getAtacando() && !descendo){
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || tron.getAtacando() && !tron.getPulando()){
                     noKeyWasPressed = false;
                     if(!tron.getAtacando()){
                         tron.atacar();
-    //                         sistemaItens.usarItem(nItem);
+                        sistemaItens.usarItem(nItem);
                         if(tron.adicionarDisco()){
                             if(tron.getDirecao() == 1){
                                 disco.setReset(sf::Vector2f(tron.animatedSprite.getPosition().x + 85, tron.animatedSprite.getPosition().y + 30),sf::Vector2f(1.0f,0.f),0);
@@ -336,12 +338,17 @@ int Jogo::Executar(sf::RenderWindow & App){
                         }     
                     }
                 }else{
-	                if(!atacando && !pulando && !descendo){
+	                if(!atacando && !tron.getPulando()){
 	                     tron.parado();
 	                }
                 }
                 
             }
+        }
+        if(tron.getAtacando() && !tron.adicionarDisco()){
+            
+            if(tron.animatedSprite.getGlobalBounds().intersects(inimigo.animatedSprite.getGlobalBounds()) )
+                printf("mataaaaaaaaaaaaaaaaaaa");
         }
         //para o pulo animacoes de descendo e pulando são diferentes, mas são usadas
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::X) || tron.getPulando()){
@@ -350,20 +357,17 @@ int Jogo::Executar(sf::RenderWindow & App){
         }
         //time para o tempo de pulo
         tron.setTimePulo();
-        if(tron.getPulando()){
-            if(tron.getDirecao() == 1){
-                    background.move(- 2.f,0.0f);
-                    ground.move(- 1.f,0.0f);
-            }else{
-                    background.move(2.f,0.0f);
-                    ground.move(1.f,0.0f);
-            }
+        if(!tron.getPulando()){
+             tron.fakeGravidade(ground.getPosition());
         }else{
-             tron.animatedSprite.setPosition(sf::Vector2f(tron.animatedSprite.getPosition().x,ground.getPosition().y - 140));
+            if(tron.getDirecao() == 1)
+                inimigo.animatedSprite.move(- 2.f,0.f);
+            else
+                inimigo.animatedSprite.move( 2.f,0.f);
         }
-
-        
-        tron.estadoPulo();
+        inimigo.fakeGravidade(sf::Vector2f(inimigo.animatedSprite.getPosition().x,ground.getPosition().y));
+        background.move(tron.getCameraBackground());
+        ground.move(tron.getCameraGround());
         tron.setTimeAtaque();
         
         //teste para adicionar um disco na lista quando precionado a tecla de ataque
@@ -389,19 +393,19 @@ int Jogo::Executar(sf::RenderWindow & App){
         inimigo.animatedSprite.update(frameTime);
         tron.animatedSprite.update(frameTime);
         App.clear();
-        App.draw(background);
         App.draw(ground);
         App.draw(sistemaItens.barraItens);
         App.draw(sistemaItens.itemSelecionado);
          for(i=0;i<4;i++){
              App.draw(sistemaItens.caixaItem[i]);
          }
-//         for(i=0;i<sistemaItens.quantItens();i++){
-//             sistemaItens.itens.remove(auxItem,deuCerto);
-//             App.draw(auxItem.getItem());
-//             sistemaItens.itens.insere(auxItem,deuCerto);
-//         }
-//         
+         int quantItena = sistemaItens.quantItens();
+        for(i=0;i<quantItena;i++){
+             sistemaItens.itens.remove(auxItem,deuCerto);
+             App.draw(auxItem.getItem());
+             sistemaItens.itens.insere(auxItem,deuCerto);
+         }
+         
        
         App.draw(barraVida);
         
@@ -411,10 +415,22 @@ int Jogo::Executar(sf::RenderWindow & App){
             discosHeroi.remove(disco,deuCerto);
             if(disco.getPosicao().x <= 1024.0f && disco.getPosicao().x > 0){
                 App.draw(disco.getDisco());
+                if(disco.getDisco().getGlobalBounds().intersects(inimigo.animatedSprite.getGlobalBounds()) )
+                    printf("mataaaaaaaaaaaaaaaaaaa");
                 disco.mover();
                 discosHeroi.insere(disco,deuCerto);
             }
         }
+        
+//         int quantInimigos = inimigos.getQuant();
+//         //animação do disco indo,  ponto + vetor * escalar
+//         for(i=0;i<quantInimigos;i++){
+//             inimigos.remove(inimigo,deuCerto);
+//             if(inimigo.getPosicao().x <= 1024.0f && inimigo.getPosicao().x > 0){
+//                 App.draw(inimigo.animatedSprite);
+//             }
+//             inimigos.insere(inimigo,deuCerto);
+//         }
         quantDiscosHeroi = discosInimigos.getQuant();
         //animação do disco indo,  ponto + vetor * escalar
         for(i=0;i<quantDiscosHeroi;i++){
@@ -428,7 +444,6 @@ int Jogo::Executar(sf::RenderWindow & App){
         inimigo.procurarHeroi(tron.animatedSprite,frameTime);
         App.draw(inimigo.animatedSprite);
         App.draw(tron.animatedSprite);
-        
         App.display();
 	}
 	//Never reaching this point normally, but just in case, exit the application
