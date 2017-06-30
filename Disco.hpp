@@ -1,3 +1,5 @@
+#ifndef DISCO_H
+#define DISCO_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -45,3 +47,4 @@ void Disco::setReset(sf::Vector2f p,sf::Vector2f v,bool tipo){
     escalar=0;
     desenho.setPosition(sf::Vector2f(ponto.x + vetor.x * escalar,ponto.y + vetor.y * escalar));
 };
+#endif

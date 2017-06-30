@@ -11,7 +11,8 @@
     
 	Controle de Versão: https://github.com/leonardo1101/JvTron-2.0
 */
-
+#ifndef MENU_H
+#define MENU_H
 #include <iostream>
 #include <string>
 #include <SFML/Graphics.hpp>
@@ -70,9 +71,9 @@ Menu::Menu(float larg, float alt): maxNumeroItens(3){
 		botao[i].setFont(fonte);
 		botao[i].setCharacterSize(40);
 		if(i == 0)
-			botao[i].setColor(sf::Color::Cyan);
+			botao[i].setColor(sf::Color(0,255,255));
 		else
-			botao[i].setColor(sf::Color::White);
+			botao[i].setColor(sf::Color(255,255,255));
 		botao[i].setString(texto[i]);
 		botao[i].setPosition(sf::Vector2f(centrox - botao[i].getCharacterSize()*1.95, (altura-100)*2/3 + altura/(maxNumeroItens+1)/2.5*i - 80));
 	}
@@ -158,9 +159,9 @@ void Menu::desenha(sf::RenderWindow & App) const{
 // Move a seleção de botão para cima
 void Menu::MovaParaCima(){
 	if(numeroItem - 1 >= 0){
-		botao[numeroItem].setColor(sf::Color::White);
+		botao[numeroItem].setColor(sf::Color(255,255,255));
 		numeroItem--;
-		botao[numeroItem].setColor(sf::Color::Cyan);
+		botao[numeroItem].setColor(sf::Color(0,255,255));
 	}
 };
 // fim MovaParaCima
@@ -169,9 +170,9 @@ void Menu::MovaParaCima(){
 // Move a seleção de botão para baixo
 void Menu::MovaParaBaixo(){
 	if(numeroItem + 1 < maxNumeroItens){
-		botao[numeroItem].setColor(sf::Color::White);
+		botao[numeroItem].setColor(sf::Color(255,255,255));
 		numeroItem++;
-		botao[numeroItem].setColor(sf::Color::Cyan);
+		botao[numeroItem].setColor(sf::Color(0,255,255));
 	}
 };
 // fim MovaParaBaixo
@@ -180,3 +181,4 @@ void Menu::MovaParaBaixo(){
 // Retorna o número do botão selecionado
 int Menu::ItemApertado(){ return numeroItem; };
 // fim ItemApertado
+#endif

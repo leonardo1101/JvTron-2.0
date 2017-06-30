@@ -1,6 +1,9 @@
+#ifndef PLAYER_H
+#define PLAYER_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Animation.hpp"
+#include "AnimatedSprite.hpp"
 #include "Pilha.hpp"
 
 class Player{
@@ -16,6 +19,10 @@ class Player{
         void setIdItem(int);
         sf::Sprite getTron();
         
+        
+        AnimatedSprite animatedSprite;   
+        Animation* currentAnimation;
+        
         //Animacao para cada estado possivel do heroi
         //utilizado vetor para ficar mais facil saber qual animação utilizar para tal item
         Animation walkingAnimationRight[4];
@@ -30,7 +37,20 @@ class Player{
         Animation descendoEsq[3];
         void perdeVida();
         void ganhaVida();
+        void setTimeFrame(sf::Time);
         int getVidaAtual() const;
+        void fakeGravidade(sf::Vector2f);
+        void atacar();
+        void setTimeAtaque();
+        bool adicionarDisco();
+        bool getAtacando();
+        void resetDisco();
+        void parado();
+        void setTimePulo();
+        void pular();
+        bool getPulando();
+        
+        void estadoPulo();
     private:
         sf::Sprite tron;
         //texture para subir cada imagem
@@ -41,6 +61,156 @@ class Player{
         int idItem;
         Pilha vida;
         const int nVidas;
+        
+        bool adicionaDisco;
+        
+          //times para o tempo de ataque e pulo
+        sf::Time tempoAtaque;
+        sf::Time tempoPulo;
+        sf::Time frameTime;
+        sf::Clock ataqueClock, puloClock;
+        
+        //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
+        bool andandoDir;
+        bool andandoEsq;
+
+        //variaveis para ver qual estado do pulo está
+        bool pulando;
+        bool descendo;
+   
+        //velocidade dos frames para os casos de direita e esquerda
+        float speedDir;
+        float speedEsq;
+        
+        bool atacando;
+        
+        sf::Vector2f movement;
+        float speed = 250.5f;
+        int contPulo;
+        int contPulo2;
+};
+bool Player::getPulando(){
+    return pulando || descendo;
+};
+void Player::setTimePulo(){
+    tempoPulo = puloClock.getElapsedTime();
+};
+void Player::pular(){
+    if(pulando == false && descendo == false){
+                puloClock.restart();
+                pulando = true;
+            }
+            if(!descendo){
+                if(getDirecao() == 1){
+                    animatedSprite.setFrameTime(sf::seconds(0.1));
+                    currentAnimation = &pulandoDir[idItem];
+                }else{
+                    animatedSprite.setFrameTime(sf::seconds(0.1));
+                    currentAnimation = &pulandoEsq[idItem];
+                }
+            }else{
+                if(getDirecao() == 1){
+                    animatedSprite.setFrameTime(sf::seconds(0.1));
+                    currentAnimation = &descendoDir[idItem];
+                }else{
+                    animatedSprite.setFrameTime(sf::seconds(0.1));
+                    currentAnimation = &descendoEsq[idItem];
+                }
+            }
+            setTimePulo();
+};
+void Player::estadoPulo(){
+    
+        if(pulando){
+            if(tempoPulo <= sf::seconds(0.5)){
+                movement.y -= contPulo * 7.0f;
+                contPulo--;                
+                contPulo2++;
+            }else{
+                contPulo++;
+                pulando = false;
+                descendo = true;
+            }
+        }else{
+            if(descendo){
+                if(tempoPulo <= sf::seconds(1)){
+                    movement.y += contPulo * 7.0f;
+                    contPulo++;
+                }else{
+                    if(descendo == true)
+                        andandoDir=false;
+                    pulando = false;
+                    descendo = false;
+                    contPulo = 79;
+                    contPulo2=0;
+                }
+            }
+        }
+        animatedSprite.play(*currentAnimation);
+        printf("Pulando\n");
+        animatedSprite.move(movement * frameTime.asSeconds());
+}
+void Player::parado(){
+    andandoDir= false;
+    andandoEsq=false;
+    if(getDirecao() == 1){
+	    animatedSprite.setFrameTime(sf::seconds(0.7));
+        currentAnimation = &stayAnimation[idItem];
+    }else{
+        animatedSprite.setFrameTime(sf::seconds(0.7));
+        currentAnimation = &stayAnimationEsq[idItem];
+	}
+    animatedSprite.play(*currentAnimation);
+};
+bool Player::getAtacando(){
+    return atacando;
+};
+void Player::resetDisco(){
+    adicionaDisco=false;
+};
+void Player::setTimeAtaque(){
+    tempoAtaque = ataqueClock.getElapsedTime();
+    if(tempoAtaque >= sf::seconds(0.25) ){
+            atacando=false;
+    }
+};
+bool Player::adicionarDisco(){
+    return adicionaDisco;
+};
+void Player::atacar(){
+    
+    if(atacando == false){
+//     sistemaItens.usarItem(nItem);
+        atacando = true;
+        ataqueClock.restart();
+        if(getDirecao() == 1){
+            currentAnimation = &ataqueAnimation[idItem];
+            if( idItem == 1){
+                animatedSprite.setFrameTime(sf::seconds(0.04));
+                 //seta o vetor e o ponto do disco a ser lançado
+                adicionaDisco=true;
+            }else{
+                animatedSprite.setFrameTime(sf::seconds(0.045));
+            }
+        }else{
+            currentAnimation = &ataqueAnimationEsq[idItem];
+            if(idItem == 1){
+                animatedSprite.setFrameTime(sf::seconds(0.04));
+                adicionaDisco=true;
+            
+            }else{
+                animatedSprite.setFrameTime(sf::seconds(0.045));
+            }   
+        }
+    }
+    animatedSprite.play(*currentAnimation);
+};
+void Player::setTimeFrame(sf::Time tempo){
+    frameTime=tempo;
+};
+void Player::fakeGravidade(sf::Vector2f gravidade){
+        animatedSprite.setPosition(sf::Vector2f(500.0f,gravidade.y - 140));//coloca o heroi na posicao
+ 
 };
 void Player::setIdItem(int id){
     idItem = id;   
@@ -48,9 +218,23 @@ void Player::setIdItem(int id){
 };
 void Player::moverDireita(){
     direcao=1;
+    animatedSprite.setFrameTime(sf::seconds(0.1));
+    andandoDir= true;
+    andandoEsq=false;
+    movement.x += speedDir;
+    currentAnimation = &walkingAnimationRight[idItem];
+    animatedSprite.play(*currentAnimation);
+    animatedSprite.move(movement * frameTime.asSeconds());
 };
 void Player::moverEsquerda(){
-    direcao=2;
+    direcao=0;
+    animatedSprite.setFrameTime(sf::seconds(0.1));
+    andandoDir= false;
+    andandoEsq=true;
+    movement.x -= speedDir;
+    currentAnimation = &walkingAnimationLeft[idItem];
+    animatedSprite.play(*currentAnimation);
+    animatedSprite.move(movement * frameTime.asSeconds());
 };
 int Player::getDirecao(){
     
@@ -59,6 +243,31 @@ int Player::getDirecao(){
 Player::Player(int v): nVidas(v){
     int i;
     bool DeuCerto;
+    
+    idItem=2;
+    //variavel que eh utilizada para quando atacar terminar o ataque
+    atacando = false;  
+    //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
+     andandoDir = false;
+     andandoEsq = false;
+     adicionaDisco=false;
+
+    //variaveis para ver qual estado do pulo está
+    pulando = false;
+	descendo = false;
+   
+    animatedSprite.setFrameTime(sf::seconds(0.7));
+    animatedSprite.pause();
+    animatedSprite.setLooped(false);    
+    
+    contPulo = 79;
+    contPulo2=0;
+    
+    movement = sf::Vector2f(0.f,0.f);
+    
+    //velocidade dos frames para os casos de direita e esquerda
+    speedDir = 200.f;
+    speedEsq = 200.f;
     direcao =1;
     //subindo imagens e dividindo elas em frames
     forma[0].loadFromFile("spriteProtagonista/Andando.png");
@@ -211,6 +420,7 @@ Player::Player(int v): nVidas(v){
     for(int i = 0; i < nVidas; i++){
         vida.Empilha(1, DeuCerto);
     }
+    parado();
 }
 
 void Player::setTamanho(sf::Vector2f tamanho){
@@ -240,3 +450,5 @@ void Player::perdeVida(){
 int Player::getVidaAtual() const{
     return vida.getNumeroElementos();
 };
+
+#endif

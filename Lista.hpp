@@ -1,5 +1,5 @@
-
-
+#ifndef LISTA_H
+#define LISTA_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -20,8 +20,9 @@ class Lista{
         void cria();
         int getQuant();
         void insere(Gen&,bool&);
+        bool estaNaLista(Gen& x);
         void insereAEsquerdaDeP(struct Node <Gen> *N,Gen&,bool&);
-        void removeP(struct Node <Gen> &N,Gen&,bool&);
+//         void removeP(struct Node <Gen> &N,Gen&,bool&);
         void remove(Gen& x,bool& deuCerto);
 };
 
@@ -66,24 +67,24 @@ void Lista<Gen>::insereAEsquerdaDeP(struct Node <Gen> *N,Gen& x,bool& deuCerto){
     
 }
 
-template<class Gen>
-void Lista<Gen>::removeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
-    quant--;
-    struct Node <Gen> *Paux = N;
-    header->info=x;
-    while(Paux->info != x)
-        Paux=Paux->esq;
-    
-    if(Paux != header){
-        deuCerto=true;
-        Paux->esq->dir=Paux->dir;
-        Paux->dir->esq=Paux->esq;
-        delete Paux;
-    }else{
-        deuCerto=false;
-    }
-    
-}
+// template<class Gen>
+// void Lista<Gen>::removeP(struct Node <Gen> &N,Gen& x,bool& deuCerto){
+//     quant--;
+//     struct Node <Gen> *Paux = N;
+//     header->info=x;
+//     while(Paux->info != x)
+//         Paux=Paux->esq;
+//     
+//     if(Paux != header){
+//         deuCerto=true;
+//         Paux->esq->dir=Paux->dir;
+//         Paux->dir->esq=Paux->esq;
+//         delete Paux;
+//     }else{
+//         deuCerto=false;
+//     }
+//     
+// }
 template <class Gen>
 void Lista<Gen>::remove(Gen& x,bool& deuCerto){
     struct Node <Gen> *Paux;
@@ -100,3 +101,19 @@ void Lista<Gen>::remove(Gen& x,bool& deuCerto){
         
     }
 }
+template <class Gen>
+bool Lista<Gen>::estaNaLista(Gen& x){
+    struct Node <Gen>  *Paux;
+    Paux=header->esq;
+    while(Paux != header){
+        if(Paux->info == x)
+            return true;
+    }
+    return false;
+}
+// inline bool operator==(const Item &lhs, const Item & rhs){ 
+//     if(lhs.getId() == rhs.getId())
+//         return true;
+//     return false;
+// }
+#endif

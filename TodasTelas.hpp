@@ -18,7 +18,6 @@
 
 // Classe mãe
 #include "Tela.hpp"
-
 // Incluir todas as telas
 #include "Menu.hpp"
 #include "Jogo.hpp"

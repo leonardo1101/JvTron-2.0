@@ -1,3 +1,5 @@
+#ifndef ITEM_H
+#define ITEM_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -10,6 +12,8 @@ class Item{
         void carregarItem(std::string,float);
         void setId(int);
         int getId();
+        int getQuantidade();
+        void setQuantidade(int);
         void setPosicao(sf::Vector2f);
         sf::Vector2u getTamanho();
         sf::Sprite getItem();
@@ -19,6 +23,14 @@ class Item{
        int quantidade;
        int id;
 };
+int Item::getQuantidade(){
+    return quantidade;
+};
+void Item::setQuantidade(int quant){
+    if(quant < 7 && quant>=0)
+        quantidade=quant;
+};
+
 void Item::setPosicao(sf::Vector2f posicao){
     
     item.setPosition(posicao);
@@ -49,3 +61,10 @@ void Item::setLocationItem(sf::Vector2f posicao){
 sf::Sprite Item::getItem(){
     return item;  
 };
+bool operator==(Item& lhs, Item& rhs){
+
+    if(lhs.getId() == rhs.getId())
+        return true;
+    return false;
+};
+#endif

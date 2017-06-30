@@ -1,3 +1,5 @@
+#ifndef PILHA_H
+#define PILHA_H
 #include <iostream>
 
 struct NodeP{
@@ -83,3 +85,4 @@ int Pilha::getTopo(){
 int Pilha::getNumeroElementos() const{
     return numeroElementos;
 }
+#endif

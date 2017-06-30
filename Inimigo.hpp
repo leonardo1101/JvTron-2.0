@@ -1,3 +1,6 @@
+#ifndef INIMIGO_H
+#define INIMIGO_H
+
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Animation.hpp"
@@ -228,3 +231,4 @@ void Inimigo::andar(sf::Time frameTime){
     animatedSprite.play(*currentAnimation );
     animatedSprite.move(movement * frameTime.asSeconds());
 }
+#endif
