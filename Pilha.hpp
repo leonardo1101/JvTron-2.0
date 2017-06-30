@@ -1,9 +1,10 @@
 #ifndef PILHA_H
 #define PILHA_H
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 struct NodeP{
-  int Info;
+  sf::Texture Info;
   NodeP *Next;
 };
 typedef struct NodeP *NodePPtr;
@@ -13,11 +14,11 @@ class Pilha
     public:
         Pilha();
         virtual ~Pilha();
-        void Empilha(int X, bool DeuCerto);
-        void Desempilha(int X, bool DeuCerto);
+        void Empilha(sf::Texture X, bool DeuCerto);
+        void Desempilha(sf::Texture X, bool DeuCerto);
         bool Vazia();
         bool Cheia();
-        int getTopo();
+        sf::Texture getTopo();
         int getNumeroElementos() const;
     private:
         NodePPtr P_Topo;
@@ -28,19 +29,19 @@ Pilha::Pilha()
 {
     numeroElementos = 0;
     P_Topo = NULL;
-}
+};
 
 Pilha::~Pilha()
 {
-    int X;
+    sf::Texture X;
     bool DeuCerto;
     while(!Vazia()){
         DeuCerto = true;
         Desempilha(X, DeuCerto);
     }
-}
+};
 
-void Pilha::Empilha(int X, bool DeuCerto){
+void Pilha::Empilha(sf::Texture X, bool DeuCerto){
     NodePPtr P_Aux;
     if(Cheia()==true)
         DeuCerto = false;
@@ -52,9 +53,9 @@ void Pilha::Empilha(int X, bool DeuCerto){
         P_Aux->Next = P_Topo;
         P_Topo = P_Aux;
     }
-}
+};
 
-void Pilha::Desempilha(int X, bool DeuCerto){
+void Pilha::Desempilha(sf::Texture X, bool DeuCerto){
     NodePPtr P_Aux;
     if(Vazia()==true)
         DeuCerto = false;
@@ -65,24 +66,28 @@ void Pilha::Desempilha(int X, bool DeuCerto){
         P_Topo = P_Topo->Next;
         delete(P_Aux);
     }
-}
+};
 
 bool Pilha::Cheia(){
     return false;
-}
+};
 
 bool Pilha::Vazia(){
     if(P_Topo == NULL)
         return true;
     else
         return false;
-}
+};
 
-int Pilha::getTopo(){
+sf::Texture Pilha::getTopo(){
     return P_Topo->Info;
 }
 
 int Pilha::getNumeroElementos() const{
     return numeroElementos;
+<<<<<<< HEAD
 }
 #endif
+=======
+};
+>>>>>>> master

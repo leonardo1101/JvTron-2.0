@@ -119,8 +119,17 @@ Jogo::Jogo(float larg, float Alt){
 //     sistemaItens.resetBarra();
     
     //faz  load das imagens e seta a escala 
+<<<<<<< HEAD
+    barra.loadFromFile("Itens/barraItens.png");
+    barraItens.setTexture(barra);
+    barraItens.setScale(sf::Vector2f(0.75,0.75));
+    std::cout << "TADAIMA!!!" << std::endl;
+    barraVida.setTexture(tron.getPilha().getTopo());
+    std::cout << "TADAIMAAA!!" << std::endl;
+=======
     vida.loadFromFile("Itens/6vida.png");
     barraVida.setTexture(vida);
+>>>>>>> 6fadd775963a69e6655a20f0a11bd8fa1238241c
     barraVida.setScale(sf::Vector2f(0.85,0.85));
     backgroundT.loadFromFile("TilesMap/teste.png");
     background.setTexture(backgroundT);
@@ -204,6 +213,9 @@ int Jogo::Executar(sf::RenderWindow & App){
 	sf::Event evento; // eventos de jogo
 	bool executando = true;
 	while (executando){ // loop da tela
+        if(!tron.getVidaAtual()) // se nao tem vida, retorne 0
+            return 0;
+            
 
 //         switch(tron.getVidaAtual()){
 //             case 6:
