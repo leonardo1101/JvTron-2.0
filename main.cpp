@@ -38,6 +38,8 @@ int main (){
     telas.push_back(s0);
     Jogo * s1 = new Jogo(App.getSize().x, App.getSize().y);
     telas.push_back(s1);
+    Regras1 * s2 = new Regras1(App.getSize().x, App.getSize().y);
+    telas.push_back(s2);
 
     // loop principal
     while (numeroTela >= 0){
