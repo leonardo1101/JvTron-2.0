@@ -21,6 +21,8 @@
 // Incluir todas as telas
 #include "Menu.hpp"
 #include "Jogo.hpp"
-#include "Regras1.cpp"
-#include "Regras2.cpp"
+#include "Regras1.hpp"
+#include "Regras2.hpp"
+#include "Ganhou.hpp"
+#include "Perdeu.hpp"
 #endif // fim da inclusão

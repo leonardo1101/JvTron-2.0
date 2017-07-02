@@ -28,7 +28,7 @@ int main (){
     int numeroTela = 0; // tela de inicio da aplicacao (0) é o menu
 
     // Janela do aplicativo creation
-    sf::RenderWindow App(sf::VideoMode(1024, 768), "SFML works!", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow App(sf::VideoMode(1024, 768), "JvAdventure", sf::Style::Titlebar | sf::Style::Close);
     App.setFramerateLimit(150);
     // Esconder seta do mouse
     //App.setMouseCursorVisible(false);
@@ -42,6 +42,10 @@ int main (){
     telas.push_back(s2);
     Regras2 * s3 = new Regras2(App.getSize().x, App.getSize().y);
     telas.push_back(s3);
+    Ganhou * s4 = new Ganhou(App.getSize().x, App.getSize().y);
+    telas.push_back(s4);
+    Perdeu * s5 = new Perdeu(App.getSize().x, App.getSize().y);
+    telas.push_back(s5);
 
     // loop principal
     while (numeroTela >= 0){
