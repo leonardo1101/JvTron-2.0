@@ -22,4 +22,5 @@
 #include "Menu.hpp"
 #include "Jogo.hpp"
 #include "Regras1.cpp"
+#include "Regras2.cpp"
 #endif // fim da inclusão

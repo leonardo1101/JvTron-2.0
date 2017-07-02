@@ -18,7 +18,7 @@
 
 #include <SFML/Graphics.hpp>
 
-class Regras1 : public Tela{
+class Regras2 : public Tela{
 private: 
 	// atributos privados
 	const int maxNumeroTeclas; // numero de teclas
@@ -30,13 +30,16 @@ private:
 	sf::Text *botao;
 	sf::Text *infos; // vetor de textoBotao para teclas
 	sf::Text *descricaoTeclas; // descricao das teclas
-	sf::RectangleShape *tecla; // vetor de teclas
+	sf::RectangleShape *tecla, *quadradoPraItens; // vetor de teclas
+	sf::Image *imagens;
+	sf::Texture *texturas;
+	sf::Sprite * spriteImagens;
 
 	// métodos privados
 	void desenha(sf::RenderWindow &) const;
 public: // métodos públicos
-	Regras1(float larg, float alt);
-	~Regras1();
+	Regras2(float larg, float alt);
+	~Regras2();
 	void MovaParaEsquerda();
 	void MovaParaDireita();
 	int ItemApertado();
@@ -47,19 +50,25 @@ public: // métodos públicos
 
 // Construtor
 // Inicializa e configura os atributos
-Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2){
-	std::string textoBotao[maxNumeroBotoes] = { "Menu", "Proximo"}; // textoBotao do botão
+Regras2::Regras2(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2){
+	std::string textoBotao[maxNumeroBotoes] = { "Anterior", "Menu"}; // textoBotao do botão
 	std::string instrucoes[maxNumeroTeclas] = { // informacoes sobre as teclas
-		"<", ">", "z", "x"
+		"1", "2", "3", "4"
 	};
-	std::string descricao[maxNumeroTeclas-1] = { "mover o personagem", "atacar", "pular" };
+	std::string descricao[maxNumeroTeclas-1] = { "6 pontos de vida", "5 minutos", "drop de itens" };
 	numeroItem = 0;
+	std::string caminhoImagem[maxNumeroTeclas+1] = { "Itens/disco.png", "Itens/lanca.png", "Itens/pocao.png", "Itens/disco.png", "Itens/6vida.png" };
 
 	// alocação de posições
-	descricaoTeclas = new sf::Text[maxNumeroTeclas-1]; // veteor para descricao das teclas
+	descricaoTeclas = new sf::Text[maxNumeroTeclas-1]; // vetor de descriões das teclas
 	tecla = new sf::RectangleShape[maxNumeroTeclas]; // vetor de teclas
 	infos = new sf::Text[maxNumeroTeclas]; // vetor de informações
 	botao = new sf::Text[maxNumeroBotoes]; // vetor de botoes
+
+	spriteImagens = new sf::Sprite[maxNumeroTeclas+1]; // vetor para as spriteImagens
+	quadradoPraItens = new sf::RectangleShape[maxNumeroTeclas];
+	imagens = new sf::Image[maxNumeroTeclas+1];
+	texturas = new sf::Texture[maxNumeroTeclas+1];
 
 	// variaveis das medidas
 	largura = larg;
@@ -75,6 +84,25 @@ Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 	titulo.setFont(fonte);
 	titulo.setPosition(sf::Vector2f(centrox - titulo.getCharacterSize()*6.34, centroy-altura*1/3 + titulo.getCharacterSize() - 150));
 	titulo.setColor(sf::Color(0,255,255));
+
+	// inicializando imagens
+	for(int i=0; i < maxNumeroTeclas + 1; i++){
+		imagens[i].loadFromFile(caminhoImagem[i]);
+		texturas[i].loadFromImage(imagens[i]);
+		spriteImagens[i].setTexture(texturas[i]);
+		if(i < maxNumeroTeclas){
+			spriteImagens[i].setScale(sf::Vector2f(.15f,.15f));
+			spriteImagens[i].setPosition(sf::Vector2f(100 + i*largura/(maxNumeroTeclas), (titulo.getCharacterSize()+60) + altura/(maxNumeroTeclas+1)));
+			quadradoPraItens[i].setSize(sf::Vector2f(50,50));
+			quadradoPraItens[i].setFillColor(sf::Color(32,32,32));
+			quadradoPraItens[i].setOutlineThickness(1);
+			quadradoPraItens[i].setOutlineColor(sf::Color(255,60,0));
+			quadradoPraItens[i].setPosition(sf::Vector2f(90 + i*largura/(maxNumeroTeclas), (titulo.getCharacterSize()+50) + altura/(maxNumeroTeclas+1)));
+		}else{
+			spriteImagens[i].setScale(sf::Vector2f(.35f,.35f));
+			spriteImagens[i].setPosition(sf::Vector2f(-180 + largura/(maxNumeroTeclas), (titulo.getCharacterSize()+150) + altura/(maxNumeroTeclas+1)));
+		}
+	}
 
 	// inicializando botoes
 	for(int i=0; i < maxNumeroBotoes; i++){
@@ -94,7 +122,7 @@ Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 		descricaoTeclas[i].setFont(fonte);
 		descricaoTeclas[i].setCharacterSize(40);
 		descricaoTeclas[i].setColor(sf::Color::White);
-		descricaoTeclas[i].setPosition(sf::Vector2f(largura/(maxNumeroTeclas), (titulo.getCharacterSize() + 132.5) + i*altura/(maxNumeroTeclas+1)));
+		descricaoTeclas[i].setPosition(sf::Vector2f(50+largura/(maxNumeroTeclas), (titulo.getCharacterSize() + 290) + i*altura/(maxNumeroTeclas+8)));
 	}
 
 	// inicializando as infos
@@ -109,25 +137,15 @@ Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 		tecla[i].setOutlineThickness(1);
 		tecla[i].setOutlineColor(sf::Color(0,255,255));
 
-		switch(i){
-			case 0:// <
-			case 1:// >
-				infos[i].setPosition(sf::Vector2f(100 + i*largura/(maxNumeroTeclas+10), (titulo.getCharacterSize() - 20) + altura/(maxNumeroTeclas+1)));
-				tecla[i].setPosition(sf::Vector2f(90 + i*largura/(maxNumeroTeclas+10), (titulo.getCharacterSize() - 20) + altura/(maxNumeroTeclas+1)));
-				break;
-			case 2: // z
-			case 3: // x
-				infos[i].setPosition(sf::Vector2f(100 + largura/(maxNumeroTeclas+10), (titulo.getCharacterSize() - 20) + i*altura/(maxNumeroTeclas+1)));
-				tecla[i].setPosition(sf::Vector2f(90 + largura/(maxNumeroTeclas+10), (titulo.getCharacterSize() - 20) + i*altura/(maxNumeroTeclas+1)));
-				break;
-		}
+		infos[i].setPosition(sf::Vector2f(100 + i*largura/(maxNumeroTeclas), (titulo.getCharacterSize() - 20) + altura/(maxNumeroTeclas+1)));
+		tecla[i].setPosition(sf::Vector2f(90 + i*largura/(maxNumeroTeclas), (titulo.getCharacterSize() - 20) + altura/(maxNumeroTeclas+1)));
 	}
 }
 // fim construtor
 
 // Destrutor
 // Deleta o vetor de teclas
-Regras1::~Regras1(){ 
+Regras2::~Regras2(){ 
 	delete infos;
 	delete botao;
 	delete tecla;
@@ -136,7 +154,7 @@ Regras1::~Regras1(){
 
 // Executar
 // Recebe por referência a janela da biblioteca gráfica
-int Regras1::Executar(sf::RenderWindow &App){
+int Regras2::Executar(sf::RenderWindow &App){
 	// declaracao de variaveis
 	sf::Event Event; // eventos de jogo
 	bool executando = true;
@@ -158,10 +176,10 @@ int Regras1::Executar(sf::RenderWindow &App){
 					case sf::Keyboard::Return:
 						switch(ItemApertado()){
 							case 0: // menu
-								return 0;
+								return 2;
 								break;
 							case 1: // proxima pagina
-								return 3;
+								return 0;
 								break;
 						}
 					default:
@@ -183,8 +201,10 @@ int Regras1::Executar(sf::RenderWindow &App){
 
 // Desenha
 // Método que desenha na tela alguns atributos
-void Regras1::desenha(sf::RenderWindow & App) const{
+void Regras2::desenha(sf::RenderWindow & App) const{
 	sf::RectangleShape linhas; // retângulo para linhas
+    sf::Text horas;
+    sf::Sprite itensGeneralizados(spriteImagens[2]);
 	// configuração do retangulo
     linhas.setPosition(sf::Vector2f(50, 50));
     linhas.setFillColor(sf::Color(32,32,32));
@@ -192,16 +212,30 @@ void Regras1::desenha(sf::RenderWindow & App) const{
     linhas.setOutlineColor(sf::Color(0,255,255));
     linhas.setSize(sf::Vector2f(largura-100, altura -100));
 
+    horas.setString("5:00");
+	horas.setFont(fonte);
+	horas.setCharacterSize(40);
+	horas.setColor(sf::Color::Cyan);
+	horas.setPosition(sf::Vector2f(-150 + largura/(maxNumeroTeclas), (titulo.getCharacterSize()+50) + 2*altura/(maxNumeroTeclas+1)));
+
+	itensGeneralizados.setScale(.25f,.25f);
+	itensGeneralizados.setPosition(sf::Vector2f(-100 + largura/(maxNumeroTeclas), (titulo.getCharacterSize()+120) + 2*altura/(maxNumeroTeclas+1)));
     // desenha na janela
     App.clear(sf::Color(32,32,32));
 	App.draw(linhas);
+    App.draw(horas);
+    App.draw(itensGeneralizados);
 	App.draw(titulo);
 	for(int i=0; i < maxNumeroBotoes; i++){
 		App.draw(botao[i]);
 	}
 	for(int i = 0; i < maxNumeroTeclas; i++){
+		App.draw(quadradoPraItens[i]);
 		App.draw(tecla[i]);
 		App.draw(infos[i]);
+	}
+	for(int i=0; i < maxNumeroTeclas+1; i++){
+		App.draw(spriteImagens[i]);
 	}
 	for(int i=0; i < maxNumeroTeclas-1; i++){
 		App.draw(descricaoTeclas[i]);
@@ -211,7 +245,7 @@ void Regras1::desenha(sf::RenderWindow & App) const{
 
 // MovaParaCima
 // Move a seleção de botão para cima
-void Regras1::MovaParaEsquerda(){
+void Regras2::MovaParaEsquerda(){
 	if(numeroItem - 1 >= 0){
 		botao[numeroItem].setColor(sf::Color(255,255,255));
 		numeroItem--;
@@ -222,7 +256,7 @@ void Regras1::MovaParaEsquerda(){
 
 // MovaParaBaixo
 // Move a seleção de botão para baixo
-void Regras1::MovaParaDireita(){
+void Regras2::MovaParaDireita(){
 	if(numeroItem + 1 < maxNumeroBotoes){
 		botao[numeroItem].setColor(sf::Color(255,255,255));
 		numeroItem++;
@@ -230,4 +264,4 @@ void Regras1::MovaParaDireita(){
 	}
 };
 // fim MovaParaBaixo
-int Regras1::ItemApertado(){ return numeroItem; };
+int Regras2::ItemApertado(){ return numeroItem; };
