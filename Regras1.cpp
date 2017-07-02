@@ -48,7 +48,7 @@ public: // métodos públicos
 // Construtor
 // Inicializa e configura os atributos
 Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2){
-	std::string textoBotao[maxNumeroBotoes] = { "Menu", "Proximo"}; // textoBotao do botão
+	std::string textoBotao[maxNumeroBotoes] = { "Menu", "Seguinte"}; // textoBotao do botão
 	std::string instrucoes[maxNumeroTeclas] = { // informacoes sobre as teclas
 		"<", ">", "z", "x"
 	};
@@ -71,9 +71,9 @@ Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 
 	// inicializando titulo
 	titulo.setCharacterSize(70);
-	titulo.setString("PARA TODOS OS LADOS");
+	titulo.setString("REGRAS");
 	titulo.setFont(fonte);
-	titulo.setPosition(sf::Vector2f(centrox - titulo.getCharacterSize()*6.34, centroy-altura*1/3 + titulo.getCharacterSize() - 150));
+	titulo.setPosition(sf::Vector2f(centrox - titulo.getCharacterSize()*2, centroy-altura*1/3 + titulo.getCharacterSize() - 150));
 	titulo.setColor(sf::Color(0,255,255));
 
 	// inicializando botoes

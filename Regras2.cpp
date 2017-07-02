@@ -55,7 +55,7 @@ Regras2::Regras2(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 	std::string instrucoes[maxNumeroTeclas] = { // informacoes sobre as teclas
 		"1", "2", "3", "4"
 	};
-	std::string descricao[maxNumeroTeclas-1] = { "6 pontos de vida", "5 minutos", "drop de itens" };
+	std::string descricao[maxNumeroTeclas-1] = { "6 pontos de vida", "5 minutos", "drop de itens\nlista de itens" };
 	numeroItem = 0;
 	std::string caminhoImagem[maxNumeroTeclas+1] = { "Itens/disco.png", "Itens/lanca.png", "Itens/pocao.png", "Itens/disco.png", "Itens/6vida.png" };
 
@@ -80,9 +80,9 @@ Regras2::Regras2(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 
 	// inicializando titulo
 	titulo.setCharacterSize(70);
-	titulo.setString("PARA TODOS OS LADOS");
+	titulo.setString("REGRAS");
 	titulo.setFont(fonte);
-	titulo.setPosition(sf::Vector2f(centrox - titulo.getCharacterSize()*6.34, centroy-altura*1/3 + titulo.getCharacterSize() - 150));
+	titulo.setPosition(sf::Vector2f(centrox - titulo.getCharacterSize()*2, centroy-altura*1/3 + titulo.getCharacterSize() - 150));
 	titulo.setColor(sf::Color(0,255,255));
 
 	// inicializando imagens
