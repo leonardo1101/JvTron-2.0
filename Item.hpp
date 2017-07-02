@@ -16,14 +16,24 @@ class Item{
         void setQuantidade(int);
         void diminuirQuantidade();
         void aumentarQuantidade();
+        void mover(sf::Vector2f);
         void setPosicao(sf::Vector2f);
         sf::Vector2u getTamanho();
+        void fakeGravidade(sf::Vector2f gravidade);
         sf::Sprite getItem();
-    private:
+        
        sf::Sprite item;
+    private:
        sf::Texture textura;
        int quantidade;
        int id;
+};
+void Item::fakeGravidade(sf::Vector2f gravidade){
+        item.setPosition(sf::Vector2f(item.getPosition().x,gravidade.y + 100));//coloca o heroi na posicao
+};
+
+void Item::mover(sf::Vector2f m){
+    item.move(m);
 };
 int Item::getQuantidade(){
     return quantidade;

@@ -18,8 +18,9 @@ class BarraItens{
         int quantItens();
            int getDois();
     private:
-            int dois;
+        int dois;
          sf::Texture barra;
+         int idItemCaixa[4];
         int quantidadeItens;
         int getIdItem(int);
         void setPosicaoItens(int);
@@ -68,6 +69,7 @@ void BarraItens::resetBarra(){
         caixaItem[i].setFillColor(sf::Color(35, 77, 77)); 
         caixaItem[i].setPosition(sf::Vector2f(1024 - barra.getSize().x * 0.75 + 80  + 80.0f * i,17.0f)); 
         itemVazio.carregarItem("",3.0f); 
+        idItemCaixa[i]=0;
 
     } 
     //seta posicao das barras 
@@ -75,11 +77,10 @@ void BarraItens::resetBarra(){
 }; 
  
 int BarraItens::selecionarItem(int numCaixa){ 
-    int id = getIdItem(numCaixa);
     itemSelecionado.setSize(sf::Vector2f(52.0f,52.0f)); 
     itemSelecionado.setFillColor(sf::Color(32, 210, 212)); 
     itemSelecionado.setPosition(sf::Vector2f(1024.f - barra.getSize().x * 0.75 + 79 + 80.0f * numCaixa ,16.0f)); 
-    return id ; 
+    return idItemCaixa[numCaixa] ; 
 }; 
  
 int BarraItens::getIdItem(int numCaixa){ 
@@ -88,10 +89,14 @@ int BarraItens::getIdItem(int numCaixa){
     int aux =0,i,quant; 
     quant = itens.getQuant(); 
     for(i=0;i<quant;i++){ 
-        itens.remove(auxItem,deuCerto); 
+        if(i == 0){
+            itens.PegaOPrimeiro(auxItem,deuCerto);
+        } else
+             itens.PegaOProximo(auxItem,deuCerto);
+        if(!deuCerto)
+            break;
         if(i == numCaixa) 
             aux = auxItem.getId(); 
-        itens.insere(auxItem,deuCerto); 
     } 
     return aux; 
 }; 
@@ -100,7 +105,15 @@ void BarraItens::setPosicaoItens(int a){
     Item auxItem; 
     int i; 
     for(i=0;i<a;i++){ 
-        itens.remove(auxItem,deuCerto); 
+        if(i == 0){
+            itens.PegaOPrimeiro(auxItem,deuCerto);
+        } else
+             itens.PegaOProximo(auxItem,deuCerto);
+        if(!deuCerto)
+            break;
+        
+        itens.removeP(auxItem,deuCerto); 
+        idItemCaixa[i]=auxItem.getId();
         auxItem.setPosicao(centralizar(caixaItem[i].getPosition(),auxItem.getTamanho(),auxItem.getId())); 
         itens.insere(auxItem,deuCerto); 
     }  
@@ -111,10 +124,14 @@ void BarraItens::setCorCaixar(int quant ){
     int aux =0,i,quantItem;  
     for(i=0;i<4;i++){ 
         if(i<quant){
-            itens.remove(auxItem,deuCerto); 
+            if(i == 0){
+                itens.PegaOPrimeiro(auxItem,deuCerto);
+            } else
+                itens.PegaOProximo(auxItem,deuCerto);
+            if(!deuCerto)
+                break;
             quantItem=auxItem.getQuantidade();
             caixaItem[i].setFillColor(sf::Color(95 - 10 * quantItem, 40 + 5 * quantItem , 40 + 5 * quantItem)); 
-            itens.insere(auxItem,deuCerto); 
         }else{
             quantItem=6;
             caixaItem[i].setFillColor(sf::Color(95 - 10 * quantItem, 40 + 5 * quantItem , 40 + 5 * quantItem)); 
@@ -125,23 +142,35 @@ void BarraItens::inserirItem(Item item){
     bool deuCerto;
     Item auxItem;
     int aux =0,i,quant; 
-    if(itens.getQuant() < 5){
+     printf("Itens : %d",itens.getQuant());
+    if(itens.getQuant() < 4){
         quant = itens.getQuant(); 
         for(i=0;i<quant;i++){ 
-            itens.remove(auxItem,deuCerto); 
+            if(i == 0){
+                itens.PegaOPrimeiro(auxItem,deuCerto);
+            } else
+                itens.PegaOProximo(auxItem,deuCerto);
+
             if( item.getId() == auxItem.getId()) {
+                itens.removeP(auxItem,deuCerto); 
                 auxItem.aumentarQuantidade(); 
+                caixaItem[i].setFillColor(sf::Color(95 - 10 * auxItem.getQuantidade(), 40 + 5 * auxItem.getQuantidade() , 40 + 5 * auxItem.getQuantidade())); 
+                itens.insere(auxItem,deuCerto); 
                 aux=1;
             }
-            itens.insere(auxItem,deuCerto); 
+            
         } 
+        if(aux == 0){
+            
+           
+            item.setQuantidade(6);
+            idItemCaixa[quantidadeItens]=item.getId();
+            item.setPosicao(centralizar(caixaItem[quantidadeItens].getPosition(),item.getTamanho(),item.getId())); 
+            itens.insere(item,deuCerto);
+            quantidadeItens++;
+        }
     }
-    if(aux == 0){
-        
-        item.setPosicao(centralizar(caixaItem[i].getPosition(),item.getTamanho(),item.getId())); 
-        itens.insere(item,deuCerto);
-        quantidadeItens++;
-    }
+    
 };
 void BarraItens::usarItem(int numCaixa){
     bool deuCerto;
@@ -149,12 +178,20 @@ void BarraItens::usarItem(int numCaixa){
     bool excluiu=false;
     int aux =0,i,quant,quantItem=1; 
     quant = itens.getQuant(); 
-    if(numCaixa<=quant){
+    printf("%d",idItemCaixa[numCaixa]);
+    if(numCaixa< quant){
         for(i=0;i<quant;i++){ 
-            itens.remove(auxItem,deuCerto); 
-            if( i == numCaixa) {
+            if(i == 0){
+                itens.PegaOPrimeiro(auxItem,deuCerto);
+            } else
+                itens.PegaOProximo(auxItem,deuCerto);
+            if(!deuCerto)
+                break; 
+            
+            itens.removeP(auxItem,deuCerto);
+            if( idItemCaixa[numCaixa]==auxItem.getId()) {
                 quantItem=auxItem.getQuantidade();
-                caixaItem[i].setFillColor(sf::Color(95 - 10 * quantItem, 40 + 5 * quantItem , 40 + 5 * quantItem)); 
+                caixaItem[numCaixa].setFillColor(sf::Color(95 - 10 * quantItem, 40 + 5 * quantItem , 40 + 5 * quantItem)); 
                 auxItem.diminuirQuantidade(); 
             }
             if(quantItem != 0)
@@ -163,7 +200,7 @@ void BarraItens::usarItem(int numCaixa){
                 excluiu=true;
                 quantItem=1;
                 quantidadeItens--;
-                
+                idItemCaixa[quantidadeItens]=0;
             }
         }
     }

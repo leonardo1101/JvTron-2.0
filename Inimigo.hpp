@@ -5,25 +5,37 @@
 #include <iostream>
 #include "Animation.hpp"
 #include "AnimatedSprite.hpp"
+#include "Item.hpp"
 class Inimigo{
     public:
+        int id;
         AnimatedSprite animatedSprite;
         Animation walkingAnimationRight[2];
         Animation walkingAnimationLeft[2];
         Animation stayAnimationDir[2];
         Animation stayAnimationEsq[2];
         Animation ataqueAnimationDir[2];
-        Animation ataqueAnimationEsq[3];     
+        Animation ataqueAnimationEsq[3];  
+        bool statusDrop;
         void setTipo(int);
         void setDiscoJogado();
         bool getAtacouDisco();
         void setPosicao(sf::Vector2f);
         sf::Vector2f getPosicao();
         void atacar();
+        
+        Item drop;
         int getDirecao();
-        sf::RectangleShape procurarHeroi(AnimatedSprite &,sf::Time);
+        bool procurarHeroi(AnimatedSprite &,sf::Time);
+        void procura(AnimatedSprite &,sf::Time);
+        bool Bateu(AnimatedSprite &heroi);
         void andar(sf::Time);
         void fakeGravidade(sf::Vector2f gravidade);
+        void setVida(int);
+        int getVida();
+        void tirarVida();
+        bool getAtacando();
+        void gerarItem();
     private:
         int estado;
         sf::Vector2f sizeEstado[2];
@@ -37,10 +49,54 @@ class Inimigo{
         int direcao;
         int tipo;
         sf::Vector2f movement;
-        float speed = 250.5f;
+        float speed = 300.5f;
         
+        
+        sf::Clock batida;
+        sf::Time tempoBatida;
         void setSizeEstado();
         void mudarEstado();
+};
+void Inimigo::gerarItem(){
+    int id = rand() % 4 + 1;
+    switch(id){
+        case 1:
+            drop.carregarItem("disco",2.9f);
+            drop.setId(1);
+            break;
+        case 2:
+            drop.carregarItem("lanca",3.4f);
+            drop.setId(2);
+            drop.setQuantidade(6);
+            break;
+        case 3:
+            drop.carregarItem("pocao",3.4f);
+            drop.setId(3);
+            drop.setQuantidade(6);
+            break;
+        case 4:
+            drop.carregarItem("disco",2.9f);
+            drop.setId(1);
+            break;
+    }
+    
+}
+
+bool  Inimigo::getAtacando(){
+     return atacando;
+};
+void  Inimigo::tirarVida(){
+    tempoBatida= batida.getElapsedTime();
+    if(sf::seconds(0.5) < tempoBatida){
+        vida--;
+        batida.restart();
+    }
+};
+void Inimigo::setVida(int v){
+    vida=v;
+};
+int Inimigo::getVida(){
+    return vida;
 };
 void Inimigo::fakeGravidade(sf::Vector2f gravidade){
         animatedSprite.setPosition(sf::Vector2f(gravidade.x,gravidade.y - 140));//coloca o heroi na posicao
@@ -115,12 +171,16 @@ void Inimigo::atacar(){
 
 void Inimigo::setTipo(int t){
     int i;
+    batida.restart();
+    setVida(3);
     tipo=t;
     direcao=-1;
     atacouDisco=false;
     atacando=false;
     estado=0;
     setSizeEstado();
+    gerarItem();
+    statusDrop=false;
     //se o inimigo for do tipo 1 ele irá utilizar o disco
     if(tipo == 1){
         
@@ -194,11 +254,12 @@ void Inimigo::setTipo(int t){
     currentAnimation = &stayAnimationEsq[tipo - 1];
     animatedSprite.play(*currentAnimation);
 };
-sf::RectangleShape Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameTime){
-    sf::RectangleShape campoVisao(sf::Vector2f(getPosicao().x - 350.f , getPosicao().y ));
-    campoVisao.setPosition(getPosicao().x  - 350.f , getPosicao().y);
+bool Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameTime){
+     bool achou=false;
+    sf::RectangleShape campoVisao(sf::Vector2f(getPosicao().x - 600.f , getPosicao().y ));
+    campoVisao.setPosition(getPosicao().x  - 600.f , getPosicao().y);
     campoVisao.setFillColor(sf::Color(32, 210, 212));
-    campoVisao.setSize(sf::Vector2f(700.f, 20.f ));
+    campoVisao.setSize(sf::Vector2f(1200.f, 20.f ));
     if(heroi.getPosition().x - animatedSprite.getPosition().x < 0 ){
         direcao=-1;
     }else{
@@ -213,6 +274,7 @@ sf::RectangleShape Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameT
             andar(frameTime);
             
         }
+        achou=true;
     }else{
         if(estado == 1)
                 mudarEstado();
@@ -220,7 +282,16 @@ sf::RectangleShape Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameT
         currentAnimation = &stayAnimationEsq[tipo - 1];
         animatedSprite.play(*currentAnimation);
     }
-    return campoVisao;
+    return achou;
+};
+void Inimigo::procura(AnimatedSprite &heroi, sf::Time frameTime){
+
+    if(heroi.getPosition().x - animatedSprite.getPosition().x < 0 ){
+        direcao=-1;
+    }else{
+        direcao=1;
+    }
+    andar(frameTime);
 };
 void Inimigo::andar(sf::Time frameTime){
     animatedSprite.setFrameTime(sf::seconds(0.1));
@@ -234,5 +305,28 @@ void Inimigo::andar(sf::Time frameTime){
     }
     animatedSprite.play(*currentAnimation );
     animatedSprite.move(movement * frameTime.asSeconds());
+}
+bool Inimigo::Bateu(AnimatedSprite &heroi){
+    sf::RectangleShape range(sf::Vector2f(getPosicao().x, getPosicao().y ));
+    
+    range.setFillColor(sf::Color(32, 210, 212));
+    range.setSize(sf::Vector2f(150.f, 180.f));
+    if(direcao == -1){
+        range.setPosition(getPosicao().x - 150  , getPosicao().y - 75 );
+        if( 75.f + heroi.getPosition().x >= range.getPosition().x  && heroi.getPosition().x + 75.f < range.getPosition().x + 150.f
+        && heroi.getPosition().y >= range.getPosition().y  && heroi.getPosition().y < range.getPosition().y + 140.f
+    ){
+        return true;
+    }
+    }else{
+        range.setPosition(getPosicao().x + 150  , getPosicao().y - 75 );
+        if( heroi.getPosition().x >= range.getPosition().x  && heroi.getPosition().x < range.getPosition().x + 150.f
+        && heroi.getPosition().y >= range.getPosition().y  && heroi.getPosition().y < range.getPosition().y + 140.f
+        ){
+            return true;
+        }
+    }
+    
+    return false;
 }
 #endif

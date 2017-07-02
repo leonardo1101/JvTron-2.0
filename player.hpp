@@ -18,6 +18,7 @@ class Player{
         void setPosicao(sf::Vector2f);
         void setIdItem(int);
         sf::Sprite getTron();
+        int idDisco;
         
         
         AnimatedSprite animatedSprite;   
@@ -25,16 +26,17 @@ class Player{
         
         //Animacao para cada estado possivel do heroi
         //utilizado vetor para ficar mais facil saber qual animação utilizar para tal item
-        Animation walkingAnimationRight[4];
-        Animation walkingAnimationLeft[4];
-        Animation stayAnimation[4];
-        Animation stayAnimationEsq[4];
-        Animation ataqueAnimation[3];
-        Animation ataqueAnimationEsq[3];
-        Animation pulandoDir[3];
-        Animation descendoDir[3];
-        Animation pulandoEsq[3];
-        Animation descendoEsq[3];
+        Animation walkingAnimationRight[5];
+        Animation levandoDano[2];
+        Animation walkingAnimationLeft[5];
+        Animation stayAnimation[5];
+        Animation stayAnimationEsq[5];
+        Animation ataqueAnimation[5];
+        Animation ataqueAnimationEsq[5];
+        Animation pulandoDir[5];
+        Animation descendoDir[5];
+        Animation pulandoEsq[5];
+        Animation descendoEsq[5];
 // // <<<<<<< HEAD
 //         void perdeVida();
 //         void ganhaVida();
@@ -50,27 +52,28 @@ class Player{
         void setTimePulo();
         void pular();
         bool getPulando();
+        bool getAndando();
+        sf::Sprite barraVida;
         
         sf::Vector2f getCameraGround();
         sf::Vector2f getCameraBackground();
         
         void estadoPulo();
-// =======
-//         bool perdeVida();
-//         bool ganhaVida();
-//         int getVidaAtual() const;
-//         Pilha getPilha () const;
-// >>>>>>> master
+
+         bool perdeVida();
+         bool ganhaVida();
     private:
         sf::Sprite tron;
-        //texture para subir cada imagem
-        sf::Texture forma[25];
+
+        sf::Texture forma[30];
+        sf::Texture vida[6];
         int direcao;
         int nDir;
         int nEsq;
         int idItem;
-        Pilha vida;
+        int vidaQuant;
         const int nVidas;
+        bool lanca;
         
         bool adicionaDisco;
         
@@ -97,14 +100,24 @@ class Player{
         //velocidade dos frames para os casos de direita e esquerda
         float speedDir;
         float speedEsq;
+        bool gravidadeTrocarPulo;
         
+        bool paradoBool;
+        bool gravidadeMudada;
         bool atacando;
+        sf::Clock batida;
+        sf::Time tempoBatida;
         
         sf::Vector2f movement;
         float speed = 250.5f;
         int contPulo;
         int contPulo2;
 };
+
+bool Player::getAndando(){
+    return andandoDir || andandoEsq;
+};
+
 void Player::setCameraGround(sf::Vector2f camera){
     cameraGround=camera;
 };
@@ -124,38 +137,61 @@ void Player::setTimePulo(){
     tempoPulo = puloClock.getElapsedTime();
 };
 void Player::pular(){
+    
     if(pulando == false && descendo == false){
-        animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x,animatedSprite.getPosition().y - 20));
+        if(!gravidadeTrocarPulo){
+            animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x,768 - 2.5f * 64  - 140));
+            gravidadeTrocarPulo=true;
+        }
         puloClock.restart();
         pulando = true;
     }
-    if(!descendo){
+    if(pulando){
         if(getDirecao() == 1){
-            setCameraGround(sf::Vector2f(- 2.f, 2.f));
-            setCameraBackground(sf::Vector2f(- 4.f, 2.f));
+            if(!paradoBool){
+                setCameraGround(sf::Vector2f(5.f,0.0f));
+                animatedSprite.move(5.f, - 6.5f);
+            }else{
+                setCameraGround(sf::Vector2f(0.f,0.0f));
+                animatedSprite.move(0.f, - 6.5f);
+            }
             animatedSprite.setFrameTime(sf::seconds(0.1));
             currentAnimation = &pulandoDir[idItem];
         }else{
-            setCameraGround(sf::Vector2f(2.f,2.f));
-            setCameraBackground(sf::Vector2f(4.f,2.f));
+            if(!paradoBool){
+                setCameraGround(sf::Vector2f(- 5.f,0.0f));
+                animatedSprite.move(- 5.f,- 6.5f);
+            }else{
+                setCameraGround(sf::Vector2f(0.f,0.0f));
+                animatedSprite.move(0.f, - 6.5f);
+            }
             animatedSprite.setFrameTime(sf::seconds(0.1));
             currentAnimation = &pulandoEsq[idItem];
         }
     }else{
-        printf("Descendo\n");
         if(getDirecao() == 1){
-            setCameraGround(sf::Vector2f(- 2.f, - 2.f));
-            setCameraBackground(sf::Vector2f(- 4.f, - 2.f));
+            
+             if(!paradoBool){
+                setCameraGround(sf::Vector2f(5.f,0.0f));
+                animatedSprite.move(5.f,6.5f);
+             }else{
+                setCameraGround(sf::Vector2f(0.f,0.0f));
+                animatedSprite.move(0.f, 6.5f);
+            }   
             animatedSprite.setFrameTime(sf::seconds(0.1));
             currentAnimation = &descendoDir[idItem];
         }else{
-            setCameraGround(sf::Vector2f(2.f, - 2.f));
-            setCameraBackground(sf::Vector2f(4.f, - 2.f));
+            if(!paradoBool){
+                setCameraGround(sf::Vector2f(- 5.f,0.0f));
+                animatedSprite.move(- 5.f,6.5f);
+            }else{
+                setCameraGround(sf::Vector2f(0.f,0.0f));
+                animatedSprite.move(0.f, 6.5f);
+            }   
             animatedSprite.setFrameTime(sf::seconds(0.1));
             currentAnimation = &descendoEsq[idItem];
         }
     }
-    
 };
 void Player::estadoPulo(){
     
@@ -181,6 +217,7 @@ void Player::estadoPulo(){
                     descendo = false;
                     contPulo = 75;
                     contPulo2=0;
+                    movement=sf::Vector2f(0,0);
                 }
             }
         }
@@ -188,10 +225,12 @@ void Player::estadoPulo(){
         animatedSprite.move(movement * frameTime.asSeconds());
 }
 void Player::parado(){
-    setCameraGround(sf::Vector2f(0.f,0.0f));
-    setCameraBackground(sf::Vector2f(0.f,0.0f));
+    gravidadeTrocarPulo=false;
+    paradoBool=true;
     andandoDir= false;
     andandoEsq=false;
+    setCameraGround(sf::Vector2f(0.f,0.0f));
+    setCameraBackground(sf::Vector2f(0.f,0.0f));
     if(getDirecao() == 1){
 	    animatedSprite.setFrameTime(sf::seconds(0.7));
         currentAnimation = &stayAnimation[idItem];
@@ -217,7 +256,8 @@ bool Player::adicionarDisco(){
     return adicionaDisco;
 };
 void Player::atacar(){
-    
+    paradoBool=true;
+    gravidadeTrocarPulo=false;
     if(atacando == false){
 //     sistemaItens.usarItem(nItem);
         atacando = true;
@@ -230,6 +270,7 @@ void Player::atacar(){
                 adicionaDisco=true;
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.045));
+                ganhaVida();
             }
         }else{
             currentAnimation = &ataqueAnimationEsq[idItem];
@@ -239,6 +280,7 @@ void Player::atacar(){
             
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.045));
+                ganhaVida();
             }   
         }
     }
@@ -248,57 +290,80 @@ void Player::setTimeFrame(sf::Time tempo){
     frameTime=tempo;
 };
 void Player::fakeGravidade(sf::Vector2f gravidade){
-        animatedSprite.setPosition(sf::Vector2f(500.0f,gravidade.y - 140));//coloca o heroi na posicao
-            movement = sf::Vector2f(animatedSprite.getPosition().x,animatedSprite.getPosition().y);
+        if(!lanca || paradoBool ){
+            if(gravidadeMudada)
+                animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,gravidade.y - 140));
+            else
+                animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x ,gravidade.y - 140));
+            gravidadeMudada=false;
+        }else{    //coloca o heroi na posicao
+            if(!gravidadeMudada){
+                animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x - 80,gravidade.y - 140));
+                gravidadeMudada=true;
+            }
+        }
+
 };
 void Player::setIdItem(int id){
-    idItem = id;   
-    
+    idItem = id;
+    if(id == 2)
+        lanca = true;
+    else
+        lanca=false;
 };
 void Player::moverDireita(){
-    setCameraGround(sf::Vector2f(- 2.f,0.0f));
-    setCameraBackground(sf::Vector2f(- 4.f,0.0f));
+    paradoBool=false;
+    pulando=false;
+    descendo=false;
+    gravidadeTrocarPulo=false;
+    setCameraGround(sf::Vector2f(20.f,0.0f));
+    animatedSprite.move(20.f,0.f);
     direcao=1;
     animatedSprite.setFrameTime(sf::seconds(0.1));
     andandoDir= true;
     andandoEsq=false;
-    movement.x += speedDir;
     currentAnimation = &walkingAnimationRight[idItem];
     animatedSprite.play(*currentAnimation);
-    animatedSprite.move(movement * frameTime.asSeconds());
 };
 void Player::moverEsquerda(){
-    setCameraGround(sf::Vector2f(2.f,0.0f));
-    setCameraBackground(sf::Vector2f(4.f,0.0f));
+    paradoBool=false;
+    pulando=false;
+    gravidadeTrocarPulo=false;
+    descendo=false;
+    setCameraGround(sf::Vector2f(- 20.f,0.0f));
+    animatedSprite.move(- 20.f,0.f);
     direcao=0;
     animatedSprite.setFrameTime(sf::seconds(0.1));
     andandoDir= false;
     andandoEsq=true;
-    movement.x -= speedDir;
     currentAnimation = &walkingAnimationLeft[idItem];
     animatedSprite.play(*currentAnimation);
-    animatedSprite.move(movement * frameTime.asSeconds());
 };
 int Player::getDirecao(){
     
    return direcao; 
 }
 Player::Player(int v): nVidas(v){
+    
     int i;
     bool DeuCerto;
-    
+    lanca=false;
+    vidaQuant=v;
     idItem=1;
     //variavel que eh utilizada para quando atacar terminar o ataque
     atacando = false;  
+    paradoBool=false;
     //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
      andandoDir = false;
      andandoEsq = false;
      adicionaDisco=false;
-
+    animatedSprite.setPosition(sf::Vector2f(500,200 - 140));
     //variaveis para ver qual estado do pulo está
     pulando = false;
 	descendo = false;
-   
+    gravidadeTrocarPulo=false;
+   gravidadeMudada = false;
+    setCameraGround(sf::Vector2f(0.f,0.0f));
     animatedSprite.setFrameTime(sf::seconds(0.7));
     animatedSprite.pause();
     animatedSprite.setLooped(false);    
@@ -306,7 +371,7 @@ Player::Player(int v): nVidas(v){
     contPulo = 75;
     contPulo2=0;
     
-    
+    idDisco=0;
     //velocidade dos frames para os casos de direita e esquerda
     speedDir = 200.f;
     speedEsq = 200.f;
@@ -314,18 +379,25 @@ Player::Player(int v): nVidas(v){
     //subindo imagens e dividindo elas em frames
     forma[0].loadFromFile("spriteProtagonista/Andando.png");
     walkingAnimationRight[0].setSpriteSheet(forma[0]);
+    walkingAnimationRight[3].setSpriteSheet(forma[0]);
     for(i=1;i<11;i++){
         walkingAnimationRight[0].addFrame(sf::IntRect(forma[0].getSize().x/11 * i,forma[0].getSize().y * 0,forma[0].getSize().x / 11,forma[0].getSize().y));
+         walkingAnimationRight[3].addFrame(sf::IntRect(forma[0].getSize().x/11 * i,forma[0].getSize().y * 0,forma[0].getSize().x / 11,forma[0].getSize().y));
     }
     forma[1].loadFromFile("spriteProtagonista/Parado.png");
     stayAnimation[0].setSpriteSheet(forma[1]);
+    stayAnimation[3].setSpriteSheet(forma[1]);
     for(i=0;i<6;i++){
         stayAnimation[0].addFrame(sf::IntRect(forma[1].getSize().x/6 * i,forma[1].getSize().y * 0,forma[1].getSize().x / 6,forma[1].getSize().y));
+        stayAnimation[3].addFrame(sf::IntRect(forma[1].getSize().x/6 * i,forma[1].getSize().y * 0,forma[1].getSize().x / 6,forma[1].getSize().y));
+  
     }
     forma[2].loadFromFile("spriteProtagonista/AndandoEsq.png");
     walkingAnimationLeft[0].setSpriteSheet(forma[2]);
+    walkingAnimationLeft[3].setSpriteSheet(forma[2]);
     for(i=9;i>=0;i--){
         walkingAnimationLeft[0].addFrame(sf::IntRect(forma[2].getSize().x/11 * i,forma[2].getSize().y * 0,forma[2].getSize().x / 11,forma[2].getSize().y));
+        walkingAnimationLeft[3].addFrame(sf::IntRect(forma[2].getSize().x/11 * i,forma[2].getSize().y * 0,forma[2].getSize().x / 11,forma[2].getSize().y));
     }
     forma[3].loadFromFile("spriteProtagonista/Andando0.png");
     walkingAnimationRight[1].setSpriteSheet(forma[3]);
@@ -349,8 +421,10 @@ Player::Player(int v): nVidas(v){
     }
      forma[7].loadFromFile("spriteProtagonista/ParadoEsq.png");
      stayAnimationEsq[0].setSpriteSheet(forma[7]);
+      stayAnimationEsq[3].setSpriteSheet(forma[7]);
      for(i=5;i>=0;i--){
         stayAnimationEsq[0].addFrame(sf::IntRect(forma[7].getSize().x/6 * i,forma[7].getSize().y * 0,forma[7].getSize().x / 6,forma[7].getSize().y));
+        stayAnimationEsq[3].addFrame(sf::IntRect(forma[7].getSize().x/6 * i,forma[7].getSize().y * 0,forma[7].getSize().x / 6,forma[7].getSize().y));
     }
     forma[8].loadFromFile("spriteProtagonista/ParadoEsq0.png");
     stayAnimationEsq[1].setSpriteSheet(forma[8]);
@@ -394,21 +468,29 @@ Player::Player(int v): nVidas(v){
     }
     forma[16].loadFromFile("spriteProtagonista/Pulando.png");
     pulandoDir[0].setSpriteSheet(forma[16]);
+    pulandoDir[3].setSpriteSheet(forma[16]);
     for(i=0;i<5;i++){
         pulandoDir[0].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
+        pulandoDir[3].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
     }
     descendoDir[0].setSpriteSheet(forma[16]);
+    descendoDir[3].setSpriteSheet(forma[16]);
     for(i=4;i>=0;i--){
         descendoDir[0].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
+        descendoDir[3].addFrame(sf::IntRect(forma[16].getSize().x/5 * i,forma[16].getSize().y * 0,forma[16].getSize().x /5,forma[16].getSize().y));
     }
     forma[17].loadFromFile("spriteProtagonista/PulandoEsq.png");
     pulandoEsq[0].setSpriteSheet(forma[17]);
+    pulandoEsq[3].setSpriteSheet(forma[17]);
     for(i=4;i>=0;i--){
         pulandoEsq[0].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
+        pulandoEsq[3].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
     }
     descendoEsq[0].setSpriteSheet(forma[17]);
+    descendoEsq[3].setSpriteSheet(forma[17]);
     for(i=0;i<5;i++){
         descendoEsq[0].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
+        descendoEsq[3].addFrame(sf::IntRect(forma[17].getSize().x/5 * i,forma[17].getSize().y * 0,forma[17].getSize().x /5,forma[17].getSize().y));
     }
     
     forma[18].loadFromFile("spriteProtagonista/Pulando0.png");
@@ -458,31 +540,37 @@ Player::Player(int v): nVidas(v){
     for(i=6;i>=0;i--){
         ataqueAnimationEsq[0].addFrame(sf::IntRect(forma[23].getSize().x/7 * i,forma[23].getSize().y * 0,forma[23].getSize().x /7,forma[23].getSize().y));
     }
-    // inserir vidas iniciais
-//     for(int i = 0; i < nVidas; i++){
-//         sf::Texture tAux; // sprite auxiliar pra epilhar
-//         switch(i){
-//             case 0:
-//                 tAux.loadFromFile("Itens/1vida.png");
-//                 break;
-//             case 1:
-//                 tAux.loadFromFile("Itens/2vida.png");
-//                 break;
-//             case 2:
-//                 tAux.loadFromFile("Itens/3vida.png");
-//                 break;
-//             case 3:
-//                 tAux.loadFromFile("Itens/4vida.png");
-//                 break;
-//             case 4:
-//                 tAux.loadFromFile("Itens/5vida.png");
-//                 break;
-//             case 5:
-//                 tAux.loadFromFile("Itens/6vida.png");
-//                 break;
-//         }
-//         vida.Empilha(tAux, DeuCerto);
-//     }
+    forma[24].loadFromFile("spriteProtagonista/usapocao.png");
+    ataqueAnimation[3].setSpriteSheet(forma[24]);
+    ataqueAnimation[3].addFrame(sf::IntRect(forma[24].getSize().x/7 * 0,forma[24].getSize().y * 0,forma[24].getSize().x ,forma[24].getSize().y));
+    
+    forma[25].loadFromFile("spriteProtagonista/usapocaoEsq.png");
+    ataqueAnimationEsq[3].setSpriteSheet(forma[25]);
+    ataqueAnimationEsq[3].addFrame(sf::IntRect(forma[25].getSize().x/7 * 0,forma[25].getSize().y * 0,forma[25].getSize().x ,forma[25].getSize().y));
+    
+    forma[26].loadFromFile("spriteProtagonista/danoDireita.png");
+    levandoDano[0].setSpriteSheet(forma[26]);
+    levandoDano[0].addFrame(sf::IntRect(forma[26].getSize().x/7 * 0,forma[26].getSize().y * 0,forma[26].getSize().x/2 ,forma[26].getSize().y));
+    levandoDano[0].addFrame(sf::IntRect(forma[26].getSize().x/2 * 1,forma[26].getSize().y * 0,forma[26].getSize().x/2 ,forma[26].getSize().y));
+    
+    forma[27].loadFromFile("spriteProtagonista/danoEsq.png");
+    levandoDano[1].setSpriteSheet(forma[27]);
+    levandoDano[1].addFrame(sf::IntRect(forma[27].getSize().x/7 * 1,forma[27].getSize().y * 0,forma[27].getSize().x/2 ,forma[27].getSize().y));
+    levandoDano[1].addFrame(sf::IntRect(forma[27].getSize().x/2 * 0,forma[27].getSize().y * 0,forma[27].getSize().x/2 ,forma[27].getSize().y));
+    
+    
+     // sprite auxiliar pra epilhar
+
+    vida[0].loadFromFile("Itens/1vida.png");
+    vida[1].loadFromFile("Itens/2vida.png");
+    vida[2].loadFromFile("Itens/3vida.png");
+    vida[3].loadFromFile("Itens/4vida.png");
+    vida[4].loadFromFile("Itens/5vida.png");
+    vida[5].loadFromFile("Itens/6vida.png");
+    barraVida.setTexture(vida[v - 1]);
+    barraVida.setScale(sf::Vector2f(0.85,0.85));
+    batida.restart();
+    
     parado();
 }
 
@@ -498,49 +586,34 @@ void Player::reset(){
     direcao=1;
 }
 
-// bool Player::ganhaVida(){
-//     sf::Texture tAux; // Textura auxiliar pra empilhar
-//     bool DeuCerto;
-//     switch(vida.getNumeroElementos()){
-//         case 0:
-//             tAux.loadFromFile("Itens/1vida.png");
-//             break;
-//         case 1:
-//             tAux.loadFromFile("Itens/2vida.png");
-//             break;
-//         case 2:
-//             tAux.loadFromFile("Itens/3vida.png");
-//             break;
-//         case 3:
-//             tAux.loadFromFile("Itens/4vida.png");
-//             break;
-//         case 4:
-//             tAux.loadFromFile("Itens/5vida.png");
-//             break;
-//         case 5:
-//             tAux.loadFromFile("Itens/6vida.png");
-//             break;
-//         case 6:
-//             return false;
-//             break;
-//     }
-//     vida.Empilha(tAux, DeuCerto);
-//     return DeuCerto;
-// }
-/*
+bool Player::ganhaVida(){
+    bool DeuCerto=false;
+    if(vidaQuant < 6){
+        DeuCerto=true;
+        vidaQuant++;
+        barraVida.setTexture(vida[vidaQuant - 1]);
+    }
+    return DeuCerto;
+}
+
 bool Player::perdeVida(){
-    sf::Texture tAux;
-    bool DeuCerto;
-    if(!vida.Vazia())
-        vida.Desempilha(tAux, DeuCerto);
+    bool DeuCerto=false;
+    tempoBatida= batida.getElapsedTime();
+    if(vidaQuant > 1){
+        if(sf::seconds(0.5) < tempoBatida){
+            DeuCerto=true;
+            vidaQuant--;
+            barraVida.setTexture(vida[vidaQuant - 1]);
+            batida.restart();
+            animatedSprite.setFrameTime(sf::seconds(0.8));
+            if(direcao == 1)
+                currentAnimation = &levandoDano[0];
+            else
+                currentAnimation = &levandoDano[1];
+            animatedSprite.play(*currentAnimation);
+        }
+    }
     return DeuCerto;
 };
 
-int Player::getVidaAtual() const{
-    return vida.getNumeroElementos();
-};
-
-Pilha Player::getPilha() const {
-    return vida;
-};*/
 #endif
