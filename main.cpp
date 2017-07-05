@@ -29,7 +29,7 @@ int main (){
 
     // Janela do aplicativo creation
     sf::RenderWindow App(sf::VideoMode(1024, 768), "JvAdventure", sf::Style::Titlebar | sf::Style::Close);
-    App.setFramerateLimit(150);
+    App.setFramerateLimit(60);
     // Esconder seta do mouse
     //App.setMouseCursorVisible(false);
 

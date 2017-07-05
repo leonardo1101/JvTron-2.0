@@ -9,7 +9,7 @@ class BarraItens{
     public:
         void resetBarra();
         int selecionarItem(int);
-        void inserirItem(Item);
+        void inserirItem(Item );
         Lista<Item> itens;
         sf::Sprite barraItens;
         sf::RectangleShape caixaItem[4];
@@ -55,7 +55,6 @@ int BarraItens::quantItens(){
 
 void BarraItens::resetBarra(){ 
     int i; 
-    Item itemVazio; 
     bool deuCerto; 
     quantidadeItens=0;
     barra.loadFromFile("Itens/barraItens.png"); 
@@ -68,7 +67,6 @@ void BarraItens::resetBarra(){
         caixaItem[i].setSize(sf::Vector2f(50.0f,50.0f)); 
         caixaItem[i].setFillColor(sf::Color(35, 77, 77)); 
         caixaItem[i].setPosition(sf::Vector2f(1024 - barra.getSize().x * 0.75 + 80  + 80.0f * i,17.0f)); 
-        itemVazio.carregarItem("",3.0f); 
         idItemCaixa[i]=0;
 
     } 
@@ -84,45 +82,33 @@ int BarraItens::selecionarItem(int numCaixa){
 }; 
  
 int BarraItens::getIdItem(int numCaixa){ 
-    bool deuCerto; 
-    Item auxItem; 
-    int aux =0,i,quant; 
-    quant = itens.getQuant(); 
-    for(i=0;i<quant;i++){ 
-        if(i == 0){
-            itens.PegaOPrimeiro(auxItem,deuCerto);
-        } else
-             itens.PegaOProximo(auxItem,deuCerto);
-        if(!deuCerto)
-            break;
-        if(i == numCaixa) 
-            aux = auxItem.getId(); 
-    } 
-    return aux; 
+
+    return idItemCaixa[numCaixa]; 
 }; 
 void BarraItens::setPosicaoItens(int a){ 
     bool deuCerto; 
     Item auxItem; 
-    int i; 
-    for(i=0;i<a;i++){ 
-        if(i == 0){
-            itens.PegaOPrimeiro(auxItem,deuCerto);
-        } else
-             itens.PegaOProximo(auxItem,deuCerto);
-        if(!deuCerto)
-            break;
-        
-        itens.removeP(auxItem,deuCerto); 
-        idItemCaixa[i]=auxItem.getId();
-        auxItem.setPosicao(centralizar(caixaItem[i].getPosition(),auxItem.getTamanho(),auxItem.getId())); 
-        itens.insere(auxItem,deuCerto); 
+    int i=0; 
+    for(i=0;i<4;i++){ 
+        idItemCaixa[i]=0;
     }  
+    i=0;
+    itens.PegaOPrimeiro(auxItem,deuCerto);
+    while(deuCerto){
+        idItemCaixa[i]=auxItem.getId();
+        auxItem.idCaixa=i;
+        auxItem.setPosicao(centralizar(caixaItem[i].getPosition(),auxItem.getTamanho(),auxItem.getId())); 
+        itens.atualizaP(auxItem,deuCerto); 
+        i++;
+        itens.PegaOProximo(auxItem,deuCerto);
+    }
+    
 }; 
 void BarraItens::setCorCaixar(int quant ){ 
     bool deuCerto; 
-    Item auxItem; 
     int aux =0,i,quantItem;  
     for(i=0;i<4;i++){ 
+        Item auxItem; 
         if(i<quant){
             if(i == 0){
                 itens.PegaOPrimeiro(auxItem,deuCerto);
@@ -140,35 +126,27 @@ void BarraItens::setCorCaixar(int quant ){
 }; 
 void BarraItens::inserirItem(Item item){
     bool deuCerto;
-    Item auxItem;
-    int aux =0,i,quant; 
-     printf("Itens : %d",itens.getQuant());
-    if(itens.getQuant() < 4){
-        quant = itens.getQuant(); 
-        for(i=0;i<quant;i++){ 
-            if(i == 0){
-                itens.PegaOPrimeiro(auxItem,deuCerto);
-            } else
-                itens.PegaOProximo(auxItem,deuCerto);
-
-            if( item.getId() == auxItem.getId()) {
-                itens.removeP(auxItem,deuCerto); 
-                auxItem.aumentarQuantidade(); 
-                caixaItem[i].setFillColor(sf::Color(95 - 10 * auxItem.getQuantidade(), 40 + 5 * auxItem.getQuantidade() , 40 + 5 * auxItem.getQuantidade())); 
-                itens.insere(auxItem,deuCerto); 
-                aux=1;
+    int i=0,quant; 
+    if(itens.estaNaLista(item)){
+        Item auxItem;
+        itens.PegaOPrimeiro(auxItem,deuCerto);
+        while(deuCerto){
+            if(item.getId() == auxItem.getId() ){
+                auxItem.aumentarQuantidade();  
             }
-            
-        } 
-        if(aux == 0){
-            
-           
+            caixaItem[auxItem.idCaixa].setFillColor(sf::Color(95 - 10 * auxItem.getQuantidade(), 40 + 5 * auxItem.getQuantidade() , 40 + 5 * auxItem.getQuantidade())); 
+            itens.atualizaP(auxItem,deuCerto); 
+            i++;
+            itens.PegaOProximo(auxItem,deuCerto);
+        }
+    }else{
+            printf("Fora dos itens");
             item.setQuantidade(6);
+            item.idCaixa = quantidadeItens;
             idItemCaixa[quantidadeItens]=item.getId();
             item.setPosicao(centralizar(caixaItem[quantidadeItens].getPosition(),item.getTamanho(),item.getId())); 
             itens.insere(item,deuCerto);
             quantidadeItens++;
-        }
     }
     
 };
@@ -178,35 +156,22 @@ void BarraItens::usarItem(int numCaixa){
     bool excluiu=false;
     int aux =0,i,quant,quantItem=1; 
     quant = itens.getQuant(); 
-    printf("%d",idItemCaixa[numCaixa]);
-    if(numCaixa< quant){
-        for(i=0;i<quant;i++){ 
-            if(i == 0){
-                itens.PegaOPrimeiro(auxItem,deuCerto);
-            } else
-                itens.PegaOProximo(auxItem,deuCerto);
-            if(!deuCerto)
-                break; 
-            
-            itens.removeP(auxItem,deuCerto);
-            if( idItemCaixa[numCaixa]==auxItem.getId()) {
-                quantItem=auxItem.getQuantidade();
-                caixaItem[numCaixa].setFillColor(sf::Color(95 - 10 * quantItem, 40 + 5 * quantItem , 40 + 5 * quantItem)); 
-                auxItem.diminuirQuantidade(); 
-            }
-            if(quantItem != 0)
-                itens.insere(auxItem,deuCerto); 
+        auxItem.idCaixa=numCaixa;
+        if(itens.estaNaListaCaixa(auxItem)){
+            itens.removePCaixa(auxItem,deuCerto);
+            quantItem=auxItem.getQuantidade();
+            caixaItem[numCaixa].setFillColor(sf::Color(95 - 10 * quantItem, 40 + 5 * quantItem , 40 + 5 * quantItem)); 
+            auxItem.diminuirQuantidade(); 
+            if(auxItem.getQuantidade() > 1 )
+                itens.insere(auxItem,deuCerto);
             else{
                 excluiu=true;
-                quantItem=1;
                 quantidadeItens--;
-                idItemCaixa[quantidadeItens]=0;
+                idItemCaixa[numCaixa]=0;
             }
-        }
     }
     if(excluiu){
         quant--;
-        printf(" num = %d",quant );
         setCorCaixar(quant);
         setPosicaoItens(quant);
     }

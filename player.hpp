@@ -270,7 +270,8 @@ void Player::atacar(){
                 adicionaDisco=true;
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.045));
-                ganhaVida();
+                if(idItem == 3)
+                    ganhaVida();
             }
         }else{
             currentAnimation = &ataqueAnimationEsq[idItem];
@@ -280,7 +281,8 @@ void Player::atacar(){
             
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.045));
-                ganhaVida();
+                 if(idItem == 3)
+                    ganhaVida();
             }   
         }
     }

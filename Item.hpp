@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
+#include "AnimatedSprite.hpp"
 
 #define maxItens 5
 
@@ -10,8 +11,10 @@ class Item{
     public:
         void setLocationItem(sf::Vector2f);
         void carregarItem(std::string,float);
+        bool Bateu(AnimatedSprite &heroi);
         void setId(int);
         int getId();
+        int idCaixa;
         int getQuantidade();
         void setQuantidade(int);
         void diminuirQuantidade();
@@ -87,4 +90,19 @@ bool operator==(Item& lhs, Item& rhs){
         return true;
     return false;
 };
+bool Item::Bateu(AnimatedSprite &heroi){
+    sf::RectangleShape range(sf::Vector2f(item.getPosition().x, item.getPosition().y ));
+    range.setPosition(sf::Vector2f(item.getPosition().x, item.getPosition().y ));
+    range.setFillColor(sf::Color(32, 210, 212));
+    range.setSize(sf::Vector2f(50.f, 50.f));
+    
+
+        if(  ((heroi.getPosition().x >= range.getPosition().x) || (heroi.getPosition().x + 150 >= range.getPosition().x)) && heroi.getPosition().x + 90.f < range.getPosition().x + 50.f
+        && heroi.getPosition().y >= range.getPosition().y  && heroi.getPosition().y < range.getPosition().y + 140.f
+    )
+            return true;
+ 
+    
+    return false;
+}
 #endif
