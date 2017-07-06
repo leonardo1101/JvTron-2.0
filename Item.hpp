@@ -24,10 +24,11 @@ class Item{
         sf::Vector2u getTamanho();
         void fakeGravidade(sf::Vector2f gravidade);
         sf::Sprite getItem();
-        
+        sf::Sprite itemDrop;
        sf::Sprite item;
     private:
        sf::Texture textura;
+       sf::Texture texturaDrop;
        int quantidade;
        int id;
 };
@@ -55,7 +56,7 @@ void Item::setQuantidade(int quant){
 };
 
 void Item::setPosicao(sf::Vector2f posicao){
-    
+    itemDrop.setPosition(posicao);
     item.setPosition(posicao);
 };
 sf::Vector2u Item::getTamanho(){
@@ -74,11 +75,15 @@ void Item::carregarItem(std::string nome, float escala){
         textura.loadFromFile("Itens/"+nome+".png");
         item.setTexture(textura);
         item.setScale(sf::Vector2f(item.getScale().x/escala,item.getScale().y/escala));
+        texturaDrop.loadFromFile("Itens/"+nome+"Drop.png");
+        itemDrop.setTexture(texturaDrop);
+        itemDrop.setScale(sf::Vector2f(itemDrop.getScale().x/5,itemDrop.getScale().y/5));
     }
 };
 
 void Item::setLocationItem(sf::Vector2f posicao){
     item.setPosition(posicao);    
+    itemDrop.setPosition(posicao);   
 };
 //pega a sprite do item
 sf::Sprite Item::getItem(){
@@ -97,8 +102,7 @@ bool Item::Bateu(AnimatedSprite &heroi){
     range.setSize(sf::Vector2f(50.f, 50.f));
     
 
-        if(  ((heroi.getPosition().x >= range.getPosition().x) || (heroi.getPosition().x + 150 >= range.getPosition().x)) && heroi.getPosition().x + 90.f < range.getPosition().x + 50.f
-        && heroi.getPosition().y >= range.getPosition().y  && heroi.getPosition().y < range.getPosition().y + 140.f
+        if(300 + heroi.getPosition().x >= range.getPosition().x  && heroi.getPosition().x < range.getPosition().x + 50
     )
             return true;
  

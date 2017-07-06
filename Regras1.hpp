@@ -52,7 +52,7 @@ Regras1::Regras1(float larg, float alt):  maxNumeroTeclas(4), maxNumeroBotoes(2)
 	std::string instrucoes[maxNumeroTeclas] = { // informacoes sobre as teclas
 		"<", ">", "z", "x"
 	};
-	std::string descricao[maxNumeroTeclas-1] = { "mover o personagem", "atacar", "pular" };
+	std::string descricao[maxNumeroTeclas-1] = { "Mover o personagem", "Utilizar item selecionado", "Pular" };
 	numeroItem = 0;
 
 	// alocação de posições

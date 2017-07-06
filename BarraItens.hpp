@@ -32,6 +32,11 @@ class BarraItens{
 sf::Vector2f BarraItens::centralizar(sf::Vector2f posicao,sf::Vector2u tamanho,int id){
     sf::Vector2f central;
     switch(id){
+            case 4:
+                central.x = posicao.x + 37.f - (tamanho.x/2.9)/2;
+                central.y = posicao.y + 38.f - (tamanho.y/2.9)/2;
+                break;
+        
             case 3:
                 central.x = posicao.x + 25.f - (tamanho.x/4.5)/2;
                 central.y = posicao.y + 25.f - (tamanho.y/4.5)/2;

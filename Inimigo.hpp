@@ -59,7 +59,7 @@ class Inimigo{
         void mudarEstado();
 };
 void Inimigo::gerarItem(){
-    int id = rand() % 3 + 1;
+    int id = rand() % 4 + 1;
     switch(id){
         case 1:
             drop.carregarItem("disco",2.9f);
@@ -73,6 +73,11 @@ void Inimigo::gerarItem(){
         case 3:
             drop.carregarItem("pocao",4.5f);
             drop.setId(3);
+            drop.setQuantidade(6);
+            break;
+        case 4:
+            drop.carregarItem("discoDois",4.5f);
+            drop.setId(4);
             drop.setQuantidade(6);
             break;
     }
@@ -304,24 +309,23 @@ void Inimigo::andar(sf::Time frameTime){
     animatedSprite.move(movement * frameTime.asSeconds());
 }
 bool Inimigo::Bateu(AnimatedSprite &heroi){
-    sf::RectangleShape range(sf::Vector2f(getPosicao().x, getPosicao().y ));
-    range.setFillColor(sf::Color(32, 210, 212));
-    range.setSize(sf::Vector2f(150.f, 180.f));
-    if(direcao == -1){
-        range.setPosition(animatedSprite.getPosition().x - 150  , animatedSprite.getPosition().y - 75 );
-            if( 75.f + heroi.getPosition().x >= range.getPosition().x  && heroi.getPosition().x + 75.f < range.getPosition().x + 150.f
-            && heroi.getPosition().y >= range.getPosition().y  && heroi.getPosition().y < range.getPosition().y + 140.f
-        ){
-            return true;
-        }
-    }else{
-        range.setPosition(animatedSprite.getPosition().x + 150  , animatedSprite.getPosition().y - 75 );
-        if( heroi.getPosition().x >= range.getPosition().x  && heroi.getPosition().x < range.getPosition().x + 150.f
-        && heroi.getPosition().y >= range.getPosition().y  && heroi.getPosition().y < range.getPosition().y + 140.f
-        ){
-            return true;
+    sf::RectangleShape range;
+    if(tipo != 1){
+        range.setFillColor(sf::Color(32, 210, 212));
+        range.setSize(sf::Vector2f(150.f, 180.f));
+        range.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 150, animatedSprite.getPosition().y ));
+        if(direcao == 1){
+                if( 300 + heroi.getPosition().x >= range.getPosition().x  && heroi.getPosition().x < range.getPosition().x + 150
+            ){
+                    return true;
+            }
+        }else{
+            if( heroi.getPosition().x  <= range.getPosition().x  && heroi.getPosition().x + 300 >= range.getPosition().x - 150){
+                return true;
+            }
         }
     }
+    
     
     return false;
 }

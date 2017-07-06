@@ -27,8 +27,13 @@
 #include "Item.hpp"
 #include "Renderiza.hpp"
 #include "SistemaInimigos.hpp"
+#include "Som.hpp"
 class Jogo : public Tela{
 private:
+    Som sons;
+    sf::Music somFundo;
+    sf::Music somHeroi;
+    sf::Music somInimigo;
     Lista<Item> itens;//Lista com itens
     Lista<Disco> discosHeroi; //Lista de Discos
     Lista<Disco> discosInimigos;
@@ -43,9 +48,9 @@ private:
      sf::Font fonte;
      int bloco;
 
-    
     BarraItens sistemaItens;
-    
+    sf::Sprite hordas[5];
+    sf::Texture hordasTexture[5];
     Player tron;
     Inimigo inimigo;
     Inimigo inimigoAux[106];
@@ -53,7 +58,7 @@ private:
     int horda;
     int quantInimigos;
     int quantItena;
-    Item itensPadrao[5];
+    Item itensPadrao[6];
     bool setGerarInimigos;
     
     sf::View view,view1;
@@ -146,7 +151,7 @@ void Jogo::gerarInimigos(){
             break;
         case 1:
              comecoInimigo=quantInimigos+comecoInimigo;
-            for(i=comecoInimigo;i<comecoInimigo+14;i++){
+            for(i=comecoInimigo;i<comecoInimigo+7;i++){
                 tipo=rand() % 2 + 1;
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
@@ -158,11 +163,11 @@ void Jogo::gerarInimigos(){
                 else
                     escada++;
             }
-            quantInimigos=14 ;
+            quantInimigos=7 ;
             break;
         case 2:
             comecoInimigo=quantInimigos+comecoInimigo;
-            for(i=comecoInimigo;i<21+comecoInimigo;i++){
+            for(i=comecoInimigo;i<7+comecoInimigo;i++){
                 tipo=rand() % 2 + 1;
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
@@ -174,11 +179,11 @@ void Jogo::gerarInimigos(){
                 else
                     escada++;
             }
-            quantInimigos=21;
+            quantInimigos=7;
             break;
         case 3:
             comecoInimigo=quantInimigos+comecoInimigo;
-            for(i=comecoInimigo;i<28+comecoInimigo;i++){
+            for(i=comecoInimigo;i<7+comecoInimigo;i++){
                 tipo=rand() % 2 + 1;
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
@@ -190,11 +195,11 @@ void Jogo::gerarInimigos(){
                 else
                     escada++;
             }
-            quantInimigos=28;
+            quantInimigos=7;
             break;
         case 4:
             comecoInimigo=quantInimigos+comecoInimigo;
-            for(i=comecoInimigo;i<35+comecoInimigo;i++){
+            for(i=comecoInimigo;i<7+comecoInimigo;i++){
                 tipo=rand() % 2 + 1;
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
@@ -205,7 +210,7 @@ void Jogo::gerarInimigos(){
                 else
                     escada++;
             }
-            quantInimigos=35 ;
+            quantInimigos=7 ;
             break;
     }
     
@@ -234,6 +239,16 @@ Jogo::Jogo(float larg, float Alt){
 //     vida.loadFromFile("Itens/6vida.png");
 //     barraVida.setTexture(vida);
 // >>>>>>> 6fadd775963a69e6655a20f0a11bd8fa1238241c
+    hordasTexture[0].loadFromFile("Arts/1horda.png");
+    hordasTexture[1].loadFromFile("Arts/2horda.png");
+    hordasTexture[2].loadFromFile("Arts/3horda.png");
+    hordasTexture[3].loadFromFile("Arts/4horda.png");
+    hordasTexture[4].loadFromFile("Arts/5horda.png");
+    for(i=0;i<5;i++){
+        hordas[i].setTexture(hordasTexture[i]);
+        hordas[i].setScale(sf::Vector2f(3.f,3.f));
+        hordas[i].setPosition(sf::Vector2f(512 - (hordasTexture[i].getSize().x/2)*3 , 768/2 - (hordasTexture[i].getSize().y/2)*3  ));
+    }
     backgroundT.loadFromFile("TilesMap/teste.png");
     
     background.setTexture(backgroundT);
@@ -255,6 +270,9 @@ Jogo::Jogo(float larg, float Alt){
     itensPadrao[3].carregarItem("pocao",4.5f);
     itensPadrao[3].setId(3);
     itensPadrao[3].setQuantidade(6);
+    itensPadrao[4].carregarItem("discoDois",4.5f);
+    itensPadrao[4].setId(4);
+    itensPadrao[4].setQuantidade(6);
     
     view.setSize(1024, 768);
     view.setCenter(1024/2, 768/2);
@@ -264,7 +282,7 @@ Jogo::Jogo(float larg, float Alt){
     sistemaItens.inserirItem(itensPadrao[1]);
     sistemaItens.inserirItem(itensPadrao[2]);
     sistemaItens.inserirItem(itensPadrao[3]);
-    
+    sistemaItens.inserirItem(itensPadrao[4]);
 
     
     inimigos.cria();
@@ -275,7 +293,7 @@ Jogo::Jogo(float larg, float Alt){
 	tempoTexto.setFont(fonte);
 	tempoTexto.setPosition(sf::Vector2f(626 - tempoTexto.getCharacterSize()*3.5, 10.f));
 	tempoTexto.setColor(sf::Color::Cyan);
-    horda =-1;
+    horda =0;
     idInimigo=0;
     procura=false;
 };
@@ -285,11 +303,15 @@ Jogo::~Jogo(){
 };
 
 int Jogo::Executar(sf::RenderWindow & App){
+    sons.musica(somFundo,deuCerto);
 	//---------------------------  Aqui q vai tudo do jogo. ------------------------------------//
      discosHeroi.cria();
     discosInimigos.cria();
+    Disco dUm,dDois;
+    int drawHorda =0;
     bool setChao = false;
     tron.idDisco=0;
+    bool pulou=false;
     //verifica se nenhuma tecla está sendo pressionada
     bool noKeyWasPressed = true;
     //i para loop e nItem para ver o numero do item atual
@@ -302,10 +324,11 @@ int Jogo::Executar(sf::RenderWindow & App){
     sf::Time aux=jogoClock.getElapsedTime();
 	while (executando){
         tempoJogo=jogoClock.getElapsedTime();
-        if(segundos == 3){
+        if(segundos == 3 ){
             if(!setGerarInimigos){
-                horda++;
                 gerarInimigos();
+                horda++; 
+                drawHorda++;
                 setGerarInimigos=true;
                 procura=false;
             }
@@ -373,16 +396,22 @@ int Jogo::Executar(sf::RenderWindow & App){
         tron.setIdItem(sistemaItens.selecionarItem(nItem));
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !tron.getPulando() && !tron.getAtacando()){
-
-            tron.moverDireita();
+            
+            if(!(tron.animatedSprite.getPosition().x > 21040.0f && tron.animatedSprite.getPosition().x <  21080.0f)){
+                tron.moverDireita();
+                view.setCenter(view.getCenter() + tron.getCameraGround());
+                
+            }
             //seta o valor de cada frame
 
             noKeyWasPressed = false;
             
         }else{
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !tron.getPulando() && !tron.getAtacando()){
-
-                tron.moverEsquerda();
+                if(!(tron.animatedSprite.getPosition().x > - 280.0f && tron.animatedSprite.getPosition().x < - 200.0f)){
+                    tron.moverEsquerda();
+                    view.setCenter(view.getCenter() + tron.getCameraGround());
+                }
             }else{
                 if((sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || tron.getAtacando()) && !tron.getPulando() && !tron.getAndando()){
                     noKeyWasPressed = false;
@@ -396,11 +425,21 @@ int Jogo::Executar(sf::RenderWindow & App){
                             }else{
                                 disco.setReset(sf::Vector2f(tron.animatedSprite.getPosition().x , tron.animatedSprite.getPosition().y + 30),sf::Vector2f(- 1.0f,0.f),0);
                             }                              
-                        }     
+                        } 
+                        if(tron.getAdicionarDoisDiscos()){
+                            dUm.setReset(sf::Vector2f(tron.animatedSprite.getPosition().x , tron.animatedSprite.getPosition().y + 30),sf::Vector2f(- 1.0f,0.f),0);
+                            dDois.setReset(sf::Vector2f(tron.animatedSprite.getPosition().x + 85, tron.animatedSprite.getPosition().y + 30),sf::Vector2f(1.0f,0.f),0);
+                        }
+                        if(tron.getAtacando() && tron.getIdItem() == 2){
+                            
+                            sons.emiteSomBarra(somHeroi,deuCerto);
+                        }
+                        
                     }
                 }else{
 	                if(!tron.getAtacando() && !tron.getPulando() ){
 	                     tron.parado();
+                         view.setCenter(view.getCenter() + tron.getCameraGround());
 	                }
                 }
                 
@@ -409,8 +448,17 @@ int Jogo::Executar(sf::RenderWindow & App){
         
         //para o pulo animacoes de descendo e pulando são diferentes, mas são usadas
         if((sf::Keyboard::isKeyPressed(sf::Keyboard::X) || tron.getPulando()) && !tron.getAtacando()){
-            tron.pular();
-            noKeyWasPressed = false;
+             if(!(tron.animatedSprite.getPosition().x > 21040.0f && tron.animatedSprite.getPosition().x <  21080.0f) &&
+                !(tron.animatedSprite.getPosition().x > - 280.0f && tron.animatedSprite.getPosition().x < - 200.0f)){
+                    tron.pular();
+                    if(!pulou){
+                        sons.emiteSomPulo(somHeroi,deuCerto);
+                        pulou=true;
+                    }
+                    view.setCenter(view.getCenter() + tron.getCameraGround());
+             }
+        }else{
+            pulou=false;
         }
         
             //time para o tempo de pulo
@@ -426,12 +474,25 @@ int Jogo::Executar(sf::RenderWindow & App){
                     tron.idDisco++;
                     disco.id = tron.idDisco;
                     discosHeroi.insere(disco,deuCerto);
+                    sons.emiteSomDisco(somHeroi,deuCerto);
                     tron.resetDisco();
+                }
+                if(tron.getAdicionarDoisDiscos()){
+                    
+                    sons.emiteSomDisco(somHeroi,deuCerto);
+                    tron.idDisco++;
+                    dUm.id = tron.idDisco;
+                    discosHeroi.insere(dUm,deuCerto);
+                    tron.idDisco++;
+                    dDois.id = tron.idDisco;
+                    discosHeroi.insere(dDois,deuCerto);
+                    tron.resetDisco();
+                    
+                    sons.emiteSomDisco(somHeroi,deuCerto);
                 }
                 bloco++;
             
                 
-            view.setCenter(view.getCenter() + tron.getCameraGround());
             noKeyWasPressed = true;
             //
             tron.animatedSprite.update(frameTime);
@@ -440,7 +501,6 @@ int Jogo::Executar(sf::RenderWindow & App){
             App.setView(view);
             App.draw(background);
             App.draw(ground);
-            
             App.setView(view1);
             App.draw(sistemaItens.barraItens);
             App.draw(sistemaItens.itemSelecionado);
@@ -470,6 +530,16 @@ int Jogo::Executar(sf::RenderWindow & App){
             tempoTexto.setString(auxMinutos + " : " + auxSegundos );
             App.draw(tempoTexto);
             
+            if(segundos == 3   ){
+                App.draw(hordas[minutos]);
+            }
+            if(minutos == 5   ){
+                return 4;
+            }else{
+                if(tron.getVida() == 0   ){
+                    return 5;
+                }
+            }
             
         App.setView(view);
         
@@ -512,21 +582,18 @@ int Jogo::Executar(sf::RenderWindow & App){
         }
      
         int dropItens = drops.getQuant();
-       
-        for(i=0;i<dropItens;i++){
-             Item drop;
-            if(i == 0){
-                drops.PegaOPrimeiro(drop,deuCerto);
+        Item drop;
+        drops.PegaOPrimeiro(drop,deuCerto);
+        while(deuCerto){
+            if(drop.Bateu(tron.animatedSprite) ){
+                drops.removeP(drop,deuCerto);
+                sistemaItens.inserirItem(drop);
             }else{
-                drops.PegaOProximo(drop,deuCerto);
+                App.draw(drop.itemDrop);
             }
-                if(drop.Bateu(tron.animatedSprite) ){
-                    drops.removeP(drop,deuCerto);
-                     sistemaItens.inserirItem(drop);
-                }
-                App.draw(drop.item);
-             //   printf("Quantidade de itens: %d\n",dropItens);
+            drops.PegaOProximo(drop,deuCerto);
         }
+  
             
             
         App.draw(tron.animatedSprite);
@@ -556,7 +623,7 @@ void Jogo::teste(sf::Time frameTime,sf::RenderWindow & App){
                         discosHeroi.removeP(discoHeroi[j],deuCerto);
                     }
                 }
-                if(tron.animatedSprite.getGlobalBounds().intersects(inimigoAux[i].animatedSprite.getGlobalBounds()) && tron.getAtacando() ){
+                if(tron.Bateu(inimigoAux[i].animatedSprite) && tron.getAtacando() && !tron.pocaoUsando ){
                     
                             inimigoAux[i].tirarVida();
                             anima=true;
@@ -569,6 +636,7 @@ void Jogo::teste(sf::Time frameTime,sf::RenderWindow & App){
                         inimigoAux[i].procura(tron.animatedSprite,frameTime);
                     if(!inimigoAux[i].getAtacouDisco() && inimigoAux[i].getAtacando()){
                         if(inimigoAux[i].Bateu(tron.animatedSprite)){
+                            sons.emiteSomBarra(somInimigo,deuCerto);
                             tron.perdeVida();
                         }
                     }
@@ -582,6 +650,7 @@ void Jogo::teste(sf::Time frameTime,sf::RenderWindow & App){
                         idInimigo++;
                         discoInimigo.mover(tron.getAndando(),tron.getDirecao(),tron.getPulando());
                         discosInimigos.insere(discoInimigo,deuCerto);
+                        sons.emiteSomDisco(somInimigo,deuCerto);
                     }
                     if(!anima)
                      App.draw(inimigoAux[i].animatedSprite);
@@ -589,7 +658,7 @@ void Jogo::teste(sf::Time frameTime,sf::RenderWindow & App){
                 }else{
                     if(!inimigoAux[i].statusDrop && drops.getQuant() < 4){
                         inimigoAux[i].statusDrop=true;
-                        inimigoAux[i].drop.setPosicao(sf::Vector2f(inimigoAux[i].animatedSprite.getPosition().x ,inimigoAux[i].animatedSprite.getPosition().y                         ));
+                        inimigoAux[i].drop.setPosicao(sf::Vector2f(inimigoAux[i].animatedSprite.getPosition().x + 80 ,inimigoAux[i].animatedSprite.getPosition().y + 75 ));
                         drops.insere(inimigoAux[i].drop,deuCerto);
                     }
                 }

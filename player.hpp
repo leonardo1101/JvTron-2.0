@@ -21,22 +21,23 @@ class Player{
         int idDisco;
         
         
+        bool Bateu(AnimatedSprite);
         AnimatedSprite animatedSprite;   
         Animation* currentAnimation;
         
         //Animacao para cada estado possivel do heroi
         //utilizado vetor para ficar mais facil saber qual animação utilizar para tal item
-        Animation walkingAnimationRight[5];
+        Animation walkingAnimationRight[6];
         Animation levandoDano[2];
-        Animation walkingAnimationLeft[5];
-        Animation stayAnimation[5];
-        Animation stayAnimationEsq[5];
-        Animation ataqueAnimation[5];
-        Animation ataqueAnimationEsq[5];
-        Animation pulandoDir[5];
-        Animation descendoDir[5];
-        Animation pulandoEsq[5];
-        Animation descendoEsq[5];
+        Animation walkingAnimationLeft[6];
+        Animation stayAnimation[6];
+        Animation stayAnimationEsq[6];
+        Animation ataqueAnimation[6];
+        Animation ataqueAnimationEsq[6];
+        Animation pulandoDir[6];
+        Animation descendoDir[6];
+        Animation pulandoEsq[6];
+        Animation descendoEsq[6];
 // // <<<<<<< HEAD
 //         void perdeVida();
 //         void ganhaVida();
@@ -53,22 +54,27 @@ class Player{
         void pular();
         bool getPulando();
         bool getAndando();
+        bool pocaoUsando;
         sf::Sprite barraVida;
         
         sf::Vector2f getCameraGround();
+        int getIdItem();
         sf::Vector2f getCameraBackground();
         
         void estadoPulo();
-
+        bool getAdicionarDoisDiscos();
          bool perdeVida();
          bool ganhaVida();
+         int getVida();
     private:
         sf::Sprite tron;
 
-        sf::Texture forma[30];
+        sf::Texture forma[32];
         sf::Texture vida[6];
         int direcao;
         int nDir;
+        
+        bool adicionarDoisDiscos;
         int nEsq;
         int idItem;
         int vidaQuant;
@@ -94,6 +100,7 @@ class Player{
         bool pulando;
         bool descendo;
    
+        bool atacouComLanca;
         sf::Vector2f cameraGround;
         sf::Vector2f cameraBackground;
         
@@ -113,7 +120,51 @@ class Player{
         int contPulo;
         int contPulo2;
 };
-
+int Player::getIdItem(){
+    return idItem;
+};
+int Player::getVida(){
+    return vidaQuant;
+};
+ bool Player::getAdicionarDoisDiscos(){
+     return adicionarDoisDiscos;
+};
+bool Player::Bateu(AnimatedSprite inimigo){
+    sf::RectangleShape range;
+    if(idItem == 2){
+        range.setFillColor(sf::Color(32, 210, 212));
+        range.setSize(sf::Vector2f(150.f, 180.f));
+        range.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 150, animatedSprite.getPosition().y ));
+        if(direcao == 1){
+                if( 300 + inimigo.getPosition().x >= range.getPosition().x  && inimigo.getPosition().x < range.getPosition().x + 150
+            ){
+                    return true;
+            }
+        }else{
+            if( inimigo.getPosition().x  <= range.getPosition().x  && inimigo.getPosition().x + 300 >= range.getPosition().x - 150){
+                return true;
+            }
+        }
+    }else{
+        if(idItem == 0){
+            range.setFillColor(sf::Color(32, 210, 212));
+            range.setSize(sf::Vector2f(70.f, 180.f));
+            range.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 75, animatedSprite.getPosition().y ));
+            if(direcao == 1){
+                    if( 300 + inimigo.getPosition().x >= range.getPosition().x  && inimigo.getPosition().x < range.getPosition().x + 50
+                ){
+                        return true;
+                }
+            }else{
+                if( inimigo.getPosition().x  <= range.getPosition().x  && inimigo.getPosition().x + 300 >= range.getPosition().x - 50
+                ){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+};
 bool Player::getAndando(){
     return andandoDir || andandoEsq;
 };
@@ -137,6 +188,10 @@ void Player::setTimePulo(){
     tempoPulo = puloClock.getElapsedTime();
 };
 void Player::pular(){
+    if(atacouComLanca){
+        animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
+        atacouComLanca=false;
+    }
     
     if(pulando == false && descendo == false){
         if(!gravidadeTrocarPulo){
@@ -150,45 +205,57 @@ void Player::pular(){
         if(getDirecao() == 1){
             if(!paradoBool){
                 setCameraGround(sf::Vector2f(5.f,0.0f));
-                animatedSprite.move(5.f, - 6.5f);
+                animatedSprite.move(5.f, - 7.f);
             }else{
                 setCameraGround(sf::Vector2f(0.f,0.0f));
-                animatedSprite.move(0.f, - 6.5f);
+                animatedSprite.move(0.f, - 7.f);
             }
             animatedSprite.setFrameTime(sf::seconds(0.1));
-            currentAnimation = &pulandoDir[idItem];
+            if(idItem == 4)
+                currentAnimation = &pulandoDir[1];
+            else
+                currentAnimation = &pulandoDir[idItem];
         }else{
             if(!paradoBool){
                 setCameraGround(sf::Vector2f(- 5.f,0.0f));
-                animatedSprite.move(- 5.f,- 6.5f);
+                animatedSprite.move(- 5.f,- 7.f);
             }else{
                 setCameraGround(sf::Vector2f(0.f,0.0f));
-                animatedSprite.move(0.f, - 6.5f);
+                animatedSprite.move(0.f, - 7.f);
             }
+            if(idItem == 4)
+                currentAnimation = &pulandoEsq[1];
+            else
+                currentAnimation = &pulandoEsq[idItem];
             animatedSprite.setFrameTime(sf::seconds(0.1));
-            currentAnimation = &pulandoEsq[idItem];
         }
     }else{
         if(getDirecao() == 1){
             
              if(!paradoBool){
                 setCameraGround(sf::Vector2f(5.f,0.0f));
-                animatedSprite.move(5.f,6.5f);
+                animatedSprite.move(5.f,7.f);
              }else{
                 setCameraGround(sf::Vector2f(0.f,0.0f));
-                animatedSprite.move(0.f, 6.5f);
+                animatedSprite.move(0.f, 7.f);
             }   
             animatedSprite.setFrameTime(sf::seconds(0.1));
-            currentAnimation = &descendoDir[idItem];
+             if(idItem == 4)
+                currentAnimation = &descendoDir[1];
+            else
+                currentAnimation = &descendoDir[idItem];
         }else{
             if(!paradoBool){
                 setCameraGround(sf::Vector2f(- 5.f,0.0f));
-                animatedSprite.move(- 5.f,6.5f);
+                animatedSprite.move(- 5.f,7.f);
             }else{
                 setCameraGround(sf::Vector2f(0.f,0.0f));
-                animatedSprite.move(0.f, 6.5f);
+                animatedSprite.move(0.f, 7.f);
             }   
             animatedSprite.setFrameTime(sf::seconds(0.1));
+            if(idItem == 4)
+                currentAnimation = &descendoEsq[1];
+            else
             currentAnimation = &descendoEsq[idItem];
         }
     }
@@ -225,6 +292,10 @@ void Player::estadoPulo(){
         animatedSprite.move(movement * frameTime.asSeconds());
 }
 void Player::parado(){
+    if(atacouComLanca){
+        animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
+        atacouComLanca=false;
+    }
     gravidadeTrocarPulo=false;
     paradoBool=true;
     andandoDir= false;
@@ -233,9 +304,15 @@ void Player::parado(){
     setCameraBackground(sf::Vector2f(0.f,0.0f));
     if(getDirecao() == 1){
 	    animatedSprite.setFrameTime(sf::seconds(0.7));
+         if(idItem == 4)
+        currentAnimation = &stayAnimation[1];
+        else
         currentAnimation = &stayAnimation[idItem];
     }else{
         animatedSprite.setFrameTime(sf::seconds(0.7));
+        if(idItem == 4)
+        currentAnimation = &stayAnimationEsq[1];
+        else
         currentAnimation = &stayAnimationEsq[idItem];
 	}
     animatedSprite.play(*currentAnimation);
@@ -245,6 +322,7 @@ bool Player::getAtacando(){
 };
 void Player::resetDisco(){
     adicionaDisco=false;
+    adicionarDoisDiscos=false;
 };
 void Player::setTimeAtaque(){
     tempoAtaque = ataqueClock.getElapsedTime();
@@ -268,21 +346,57 @@ void Player::atacar(){
                 animatedSprite.setFrameTime(sf::seconds(0.04));
                  //seta o vetor e o ponto do disco a ser lançado
                 adicionaDisco=true;
+                pocaoUsando = false;
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.045));
-                if(idItem == 3)
+                if(idItem == 3){
                     ganhaVida();
+                    pocaoUsando = true;
+                    
+                }else{
+                    pocaoUsando=false;
+                    if(idItem == 2){
+                        if(!atacouComLanca){
+                            animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x - 80,768 - 2.5f * 64  - 140));
+                            atacouComLanca=true;
+                        }
+                    }else{
+                        if(idItem == 4){
+                            animatedSprite.setFrameTime(sf::seconds(0.045));
+                            adicionarDoisDiscos=true;
+                        }else{
+                            animatedSprite.setFrameTime(sf::seconds(0.045));
+                        }
+                    }
+                }
             }
         }else{
             currentAnimation = &ataqueAnimationEsq[idItem];
             if(idItem == 1){
                 animatedSprite.setFrameTime(sf::seconds(0.04));
                 adicionaDisco=true;
-            
+                pocaoUsando = false;
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.045));
-                 if(idItem == 3)
-                    ganhaVida();
+                 if(idItem == 3){
+                    ganhaVida();                    
+                    pocaoUsando = true;
+                 }else{
+                     pocaoUsando=false;
+                     if(idItem == 2){
+                        if(!atacouComLanca){
+                            animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x - 80,768 - 2.5f * 64  - 140));
+                            atacouComLanca=true;
+                        }
+                    }else{
+                        if(idItem == 4){
+                            animatedSprite.setFrameTime(sf::seconds(0.045));
+                            adicionarDoisDiscos=true;
+                        }else{
+                            animatedSprite.setFrameTime(sf::seconds(0.045));
+                        }
+                    }
+                }
             }   
         }
     }
@@ -314,30 +428,44 @@ void Player::setIdItem(int id){
         lanca=false;
 };
 void Player::moverDireita(){
+    if(atacouComLanca){
+        animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
+        atacouComLanca=false;
+    }
     paradoBool=false;
     pulando=false;
     descendo=false;
     gravidadeTrocarPulo=false;
-    setCameraGround(sf::Vector2f(20.f,0.0f));
-    animatedSprite.move(20.f,0.f);
+    setCameraGround(sf::Vector2f(9.f,0.0f));
+    animatedSprite.move(9.f,0.f);
     direcao=1;
     animatedSprite.setFrameTime(sf::seconds(0.1));
     andandoDir= true;
     andandoEsq=false;
+    if(idItem == 4)
+        currentAnimation = &walkingAnimationRight[1];
+    else
     currentAnimation = &walkingAnimationRight[idItem];
     animatedSprite.play(*currentAnimation);
 };
 void Player::moverEsquerda(){
+    if(atacouComLanca){
+        animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
+        atacouComLanca=false;
+    }
     paradoBool=false;
     pulando=false;
     gravidadeTrocarPulo=false;
     descendo=false;
-    setCameraGround(sf::Vector2f(- 20.f,0.0f));
-    animatedSprite.move(- 20.f,0.f);
+    setCameraGround(sf::Vector2f(- 9.f,0.0f));
+    animatedSprite.move(- 9.f,0.f);
     direcao=0;
     animatedSprite.setFrameTime(sf::seconds(0.1));
     andandoDir= false;
     andandoEsq=true;
+    if(idItem == 4)
+        currentAnimation = &walkingAnimationLeft[1];
+    else
     currentAnimation = &walkingAnimationLeft[idItem];
     animatedSprite.play(*currentAnimation);
 };
@@ -346,7 +474,7 @@ int Player::getDirecao(){
    return direcao; 
 }
 Player::Player(int v): nVidas(v){
-    
+    pocaoUsando=false;
     int i;
     bool DeuCerto;
     lanca=false;
@@ -355,6 +483,8 @@ Player::Player(int v): nVidas(v){
     //variavel que eh utilizada para quando atacar terminar o ataque
     atacando = false;  
     paradoBool=false;
+    adicionarDoisDiscos=false;
+    atacouComLanca=false;
     //variaveis para verificar se o heroi está se movendo para utilizar com o pulo
      andandoDir = false;
      andandoEsq = false;
@@ -418,8 +548,23 @@ Player::Player(int v): nVidas(v){
     }
     forma[6].loadFromFile("spriteProtagonista/jogandodisco.png");
     ataqueAnimation[1].setSpriteSheet(forma[6]);
+    
     for(i=1;i<8;i++){
         ataqueAnimation[1].addFrame(sf::IntRect(forma[6].getSize().x/8 * i,forma[6].getSize().y * 0,forma[6].getSize().x / 8,forma[6].getSize().y));
+        ataqueAnimation[4].addFrame(sf::IntRect(forma[6].getSize().x/8 * i,forma[6].getSize().y * 0,forma[6].getSize().x / 8,forma[6].getSize().y));
+        
+    }
+    forma[28].loadFromFile("spriteProtagonista/atacadoisdiscos.png");
+    ataqueAnimation[4].setSpriteSheet(forma[28]);
+    for(i=0;i<3;i++){
+        ataqueAnimation[4].addFrame(sf::IntRect(forma[28].getSize().x/3 * i,forma[28].getSize().y * 0,forma[28].getSize().x / 3,forma[28].getSize().y));
+        
+    }
+    forma[29].loadFromFile("spriteProtagonista/atacadoisdiscosEsq.png");
+    ataqueAnimationEsq[4].setSpriteSheet(forma[29]);
+    for(i=2;i>=0;i--){
+        ataqueAnimationEsq[4].addFrame(sf::IntRect(forma[29].getSize().x/3 * i,forma[29].getSize().y * 0,forma[29].getSize().x / 3,forma[29].getSize().y));
+        
     }
      forma[7].loadFromFile("spriteProtagonista/ParadoEsq.png");
      stayAnimationEsq[0].setSpriteSheet(forma[7]);
@@ -497,21 +642,29 @@ Player::Player(int v): nVidas(v){
     
     forma[18].loadFromFile("spriteProtagonista/Pulando0.png");
     pulandoDir[1].setSpriteSheet(forma[18]);
+    pulandoDir[4].setSpriteSheet(forma[18]);
     for(i=0;i<5;i++){
         pulandoDir[1].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
+        pulandoDir[4].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
     }
     descendoDir[1].setSpriteSheet(forma[18]);
+    descendoDir[4].setSpriteSheet(forma[18]);
     for(i=3;i>=0;i--){
         descendoDir[1].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
+        descendoDir[4].addFrame(sf::IntRect(forma[18].getSize().x/5 * i,forma[18].getSize().y * 0,forma[18].getSize().x /5,forma[18].getSize().y));
     }
     forma[19].loadFromFile("spriteProtagonista/PulandoEsq0.png");
     pulandoEsq[1].setSpriteSheet(forma[19]);
+    pulandoEsq[4].setSpriteSheet(forma[19]);
     for(i=4;i>=0;i--){
         pulandoEsq[1].addFrame(sf::IntRect(forma[19].getSize().x/5 * i,forma[19].getSize().y * 0,forma[19].getSize().x /5,forma[19].getSize().y));
+        pulandoEsq[4].addFrame(sf::IntRect(forma[19].getSize().x/5 * i,forma[19].getSize().y * 0,forma[19].getSize().x /5,forma[19].getSize().y));
     }
     descendoEsq[1].setSpriteSheet(forma[19]);
+    descendoEsq[4].setSpriteSheet(forma[19]);
     for(i=0;i<5;i++){
         descendoEsq[1].addFrame(sf::IntRect(forma[19].getSize().x/5 * i,forma[19].getSize().y * 0,forma[19].getSize().x /5,forma[19].getSize().y));
+        descendoEsq[4].addFrame(sf::IntRect(forma[19].getSize().x/5 * i,forma[19].getSize().y * 0,forma[19].getSize().x /5,forma[19].getSize().y));
     }
     
     forma[20].loadFromFile("spriteProtagonista/Pulando1.png");
@@ -557,7 +710,7 @@ Player::Player(int v): nVidas(v){
     
     forma[27].loadFromFile("spriteProtagonista/danoEsq.png");
     levandoDano[1].setSpriteSheet(forma[27]);
-    levandoDano[1].addFrame(sf::IntRect(forma[27].getSize().x/7 * 1,forma[27].getSize().y * 0,forma[27].getSize().x/2 ,forma[27].getSize().y));
+    levandoDano[1].addFrame(sf::IntRect(forma[27].getSize().x/2 * 1,forma[27].getSize().y * 0,forma[27].getSize().x/2 ,forma[27].getSize().y));
     levandoDano[1].addFrame(sf::IntRect(forma[27].getSize().x/2 * 0,forma[27].getSize().y * 0,forma[27].getSize().x/2 ,forma[27].getSize().y));
     
     
@@ -601,13 +754,13 @@ bool Player::ganhaVida(){
 bool Player::perdeVida(){
     bool DeuCerto=false;
     tempoBatida= batida.getElapsedTime();
-    if(vidaQuant > 1){
+    if(vidaQuant > 0){
         if(sf::seconds(0.5) < tempoBatida){
             DeuCerto=true;
             vidaQuant--;
             barraVida.setTexture(vida[vidaQuant - 1]);
             batida.restart();
-            animatedSprite.setFrameTime(sf::seconds(0.8));
+            animatedSprite.setFrameTime(sf::seconds(0.1));
             if(direcao == 1)
                 currentAnimation = &levandoDano[0];
             else
