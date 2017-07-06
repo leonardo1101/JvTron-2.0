@@ -26,12 +26,25 @@
 int main (){
     std::vector<Tela*> telas; // vetor que conterá as telas
     int numeroTela = 0; // tela de inicio da aplicacao (0) é o menu
+    sf::Music musica;
 
     // Janela do aplicativo creation
     sf::RenderWindow App(sf::VideoMode(1024, 768), "JvAdventure", sf::Style::Titlebar | sf::Style::Close);
     App.setFramerateLimit(60);
     // Esconder seta do mouse
     //App.setMouseCursorVisible(false);
+
+    //verificações. Se der erro na abertura de uma musica, o programa retorna 1
+    if(!musica.openFromFile("Derezzed.ogg")){
+        std::cout << "ERROR 1" << std::endl;
+        return 1;
+    }
+
+    //music e entra num loop para que a musica reinicie quando ela acabar
+    musica.setLoop(true);
+
+    //inicializa a musica
+    musica.play();
 
     // Preparacao das tela
     Menu * s0 = new Menu(App.getSize().x, App.getSize().y); // TELA 0: menu do jogo
