@@ -112,6 +112,7 @@ int Ganhou::Executar(sf::RenderWindow &App){
                             	return (1); // jogar novamente
                                 break;
                             case 1:
+                            	App.close();
                                 return (-1); // sair
                                 break;
                         }

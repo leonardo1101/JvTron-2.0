@@ -62,6 +62,7 @@ void Som::musica(sf::Music &music, bool ok){
         ok = false;
     }
     music.setVolume(75);
+    music.setLoop(true);
     music.play();
     ok = true;
 };

@@ -142,12 +142,12 @@ bool TestEvent(MyKeys k, sf::Event e){
         hordas[i].setPosition(sf::Vector2f(512 - (hordasTexture[i].getSize().x/2)*3 , 768/2 - (hordasTexture[i].getSize().y/2)*3  ));
     }
     //seta o background e o ground
-    backgroundT.loadFromFile("TilesMap/teste.png");
+    backgroundT.loadFromFile("background.png");
     
     background.setTexture(backgroundT);
     background.setScale(sf::Vector2f(3.3f,3.3f));
     background.setPosition(sf::Vector2f(- 768.f, - 2.5f * 64 * 3.5 + 20));
-    groundT.loadFromFile("TilesMap/chao.png");
+    groundT.loadFromFile("chao.png");
     ground.setTexture(groundT);
     ground.setScale(sf::Vector2f(4.258f,2.5f));
     ground.setPosition(sf::Vector2f(- 189.f, 768 - 2.5f * 64 ));
@@ -282,12 +282,12 @@ Jogo::Jogo(float larg, float Alt){
         hordas[i].setPosition(sf::Vector2f(512 - (hordasTexture[i].getSize().x/2)*3 , 768/2 - (hordasTexture[i].getSize().y/2)*3  ));
     }
      //seta o background e o ground
-    backgroundT.loadFromFile("TilesMap/teste.png");
+    backgroundT.loadFromFile("background.png");
     
     background.setTexture(backgroundT);
     background.setScale(sf::Vector2f(3.3f,3.3f));
     background.setPosition(sf::Vector2f(- 768.f, - 2.5f * 64 * 3.5 + 20));
-    groundT.loadFromFile("TilesMap/chao.png");
+    groundT.loadFromFile("chao.png");
     ground.setTexture(groundT);
     ground.setScale(sf::Vector2f(4.258f,2.5f));
     ground.setPosition(sf::Vector2f(- 189.f, 768 - 2.5f * 64 ));
@@ -336,7 +336,7 @@ Jogo::~Jogo(){
 
 int Jogo::Executar(sf::RenderWindow & App){
     sons.musica(somFundo,deuCerto); //som da musica de fundo
-     discosHeroi.cria(); //cria a lista de disco do heroi
+    discosHeroi.cria(); //cria a lista de disco do heroi
     discosInimigos.cria();//cria a lista de disco do inimigo
     Disco dUm,dDois; //discos auxiliares
     int drawHorda =0; // verifica qual horda mostrar

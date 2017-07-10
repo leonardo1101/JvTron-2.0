@@ -112,6 +112,7 @@ int Perdeu::Executar(sf::RenderWindow &App){
                             	return (0); // jogar novamente
                                 break;
                             case 1:
+                            	App.close();
                                 return (-1); // sair
                                 break;
                         }
