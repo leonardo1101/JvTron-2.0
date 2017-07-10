@@ -9,23 +9,23 @@
 
 class Item{
     public:
-        void setLocationItem(sf::Vector2f);
-        void carregarItem(std::string,float);
-        bool Bateu(AnimatedSprite &heroi);
-        void setId(int);
-        int getId();
-        int idCaixa;
-        int getQuantidade();
-        void setQuantidade(int);
-        void diminuirQuantidade();
-        void aumentarQuantidade();
-        void mover(sf::Vector2f);
-        void setPosicao(sf::Vector2f);
-        sf::Vector2u getTamanho();
-        void fakeGravidade(sf::Vector2f gravidade);
-        sf::Sprite getItem();
-        sf::Sprite itemDrop;
-       sf::Sprite item;
+        void setLocationItem(sf::Vector2f); // seta a posicao do item
+        void carregarItem(std::string,float); // carrega o item
+        bool Bateu(AnimatedSprite &heroi); //verifica se batei
+        void setId(int); //seta o id do item
+        int getId(); //pega o id do item
+        int idCaixa; // id da caixa que o item está
+        int getQuantidade(); // pega a quantidade de itens
+        void setQuantidade(int); // seta a  quantidade de itens
+        void diminuirQuantidade(); // diminui a quantidade de iten
+        void aumentarQuantidade(); // aumenta a quantidade de itens
+        void mover(sf::Vector2f);   // faz o item mudar de posicao
+        void setPosicao(sf::Vector2f); // seta a posicao do item 
+        sf::Vector2u getTamanho(); // pega o tamanha do item
+        void fakeGravidade(sf::Vector2f gravidade); // gravidade sobre o item
+        sf::Sprite getItem(); // pega o item
+        sf::Sprite itemDrop; // item do drop
+       sf::Sprite item; // item
     private:
        sf::Texture textura;
        sf::Texture texturaDrop;

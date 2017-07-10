@@ -9,6 +9,7 @@
 class Inimigo{
     public:
         int id;
+        //animatedSprite para animações
         AnimatedSprite animatedSprite;
         Animation walkingAnimationRight[2];
         Animation walkingAnimationLeft[2];
@@ -16,17 +17,25 @@ class Inimigo{
         Animation stayAnimationEsq[2];
         Animation ataqueAnimationDir[2];
         Animation ataqueAnimationEsq[3];  
+        //verifica se foi deixado algum drop
         bool statusDrop;
+        //seta o tipo de inimigo
         void setTipo(int);
+        //seta se o disco é jogado
         void setDiscoJogado();
+        //verifica se o inimigo atacou o disco
         bool getAtacouDisco();
+        //seta a posicao do disco
         void setPosicao(sf::Vector2f);
+        //pega a posicao do disco
         sf::Vector2f getPosicao();
+        //ataca
         void atacar();
+        //verifica se tem drop
         bool temDrop;
         
-        Item drop;
-        int getDirecao();
+        Item drop; //  item do drop
+        int getDirecao(); //direcao do inimigo
         bool procurarHeroi(AnimatedSprite &,sf::Time);
         void procura(AnimatedSprite &,sf::Time);
         bool Bateu(AnimatedSprite &heroi);
@@ -36,12 +45,14 @@ class Inimigo{
         int getVida();
         void tirarVida();
         bool getAtacando();
+        bool andando;
         void gerarItem();
     private:
-        int estado;
-        sf::Vector2f sizeEstado[2];
-        bool atacando;
-        bool atacouDisco;
+        int estado; // pega o estado do inimigo
+        sf::Vector2f sizeEstado[2]; // pega o tamanho da texture de cada estado do inimigo
+        bool atacando; // verifica se o nimigo atacou
+        bool atacouDisco; //verifica se o disco foi atacado
+        //time e clock do ataque
         sf::Time tempoAtaque;
         sf::Clock ataqueClock;
         Animation* currentAnimation;
@@ -50,7 +61,7 @@ class Inimigo{
         int direcao;
         int tipo;
         sf::Vector2f movement;
-        float speed = 300.5f;
+        float speed = 330.5f; // velocidade do movimento
         
         
         sf::Clock batida;
@@ -129,16 +140,20 @@ void Inimigo::setDiscoJogado(){
 bool Inimigo::getAtacouDisco(){
     return atacouDisco;
 };
+//seta a posicção do inimigo
 void Inimigo::setPosicao(sf::Vector2f posicao){
     animatedSprite.setPosition(sf::Vector2f(posicao.x - sizeEstado[estado].x/2 , posicao.y - sizeEstado[estado].y/2));
 };
+//pega a posição do inimigo
 sf::Vector2f Inimigo::getPosicao(){
     return sf::Vector2f(animatedSprite.getPosition().x + sizeEstado[estado].x/2 , animatedSprite.getPosition().y + sizeEstado[estado].y/2 );
     
 };
+//faz o inimigo atacar
 void Inimigo::atacar(){
     movement.x=0;
     movement.y=0;
+    andando=false;
     if(direcao == -1)
         currentAnimation = &ataqueAnimationEsq[tipo - 1];
     else
@@ -150,15 +165,15 @@ void Inimigo::atacar(){
         animatedSprite.play(*currentAnimation);
     }else{
         tempoAtaque = ataqueClock.getElapsedTime();
-        if(tempoAtaque >= sf::seconds(0.8) || !atacando){
+        if(tempoAtaque >= sf::seconds(1.4) || !atacando){
             atacouDisco=true;
             ataqueClock.restart();
             animatedSprite.setFrameTime(sf::seconds(0.01));
             currentAnimation = &stayAnimationEsq[tipo - 1];
             animatedSprite.play(*currentAnimation);
         }else{
-            if(tempoAtaque <= sf::seconds(0.315) ){
-                animatedSprite.setFrameTime(sf::seconds(0.045));
+            if(tempoAtaque <= sf::seconds(0.9) ){
+                animatedSprite.setFrameTime(sf::seconds(0.08));
                 animatedSprite.play(*currentAnimation);
             }else{
                 animatedSprite.setFrameTime(sf::seconds(0.01));
@@ -170,11 +185,11 @@ void Inimigo::atacar(){
     }
     atacando=true;
 };
-
+//seta o inimigo como animiações o tipo, direcao e qual item ele estará carregando
 void Inimigo::setTipo(int t){
     int i;
     batida.restart();
-    setVida(3);
+    setVida(1);
     tipo=t;
     direcao=-1;
     atacouDisco=false;
@@ -183,6 +198,7 @@ void Inimigo::setTipo(int t){
     setSizeEstado();
     gerarItem();
     statusDrop=false;
+    andando=false;
     //se o inimigo for do tipo 1 ele irá utilizar o disco
     if(tipo == 1){
         
@@ -256,6 +272,7 @@ void Inimigo::setTipo(int t){
     currentAnimation = &stayAnimationEsq[tipo - 1];
     animatedSprite.play(*currentAnimation);
 };
+//inimigo procura o heroi
 bool Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameTime){
      bool achou=false;
     sf::RectangleShape campoVisao(sf::Vector2f(getPosicao().x - 600.f , getPosicao().y ));
@@ -286,6 +303,7 @@ bool Inimigo::procurarHeroi(AnimatedSprite &heroi, sf::Time frameTime){
     }
     return achou;
 };
+// o inimigo procura o heroi
 void Inimigo::procura(AnimatedSprite &heroi, sf::Time frameTime){
 
     if(heroi.getPosition().x - animatedSprite.getPosition().x < 0 ){
@@ -295,7 +313,9 @@ void Inimigo::procura(AnimatedSprite &heroi, sf::Time frameTime){
     }
     andar(frameTime);
 };
+//faz o inimigo andar em direção ao heroi
 void Inimigo::andar(sf::Time frameTime){
+    andando=true;
     animatedSprite.setFrameTime(sf::seconds(0.1));
     movement.x = 0;
     if(direcao == -1){
@@ -305,9 +325,11 @@ void Inimigo::andar(sf::Time frameTime){
         currentAnimation = &walkingAnimationRight[tipo - 1];
         movement.x = speed;
     }
-    animatedSprite.play(*currentAnimation );
+    
     animatedSprite.move(movement * frameTime.asSeconds());
+    animatedSprite.play(*currentAnimation );
 }
+//verifica se o inimigo bateu
 bool Inimigo::Bateu(AnimatedSprite &heroi){
     sf::RectangleShape range;
     if(tipo != 1){

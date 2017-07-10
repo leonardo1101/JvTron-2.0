@@ -7,10 +7,14 @@ using namespace std;
 class Som{
 public:
     Som(){};
+    //mite o som do disco sendo jogado
 	void emiteSomDisco(sf::Music &somDisco, bool ok);
+    //emite o som da barra
 	void emiteSomBarra(sf::Music &somBarra, bool ok);
 	void emiteSomGolpe(sf::Music &somGolpe, bool ok);
+    //emite o som do pulo
 	void emiteSomPulo(sf::Music &somPulo, bool ok);
+    //emite o som da musica
 	void musica(sf::Music &music, bool ok); //musica de fundo
 };
 

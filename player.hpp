@@ -38,11 +38,8 @@ class Player{
         Animation descendoDir[6];
         Animation pulandoEsq[6];
         Animation descendoEsq[6];
-// // <<<<<<< HEAD
-//         void perdeVida();
-//         void ganhaVida();
+
         void setTimeFrame(sf::Time);
-//         int getVidaAtual() const;
         void fakeGravidade(sf::Vector2f);
         void atacar();
         void setTimeAtaque();
@@ -101,6 +98,7 @@ class Player{
         bool descendo;
    
         bool atacouComLanca;
+        //variavei para as cameras
         sf::Vector2f cameraGround;
         sf::Vector2f cameraBackground;
         
@@ -108,7 +106,7 @@ class Player{
         float speedDir;
         float speedEsq;
         bool gravidadeTrocarPulo;
-        
+        //variaveis de estados para pulo e gravidade ou ataque
         bool paradoBool;
         bool gravidadeMudada;
         bool atacando;
@@ -120,15 +118,19 @@ class Player{
         int contPulo;
         int contPulo2;
 };
+//verifica se o id do item que o heroi está usando
 int Player::getIdItem(){
     return idItem;
 };
+//pga a vida do heroi
 int Player::getVida(){
     return vidaQuant;
 };
+//retorna se o heroi tem que adicionar dois discos
  bool Player::getAdicionarDoisDiscos(){
      return adicionarDoisDiscos;
 };
+//verifica se o heroi bateu
 bool Player::Bateu(AnimatedSprite inimigo){
     sf::RectangleShape range;
     if(idItem == 2){
@@ -165,28 +167,34 @@ bool Player::Bateu(AnimatedSprite inimigo){
     }
     return false;
 };
+//verifica se o heroi está andando
 bool Player::getAndando(){
     return andandoDir || andandoEsq;
 };
-
+//seta as cameras do heroi
 void Player::setCameraGround(sf::Vector2f camera){
     cameraGround=camera;
 };
 void Player::setCameraBackground(sf::Vector2f camera ){
     cameraBackground=camera;
 };
+//pega a camera do heroi
 sf::Vector2f Player::getCameraGround(){
     return cameraGround;
 };
+//pega a camera do heroi
 sf::Vector2f Player::getCameraBackground(){
     return cameraBackground;
 };
+//verifica se o heroi ainda está na ação de pulando
 bool Player::getPulando(){
     return pulando || descendo;
 };
+//seta o time do pulo do heroi
 void Player::setTimePulo(){
     tempoPulo = puloClock.getElapsedTime();
 };
+// faz a ação de pular
 void Player::pular(){
     if(atacouComLanca){
         animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
@@ -260,6 +268,7 @@ void Player::pular(){
         }
     }
 };
+// seta o estado do pulo do heroi
 void Player::estadoPulo(){
     
         if(pulando){
@@ -291,6 +300,7 @@ void Player::estadoPulo(){
         animatedSprite.play(*currentAnimation);
         animatedSprite.move(movement * frameTime.asSeconds());
 }
+//player está parado
 void Player::parado(){
     if(atacouComLanca){
         animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
@@ -320,19 +330,23 @@ void Player::parado(){
 bool Player::getAtacando(){
     return atacando;
 };
+//da um reset no disco
 void Player::resetDisco(){
     adicionaDisco=false;
     adicionarDoisDiscos=false;
 };
+//set o tempo de ataque do heroi
 void Player::setTimeAtaque(){
     tempoAtaque = ataqueClock.getElapsedTime();
     if(tempoAtaque >= sf::seconds(0.25) ){
             atacando=false;
     }
 };
+//pega se o tem que adicionar um disco na lista de discos do heroi
 bool Player::adicionarDisco(){
     return adicionaDisco;
 };
+// faz o heroi  utiliza o item correspoendente
 void Player::atacar(){
     paradoBool=true;
     gravidadeTrocarPulo=false;
@@ -402,9 +416,11 @@ void Player::atacar(){
     }
     animatedSprite.play(*currentAnimation);
 };
+//set frame do heroi
 void Player::setTimeFrame(sf::Time tempo){
     frameTime=tempo;
 };
+//fake gravidade do heroi
 void Player::fakeGravidade(sf::Vector2f gravidade){
         if(!lanca || paradoBool ){
             if(gravidadeMudada)
@@ -420,6 +436,7 @@ void Player::fakeGravidade(sf::Vector2f gravidade){
         }
 
 };
+//seta o id do item que o player está carregando
 void Player::setIdItem(int id){
     idItem = id;
     if(id == 2)
@@ -427,6 +444,7 @@ void Player::setIdItem(int id){
     else
         lanca=false;
 };
+//pega o heroi para direita
 void Player::moverDireita(){
     if(atacouComLanca){
         animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
@@ -448,6 +466,7 @@ void Player::moverDireita(){
     currentAnimation = &walkingAnimationRight[idItem];
     animatedSprite.play(*currentAnimation);
 };
+//move o heroi para esquerda
 void Player::moverEsquerda(){
     if(atacouComLanca){
         animatedSprite.setPosition(sf::Vector2f(animatedSprite.getPosition().x + 80,768 - 2.5f * 64  - 140));
@@ -469,10 +488,12 @@ void Player::moverEsquerda(){
     currentAnimation = &walkingAnimationLeft[idItem];
     animatedSprite.play(*currentAnimation);
 };
+// pega a direção do heroi
 int Player::getDirecao(){
     
    return direcao; 
 }
+//seta os estados do heroi, como correndo, pulando, atacando - também eh setado vida e variaveis de estado
 Player::Player(int v): nVidas(v){
     pocaoUsando=false;
     int i;
@@ -728,19 +749,23 @@ Player::Player(int v): nVidas(v){
     
     parado();
 }
-
+//seta o tamanho do heroi
 void Player::setTamanho(sf::Vector2f tamanho){
     tron.setScale(tamanho);
 }
-
+//seta a posicao do heroi
 void Player::setPosicao(sf::Vector2f posicao){
     tron.setPosition(posicao);
 }
 
+//da um reset no heroi
 void Player::reset(){
     direcao=1;
+    vidaQuant =6;
+    barraVida.setTexture(vida[5]);
+    animatedSprite.setPosition(sf::Vector2f(500,200 - 140));
 }
-
+//o heroi ganha vida
 bool Player::ganhaVida(){
     bool DeuCerto=false;
     if(vidaQuant < 6){
@@ -750,7 +775,7 @@ bool Player::ganhaVida(){
     }
     return DeuCerto;
 }
-
+//tira vida do heroi
 bool Player::perdeVida(){
     bool DeuCerto=false;
     tempoBatida= batida.getElapsedTime();

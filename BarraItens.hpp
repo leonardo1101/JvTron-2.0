@@ -18,17 +18,17 @@ class BarraItens{
         int quantItens();
            int getDois();
     private:
-        int dois;
-         sf::Texture barra;
-         int idItemCaixa[4];
-        int quantidadeItens;
-        int getIdItem(int);
-        void setPosicaoItens(int);
-        void setCorCaixar(int);
-        sf::Vector2f centralizar(sf::Vector2f,sf::Vector2u, int id);
+         sf::Texture barra; //texture da barra
+         int idItemCaixa[4];    //id contido em cada caixa
+        int quantidadeItens;    //quantidade de itens
+        int getIdItem(int);     //pega o id do item
+        void setPosicaoItens(int);  //pega a posicao dos itens
+        void setCorCaixar(int); //seta a cor das caixas
+        sf::Vector2f centralizar(sf::Vector2f,sf::Vector2u, int id); //centraliza os itens 
       
 
 };
+//centraliza os itens
 sf::Vector2f BarraItens::centralizar(sf::Vector2f posicao,sf::Vector2u tamanho,int id){
     sf::Vector2f central;
     switch(id){
@@ -53,11 +53,11 @@ sf::Vector2f BarraItens::centralizar(sf::Vector2f posicao,sf::Vector2u tamanho,i
     }
     return central;
 };
-
+//pega a quantidade de itens 
 int BarraItens::quantItens(){
     return quantidadeItens;
 }
-
+//da um reset nos elementos da barra de itens
 void BarraItens::resetBarra(){ 
     int i; 
     bool deuCerto; 
@@ -67,6 +67,7 @@ void BarraItens::resetBarra(){
     barraItens.setScale(sf::Vector2f(0.75,0.75)); 
  
     itens.cria(); 
+    itens.limparLista();
      
     for(int i=0; i<4; i++){ 
         caixaItem[i].setSize(sf::Vector2f(50.0f,50.0f)); 
@@ -78,18 +79,19 @@ void BarraItens::resetBarra(){
     //seta posicao das barras 
     barraItens.setPosition(sf::Vector2f(1024 - barra.getSize().x * 0.75,0.0f)); 
 }; 
- 
+//seleciona um item da barra
 int BarraItens::selecionarItem(int numCaixa){ 
     itemSelecionado.setSize(sf::Vector2f(52.0f,52.0f)); 
     itemSelecionado.setFillColor(sf::Color(32, 210, 212)); 
     itemSelecionado.setPosition(sf::Vector2f(1024.f - barra.getSize().x * 0.75 + 79 + 80.0f * numCaixa ,16.0f)); 
     return idItemCaixa[numCaixa] ; 
 }; 
- 
+//ega o id de um item
 int BarraItens::getIdItem(int numCaixa){ 
 
     return idItemCaixa[numCaixa]; 
 }; 
+//seta a posicao de cada item dentro da barra de itens
 void BarraItens::setPosicaoItens(int a){ 
     bool deuCerto; 
     Item auxItem; 
@@ -109,6 +111,7 @@ void BarraItens::setPosicaoItens(int a){
     }
     
 }; 
+//seta a cor das caixas
 void BarraItens::setCorCaixar(int quant ){ 
     bool deuCerto; 
     int aux =0,i,quantItem;  
@@ -129,6 +132,7 @@ void BarraItens::setCorCaixar(int quant ){
         }
     }  
 }; 
+//insere um item 
 void BarraItens::inserirItem(Item item){
     bool deuCerto;
     int i=0,quant; 
@@ -145,7 +149,6 @@ void BarraItens::inserirItem(Item item){
             itens.PegaOProximo(auxItem,deuCerto);
         }
     }else{
-            printf("Fora dos itens");
             item.setQuantidade(6);
             item.idCaixa = quantidadeItens;
             idItemCaixa[quantidadeItens]=item.getId();
@@ -155,6 +158,7 @@ void BarraItens::inserirItem(Item item){
     }
     
 };
+//utiliza o item selecionado dentro da caixa
 void BarraItens::usarItem(int numCaixa){
     bool deuCerto;
     Item auxItem;

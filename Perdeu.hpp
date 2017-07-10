@@ -109,7 +109,7 @@ int Perdeu::Executar(sf::RenderWindow &App){
 					case sf::Keyboard::Return:
 						switch(ItemApertado()){
                             case 0:
-                            	return (1); // jogar novamente
+                            	return (0); // jogar novamente
                                 break;
                             case 1:
                                 return (-1); // sair

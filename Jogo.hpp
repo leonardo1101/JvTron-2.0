@@ -36,62 +36,54 @@ private:
     sf::Music somInimigo;
     Lista<Item> itens;//Lista com itens
     Lista<Disco> discosHeroi; //Lista de Discos
-    Lista<Disco> discosInimigos;
-    Lista<Inimigo> inimigos;
-    Lista<Item> drops;
-    SistemaInimigos sistemaInimigos;
+    Lista<Disco> discosInimigos; //lista com os discos dos inimigos
+    Lista<Item> drops; //lista de itens dos drops dos inimigos
     sf::Text tempoTexto;
-    void gerarInimigos();
-//     //times para o tempo de ataque e pulo
-     sf::Time tempoAtaque;
-     sf::Time tempoPulo;
-     sf::Font fonte;
-     int bloco;
+    void gerarInimigos(); //funcao que gera os inimigos
+     
+    sf::Font fonte;
 
-    BarraItens sistemaItens;
-    sf::Sprite hordas[5];
-    sf::Texture hordasTexture[5];
-    Player tron;
-    Inimigo inimigo;
-    Inimigo inimigoAux[106];
-    Disco discoHeroi[25];
-    int horda;
-    int quantInimigos;
-    int quantItena;
-    Item itensPadrao[6];
-    bool setGerarInimigos;
+    BarraItens sistemaItens; // barra de itens 
+    sf::Sprite hordas[5]; //sprite que mostra as hordas
+    sf::Texture hordasTexture[5]; //texture das hordas
+    Player tron;    //classe player 
+    Inimigo inimigoAux[106]; //vetor de inimigos
+    int horda; //int para ver qual a horada
+    int quantInimigos; // verifica a quantidade de inimigos
+    int quantItena; //int para verificar a quantidade de itens
+    Item itensPadrao[6]; // vetor que cseta os itens padroes
+    bool setGerarInimigos; // boolean para verificar quando setar os inimigos
     
-    sf::View view,view1;
+    sf::View view,view1; //views para movimentação de camera
     
     //Variaveis para carregar as texturas
-    sf::Texture vida;
+    sf::Texture vida; 
     sf::Texture backgroundT;
-    bool procura;
+    bool procura; //bool utilizada para procurar o heroi
   	sf::Texture groundT;
     
     sf::Sprite background;//sprite para o background
     sf::Sprite ground;//sprite para o background
-    void acertarDiscos();
     
+    Disco discoHeroi[42];
     sf::Clock frameClock;//clocks que são utilizados para monitorar os ataques, pulos e frames
     sf::Clock jogoClock;
     
-    sf::Time tempoJogo;
+    sf::Time tempoJogo;//verifica o tempo do jogo
     //para utilizar nos parametros da lista
-    int idInimigo;
+    int idInimigo;  //int para os ids dos inimigos
     bool deuCerto;
-    int minutos,segundos;
-    sf::Vector2f moveInimigo;
+    int minutos,segundos; //int para segundos e minutos do tempo
     bool atualInimigos=false, anima = false;
     float auxTempo;
     int tempo ;
-    Item auxItem;
+    Item auxItem; //auxiliar para o tempo
     //variavel para utilizada para ter certeza de adicionar apenas um disco quando ataca
     bool adicionarUmDisco=false;
     //Variavel para pegar a quantidade de discos jogados pelo heroi
-    int j;
-    int comecoInimigo;
-    bool achou;
+    int j; // contador j
+    int comecoInimigo; //onde começa os inimigos
+    bool achou; //se achou o heroi
 
     //carregamento do disco que pode ser jogado
     Disco disco, discoInimigo;
@@ -100,8 +92,9 @@ private:
    
 public:
 	Jogo(float larg, float alt);
+    void reset(float larg, float alt);
 	~Jogo();
-    void teste(sf::Time,sf::RenderWindow & App);
+    void AcoesInimigo(sf::Time,sf::RenderWindow & App);
 	virtual int Executar(sf::RenderWindow & app);
 };
 
@@ -126,6 +119,63 @@ bool TestEvent(MyKeys k, sf::Event e){
     }
     return (false);
 };
+//opção para jogar novamente
+ void Jogo::reset(float larg, float alt){
+     bool ok;
+    int i;
+    
+    //reseta o tron e seta posicao e tamanho
+    tron.reset();
+    tron.setTamanho(sf::Vector2f(3.0f,3.0f));
+    tron.setPosicao(sf::Vector2f(1.0f,540.0f));
+    setGerarInimigos=false;
+    //seta a posicao das sprites da horda
+    hordasTexture[0].loadFromFile("Arts/1horda.png");
+    hordasTexture[1].loadFromFile("Arts/2horda.png");
+    hordasTexture[2].loadFromFile("Arts/3horda.png");
+    hordasTexture[3].loadFromFile("Arts/4horda.png");
+    hordasTexture[4].loadFromFile("Arts/5horda.png");
+    
+    for(i=0;i<5;i++){
+        hordas[i].setTexture(hordasTexture[i]);
+        hordas[i].setScale(sf::Vector2f(3.f,3.f));
+        hordas[i].setPosition(sf::Vector2f(512 - (hordasTexture[i].getSize().x/2)*3 , 768/2 - (hordasTexture[i].getSize().y/2)*3  ));
+    }
+    //seta o background e o ground
+    backgroundT.loadFromFile("TilesMap/teste.png");
+    
+    background.setTexture(backgroundT);
+    background.setScale(sf::Vector2f(3.3f,3.3f));
+    background.setPosition(sf::Vector2f(- 768.f, - 2.5f * 64 * 3.5 + 20));
+    groundT.loadFromFile("TilesMap/chao.png");
+    ground.setTexture(groundT);
+    ground.setScale(sf::Vector2f(4.258f,2.5f));
+    ground.setPosition(sf::Vector2f(- 189.f, 768 - 2.5f * 64 ));
+    //seta os valores das cameras
+    view.setSize(1024, 768);
+    view.setCenter(1024/2, 768/2);
+    view1.setSize(1024, 768);
+    view1.setCenter(1024/2, 768/2);
+    //seta os valores da barra e insere os itens iniciais
+    sistemaItens.resetBarra();
+    sistemaItens.inserirItem(itensPadrao[1]);
+    sistemaItens.inserirItem(itensPadrao[2]);
+    sistemaItens.inserirItem(itensPadrao[3]);
+    sistemaItens.inserirItem(itensPadrao[4]);
+
+    fonte.loadFromFile("Tr2n.ttf");
+    tempoTexto.setCharacterSize(40);
+	tempoTexto.setFont(fonte);
+	tempoTexto.setPosition(sf::Vector2f(626 - tempoTexto.getCharacterSize()*3.5, 10.f));
+	tempoTexto.setColor(sf::Color::Cyan);
+    //inicia contadores de horda,id,quant,procura
+    horda =0;
+    idInimigo=0;
+    quantInimigos=0;
+    comecoInimigo=0;
+    procura=false;
+}
+//funcao que gera os inimigos e a posicao inicial deles
 void Jogo::gerarInimigos(){
     int i, tipo=0;
     float local=0;
@@ -140,7 +190,6 @@ void Jogo::gerarInimigos(){
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
                 
-               // printf("\nx = %f",local);
                 inimigoAux[i].setPosicao(sf::Vector2f(local,ground.getPosition().y - 69));
                 if(escada == 6)
                     escada=0;
@@ -156,7 +205,6 @@ void Jogo::gerarInimigos(){
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
                 
-              //  printf("\nx = %f",local);
                 inimigoAux[i].setPosicao(sf::Vector2f(local,ground.getPosition().y - 69));
                 if(escada == 6)
                     escada=0;
@@ -172,7 +220,6 @@ void Jogo::gerarInimigos(){
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
                 
-              //  printf("\nx = %f",local);
                 inimigoAux[i].setPosicao(sf::Vector2f(local,ground.getPosition().y - 69));
                 if(escada == 6)
                     escada=0;
@@ -188,7 +235,6 @@ void Jogo::gerarInimigos(){
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
                 
-               // printf("\nx = %f",local);
                 inimigoAux[i].setPosicao(sf::Vector2f(local,ground.getPosition().y - 69));
                 if(escada == 6)
                     escada=0;
@@ -203,7 +249,6 @@ void Jogo::gerarInimigos(){
                 tipo=rand() % 2 + 1;
                 inimigoAux[i].setTipo(tipo);
                 local = rand() %  400 + posicaoEscada[escada];
-               // printf("\nx = %f",local);
                 inimigoAux[i].setPosicao(sf::Vector2f(local,ground.getPosition().y - 69));
                 if(escada == 6)
                     escada=0;
@@ -220,25 +265,12 @@ void Jogo::gerarInimigos(){
 Jogo::Jogo(float larg, float Alt){
     bool ok;
     int i;
-    bloco=0;
     //reseta o tron e seta posicao e tamanho
     tron.reset();
     tron.setTamanho(sf::Vector2f(3.0f,3.0f));
     tron.setPosicao(sf::Vector2f(1.0f,540.0f));
     setGerarInimigos=false;
-    
-    //faz  load das imagens e seta a escala 
-// <<<<<<< HEAD
-//     barra.loadFromFile("Itens/barraItens.png");
-//     barraItens.setTexture(barra);
-//     barraItens.setScale(sf::Vector2f(0.75,0.75));
-//     std::cout << "TADAIMA!!!" << std::endl;
-//     barraVida.setTexture(tron.getPilha().getTopo());
-//     std::cout << "TADAIMAAA!!" << std::endl;
-// =======
-//     vida.loadFromFile("Itens/6vida.png");
-//     barraVida.setTexture(vida);
-// >>>>>>> 6fadd775963a69e6655a20f0a11bd8fa1238241c
+    //seta a posicao das sprites da horda
     hordasTexture[0].loadFromFile("Arts/1horda.png");
     hordasTexture[1].loadFromFile("Arts/2horda.png");
     hordasTexture[2].loadFromFile("Arts/3horda.png");
@@ -249,6 +281,7 @@ Jogo::Jogo(float larg, float Alt){
         hordas[i].setScale(sf::Vector2f(3.f,3.f));
         hordas[i].setPosition(sf::Vector2f(512 - (hordasTexture[i].getSize().x/2)*3 , 768/2 - (hordasTexture[i].getSize().y/2)*3  ));
     }
+     //seta o background e o ground
     backgroundT.loadFromFile("TilesMap/teste.png");
     
     background.setTexture(backgroundT);
@@ -258,7 +291,7 @@ Jogo::Jogo(float larg, float Alt){
     ground.setTexture(groundT);
     ground.setScale(sf::Vector2f(4.258f,2.5f));
     ground.setPosition(sf::Vector2f(- 189.f, 768 - 2.5f * 64 ));
-
+    //cria os itens padrões
     itensPadrao[0].carregarItem("",3.0f);
     itensPadrao[0].setId(0);
     itensPadrao[1].carregarItem("disco",2.9f);
@@ -273,19 +306,18 @@ Jogo::Jogo(float larg, float Alt){
     itensPadrao[4].carregarItem("discoDois",4.5f);
     itensPadrao[4].setId(4);
     itensPadrao[4].setQuantidade(6);
-    
+     //seta os valores das cameras
     view.setSize(1024, 768);
     view.setCenter(1024/2, 768/2);
     view1.setSize(1024, 768);
     view1.setCenter(1024/2, 768/2);
+    //seta os valores da barra e insere os itens iniciais
     sistemaItens.resetBarra();
     sistemaItens.inserirItem(itensPadrao[1]);
     sistemaItens.inserirItem(itensPadrao[2]);
     sistemaItens.inserirItem(itensPadrao[3]);
     sistemaItens.inserirItem(itensPadrao[4]);
-
-    
-    inimigos.cria();
+    //cria o sistema de drops
     drops.cria();
         //animação do disco indo,  ponto + vetor * escalar
     fonte.loadFromFile("Tr2n.ttf");
@@ -303,14 +335,12 @@ Jogo::~Jogo(){
 };
 
 int Jogo::Executar(sf::RenderWindow & App){
-    sons.musica(somFundo,deuCerto);
-	//---------------------------  Aqui q vai tudo do jogo. ------------------------------------//
-     discosHeroi.cria();
-    discosInimigos.cria();
-    Disco dUm,dDois;
-    int drawHorda =0;
-    bool setChao = false;
-    tron.idDisco=0;
+    sons.musica(somFundo,deuCerto); //som da musica de fundo
+     discosHeroi.cria(); //cria a lista de disco do heroi
+    discosInimigos.cria();//cria a lista de disco do inimigo
+    Disco dUm,dDois; //discos auxiliares
+    int drawHorda =0; // verifica qual horda mostrar
+    tron.idDisco=0; //set o id dos discos
     bool pulou=false;
     //verifica se nenhuma tecla está sendo pressionada
     bool noKeyWasPressed = true;
@@ -320,11 +350,11 @@ int Jogo::Executar(sf::RenderWindow & App){
     MyKeys key;
 	sf::Event evento; // eventos de jogo
 	bool executando = true;
-    jogoClock.restart();
+    jogoClock.restart(); //seta o clock do jogo
     sf::Time aux=jogoClock.getElapsedTime();
 	while (executando){
         tempoJogo=jogoClock.getElapsedTime();
-        if(segundos == 3 ){
+        if(segundos == 3 ){ // se for 3 segundos ele ira mostrar qual eh a horda e gerar inimigos
             if(!setGerarInimigos){
                 gerarInimigos();
                 horda++; 
@@ -334,7 +364,7 @@ int Jogo::Executar(sf::RenderWindow & App){
             }
         }else{
             setGerarInimigos=false;
-            if(segundos == 20){
+            if(segundos == 10){ //comeca a procurar o heroi
                 procura=true;
             }
         }
@@ -393,8 +423,10 @@ int Jogo::Executar(sf::RenderWindow & App){
         sf::Vector2f movement(0.f, 0.f);
         tron.setTimeFrame(frameClock.restart());
         tron.estadoPulo();
+        //seta qual item o heroi esta usando no momento
         tron.setIdItem(sistemaItens.selecionarItem(nItem));
         
+        //movimentos do heroi
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !tron.getPulando() && !tron.getAtacando()){
             
             if(!(tron.animatedSprite.getPosition().x > 21040.0f && tron.animatedSprite.getPosition().x <  21080.0f)){
@@ -402,9 +434,6 @@ int Jogo::Executar(sf::RenderWindow & App){
                 view.setCenter(view.getCenter() + tron.getCameraGround());
                 
             }
-            //seta o valor de cada frame
-
-            noKeyWasPressed = false;
             
         }else{
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !tron.getPulando() && !tron.getAtacando()){
@@ -413,11 +442,13 @@ int Jogo::Executar(sf::RenderWindow & App){
                     view.setCenter(view.getCenter() + tron.getCameraGround());
                 }
             }else{
+                //ataque no heroi
                 if((sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || tron.getAtacando()) && !tron.getPulando() && !tron.getAndando()){
-                    noKeyWasPressed = false;
                     if(!tron.getAtacando()){
+                        //o heroi esta usando um item
                         sistemaItens.usarItem(nItem);
                         tron.atacar();
+                        //caso o heroi esteja com o disco e ele atacar será adicionado um disco da lista de discos do heroi
                         if(tron.adicionarDisco()){
                             if(tron.getDirecao() == 1){
                                 disco.setReset(sf::Vector2f(tron.animatedSprite.getPosition().x + 85, tron.animatedSprite.getPosition().y + 30),sf::Vector2f(1.0f,0.f),0);
@@ -464,12 +495,12 @@ int Jogo::Executar(sf::RenderWindow & App){
             //time para o tempo de pulo
                 tron.setTimePulo();
                 if(!tron.getPulando()){
+                    //gravidade para o heroi
                     tron.fakeGravidade(sf::Vector2f(0.f, 768 - 2.5f * 64 ));
                 }
                 tron.setTimeAtaque();
                 
                 //teste para adicionar um disco na lista quando precionado a tecla de ataque
-                
                 if(tron.adicionarDisco()){
                     tron.idDisco++;
                     disco.id = tron.idDisco;
@@ -477,6 +508,7 @@ int Jogo::Executar(sf::RenderWindow & App){
                     sons.emiteSomDisco(somHeroi,deuCerto);
                     tron.resetDisco();
                 }
+                //verifica se ele esta usando o item de lancar dois discos
                 if(tron.getAdicionarDoisDiscos()){
                     
                     sons.emiteSomDisco(somHeroi,deuCerto);
@@ -490,14 +522,12 @@ int Jogo::Executar(sf::RenderWindow & App){
                     
                     sons.emiteSomDisco(somHeroi,deuCerto);
                 }
-                bloco++;
+            
             
                 
-            noKeyWasPressed = true;
-            //
             tron.animatedSprite.update(frameTime);
             App.clear();
-            
+            //seta a camera e desenha os compnente corretamente na tela
             App.setView(view);
             App.draw(background);
             App.draw(ground);
@@ -546,7 +576,8 @@ int Jogo::Executar(sf::RenderWindow & App){
        atualInimigos=false;
        anima = false;
         
-       teste(frameTime,App);
+       AcoesInimigo(frameTime,App);
+       //percorre a lista de discos do heroi
            Disco discoAux;
          discosHeroi.PegaOPrimeiro(discoAux,deuCerto);
          int j=0;
@@ -560,7 +591,7 @@ int Jogo::Executar(sf::RenderWindow & App){
             discosHeroi.PegaOProximo(discoAux,deuCerto);
          }
        
-
+        //percorre os discos do heroi
          int quantDiscosInimigo = discosInimigos.getQuant();
         for(i=0;i<quantDiscosInimigo;i++){
              Disco discoAuxInimigo;
@@ -580,7 +611,7 @@ int Jogo::Executar(sf::RenderWindow & App){
                 }
             }
         }
-     
+        //percorre a lista de drops
         int dropItens = drops.getQuant();
         Item drop;
         drops.PegaOPrimeiro(drop,deuCerto);
@@ -604,7 +635,8 @@ int Jogo::Executar(sf::RenderWindow & App){
 	//Never reaching this point normally, but just in case, exit the application
 	return 0;
 };
-void Jogo::teste(sf::Time frameTime,sf::RenderWindow & App){
+//percorre o vetor dos inimigos verificando se fora lancado o disco ou se o disco do heroi bateu em alguem
+void Jogo::AcoesInimigo(sf::Time frameTime,sf::RenderWindow & App){
     int i;
             for(i=comecoInimigo;i<quantInimigos+comecoInimigo;i++){
               int  quantDiscos = discosHeroi.getQuant();
@@ -635,7 +667,7 @@ void Jogo::teste(sf::Time frameTime,sf::RenderWindow & App){
                     if(procura && !achou)
                         inimigoAux[i].procura(tron.animatedSprite,frameTime);
                     if(!inimigoAux[i].getAtacouDisco() && inimigoAux[i].getAtacando()){
-                        if(inimigoAux[i].Bateu(tron.animatedSprite)){
+                        if(inimigoAux[i].Bateu(tron.animatedSprite) && inimigoAux[i].getAtacando() && !inimigoAux[i].andando ){
                             sons.emiteSomBarra(somInimigo,deuCerto);
                             tron.perdeVida();
                         }

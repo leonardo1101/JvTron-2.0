@@ -63,7 +63,9 @@ int main (){
     // loop principal
     while (numeroTela >= 0){
         if( (numeroTela = telas[numeroTela]->Executar(App)) == 1 );// chamada do metodo que faz funcionar a tela atual
-            telas[1] = new Jogo(App.getSize().x, App.getSize().y);
+            if(numeroTela == 1 ){
+                s1->reset(App.getSize().x, App.getSize().y);
+            }
     } // fim loop principal
 
     return EXIT_SUCCESS; // fim do programa

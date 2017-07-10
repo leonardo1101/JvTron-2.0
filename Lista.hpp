@@ -24,6 +24,7 @@ class Lista{
         void PegaOProximo(Gen&,bool&);
         void PegaOPrimeiro(Gen&,bool&);
         void cria();
+        void limparLista();
         int getQuant();
         void insere(Gen&,bool&);
         bool estaNaLista(Gen& x);
@@ -50,6 +51,19 @@ Lista<Gen>::~Lista(){
     delete Paux;
     
 }
+template<class Gen>
+void Lista<Gen>::limparLista(){
+    struct Node <Gen> *Paux;
+    Paux= header->esq;
+    quant=0;
+    while(Paux != header){
+        
+        Paux->esq->dir=Paux->dir;
+        Paux->dir->esq=Paux->esq;
+        delete Paux;
+        Paux= header->esq;
+    }
+};
 template<class Gen>
 Lista<Gen>::Lista(){
     
