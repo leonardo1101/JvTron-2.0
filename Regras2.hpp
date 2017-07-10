@@ -1,17 +1,16 @@
 /*
-	JvTron: Trabalho 1
-	Departamento de Computação
-	UFSCar Universidade Federal de São Carlos
-	Disciplina: Estrutura de Dados
-	Professor: Roberto Ferrari
-	Aluno(a):								RA:
-		João Gabriel Melo Barbirato			726546
-		Leonardo de Oliveira Peralta		726556
-		Gabrieli Santos						726523
+    JvAdventure: Trabalho 2
+    Departamento de Computação
+    UFSCar Universidade Federal de São Carlos
+    Disciplina: Estrutura de Dados
+    Professor: Roberto Ferrari
+    Aluno(a):                               RA:
+        João Gabriel Melo Barbirato         726546
+        Leonardo de Oliveira Peralta        726556
+        Gabrieli Santos                     726523
 
-	Controle de Versão: https://github.com/leonardo1101/JvTron
+    Controle de Versão: https://github.com/leonardo1101/JvTron
 */
-
 #include <iostream>
 #include "Tela.hpp"
 #include <string.h>

@@ -1,5 +1,5 @@
 /*
-    JvTron: Trabalho 1
+    JvAdventure: Trabalho 2
     Departamento de Computação
     UFSCar Universidade Federal de São Carlos
     Disciplina: Estrutura de Dados
@@ -11,7 +11,6 @@
 
     Controle de Versão: https://github.com/leonardo1101/JvTron
 */
-
 #include <iostream>
 #include "Tela.hpp"
 #include <SFML/Graphics.hpp>
